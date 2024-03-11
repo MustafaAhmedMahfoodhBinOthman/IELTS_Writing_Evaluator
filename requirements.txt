@@ -1,0 +1,8 @@
+streamlit
+pytesseract
+google.generativeai
+wordcloud
+PIL
+matplotlib
+random
+re
