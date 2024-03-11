@@ -2,7 +2,7 @@ streamlit
 pytesseract
 google.generativeai
 wordcloud
-PIL
+Pillow
 matplotlib
 random
 re
