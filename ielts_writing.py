@@ -59,12 +59,14 @@ type_take = 'secondary'
 st.sidebar.title('IELTS Writing Evaluator (Free)')
 st.sidebar.write('This is currently in Beta version launched on 11/3/2024')
 st.sidebar.write('There will be many special features and big improvments coming soon😊')
+
 side_check_button = st.sidebar.button('Check Your Essay', type=type_check, use_container_width=True)
 side_take_button = st.sidebar.button("Take a Test (it's coming soon)", type=type_take, use_container_width=True, disabled=True)
 
-st.sidebar.write("if there is any issue in the performance kindly contact me to solve that problem")
+st.sidebar.write("if there is any issue in the performance please contact me to solve that problem")
+
 st.sidebar.write("Email: mustafabinothman2023@gmail.com")
-st.sidebar.write("Telegram:  https://t.me/ielts_pathway")
+st.sidebar.write("Telegram:  https://t.me/mustafa_binothman")
 st.sidebar.markdown("Developed by **Mustafa Bin Othman**")
 
 
