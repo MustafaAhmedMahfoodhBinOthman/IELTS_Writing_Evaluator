@@ -4,5 +4,4 @@ google.generativeai
 wordcloud
 Pillow
 matplotlib
-random
-re
+
