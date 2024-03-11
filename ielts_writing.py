@@ -71,7 +71,7 @@ st.sidebar.markdown("Developed by **Mustafa Bin Othman**")
 
 
 st.title('IELTS Writing Evaluator (Free)')
-st.write('This is a high-quality AI that is competent in evaluating IELTS writing. It uses advanced LLMs to make an accurate analysis of IELTS essays.')
+st.write('This is a high-quality AI capable of evaluating IELTS writing with competence. It utilizes advanced LLMs to provide accurate analysis of IELTS essays.')
 
 #make the user take a test
 # the problem is that the timer and the text input does not work in the same time
@@ -113,14 +113,14 @@ st.write('This is a high-quality AI that is competent in evaluating IELTS writin
 task = ''
 gen_acad = ''
 # st.markdown('**Please Select which task you want to evlauate**')
-select_task = st.selectbox('**Please Select which task you want to evlauate**', ['Task 1', 'Task 2'])
+select_task = st.selectbox('**Please select which task you want to evlauate**', ['Task 1', 'Task 2'])
 
 if select_task == 'Task 1':
     task = 'Task 1'
     gen_aca = st.selectbox('**Academic or General essay**', ['Academic', 'General'])
     gen_acad = gen_aca
     if gen_acad == 'Academic':
-        chart_image = st.file_uploader('Please upload Task 1 chart/map', type=['png', 'jpg'] )
+        chart_image = st.file_uploader('Please upload Task 1 (Chart, Map, Process, Diagram or Table)', type=['png', 'jpg'] )
     else:
         pass
     
