@@ -701,7 +701,7 @@ if button:
         evaluate2(task_response)
         
         st.markdown('---')
-        st.markdown("## Coherence and Cohesive")
+        st.markdown("## Coherence and Cohesion")
         evaluate2(co_prompt)
         st.markdown('---')
         st.markdown("## Lexical Resources")
