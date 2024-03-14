@@ -8,14 +8,14 @@ import random
 import re
 from PIL import Image
 
-hide_st_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_st_style, unsafe_allow_html=True)
+# hide_st_style = """
+#             <style>
+#             #MainMenu {visibility: hidden;}
+#             footer {visibility: hidden;}
+#             header {visibility: hidden;}
+#             </style>
+#             """
+# st.markdown(hide_st_style, unsafe_allow_html=True)
 
 
 
@@ -71,7 +71,7 @@ st.sidebar.markdown("Developed by **Mustafa Bin Othman**")
 
 
 st.title('IELTS Writing Evaluator (Free)')
-st.write('This is a high-quality AI capable of evaluating IELTS writing with competence. It utilizes advanced LLMs to provide accurate analysis of IELTS essays.')
+st.write('This is a high-quality AI that is competent in evaluating IELTS writing. It uses advanced LLMs to make an accurate analysis of IELTS essays.')
 
 #make the user take a test
 # the problem is that the timer and the text input does not work in the same time
@@ -113,14 +113,14 @@ st.write('This is a high-quality AI capable of evaluating IELTS writing with com
 task = ''
 gen_acad = ''
 # st.markdown('**Please Select which task you want to evlauate**')
-select_task = st.selectbox('**Please select which task you want to evlauate**', ['Task 1', 'Task 2'])
+select_task = st.selectbox('**Please Select which task you want to evlauate**', ['Task 1', 'Task 2'])
 
 if select_task == 'Task 1':
     task = 'Task 1'
     gen_aca = st.selectbox('**Academic or General essay**', ['Academic', 'General'])
     gen_acad = gen_aca
     if gen_acad == 'Academic':
-        chart_image = st.file_uploader('Please upload Task 1 (Chart, Map, Process, Diagram or Table)', type=['png', 'jpg'] )
+        chart_image = st.file_uploader('Please upload Task 1 chart/map', type=['png', 'jpg'] )
     else:
         pass
     
@@ -302,6 +302,8 @@ tas_prompt = f"""
     - how clearly the candidate opens the discourse, establishes their position and formulates conclusions. 
     - how appropriate the format of the response is to the task.
 
+    you should be fair when you assess this criteria and give a precise band score and provide some explanation 
+    important NOTE: when you give the band score it should be a whole number not a decimal number between 0 to 9 and when you give a decimal number round it  
     
     Below are the band descriptors for the TR criterion:
     
@@ -325,12 +327,10 @@ tas_prompt = f"""
 
     Band 0: The candidate did not attempt the task, so no assessment of task response can be made.
      
-    NOTE: you do not need to give an explicit number such as 7 you can also give a fraction number if it is possible such as 6.5 etc..
     
-    in the end you should explain why you gave him this band score and what he should do to improve it
     
     i want the structure of your response looks like:
-    first in the beginning write the band score for example: Bnnd Score : ....
+    first in the beginning write the band score it should not be a decimal number for example: Bnnd Score : ....
     
     then write an about your evaluation in details and explain why this eesay deserve this band score
     after that write suggetions to improve the writing in organized points
@@ -361,7 +361,8 @@ co_prompt = f"""
       response, e.g. [First of all | In conclusion], and to signal the relationship between 
       ideas and/or information, e.g. [as a result | similarly]
       
-    you should be fair when you assess this criteria and give a band score and provide some explanation 
+    you should be fair when you assess this criteria and give a precise band score and provide some explanation 
+    important NOTE: when you give the band score it should be a whole number not a decimal number between 0 to 9 and when you give a decimal number round it  
     
     Below are the band descriptors for the CC criterion:
     
@@ -385,12 +386,10 @@ co_prompt = f"""
     
     Band 0: The candidate did not attempt the task, so no assessment of coherence and cohesion can be made.
    
-   NOTE: you do not need to give an explicit number such as 7 you can also give a fraction number if it is possible such as 6.5 etc..
-    
-    in the end you should explain why you gave him this band score and what he should do to improve it
-    
+   
+   
     i want the structure of your response looks like:
-    first in the beginning write the band score for example: Bnnd Score : ....
+    first in the beginning write the band score it should not be a decimal number for example: Bnnd Score : ....
     
     then write an about your evaluation in details and explain why this eesay deserve this band score
     after that write suggetions to improve the writing in organized points
@@ -415,7 +414,8 @@ lex_prompt = f"""
     - the density and communicative effect of errors in spelling. 
     - the density and communicative effect of errors in word formation.
     
-    you should be fair when you assess this criteria and give a band score and provide some explanation
+    you should be fair when you assess this criteria and give a precise band score and provide some explanation 
+    important NOTE: when you give the band score it should be a whole number not a decimal number between 0 to 9 and when you give a decimal number round it  
     
     Below are the band descriptors for the LR criterion:
     
@@ -439,12 +439,9 @@ lex_prompt = f"""
         
     Band 0: The candidate did not attempt the task, so no assessment of lexical resource can be made.
     
-    NOTE: you do not need to give an explicit number such as 7 you can also give a fraction number if it is possible such as 6.5 etc..
-    
-    in the end you should explain why you gave him this band score and what he should do to improve it
     
     i want the structure of your response looks like:
-    first in the beginning write the band score for example: Bnnd Score : ....
+    first in the beginning write the band score it should not be a decimal number for example: Bnnd Score : ....
     
     then write an about your evaluation in details and explain why this eesay deserve this band score
     after that write suggetions to improve the writing in organized points
@@ -465,7 +462,8 @@ gr_prompt = f"""
     - the density and communicative effect of grammatical errors.
     - the accurate and appropriate use of punctuation.
     
-    you should be fair when you assess this criteria and give a band score and provide some explanation 
+    you should be fair when you assess this criteria and give a precise band score and provide some explanation 
+    important NOTE: when you give the band score it should be a whole number not a decimal number between 0 to 9 and when you give a decimal number round it  
     
     Below are the band descriptors for the GRA criterion:
 
@@ -489,12 +487,10 @@ gr_prompt = f"""
     
     Band 0: The candidate did not attempt the task.
    
-   NOTE: you do not need to give an explicit number such as 7 you can also give a fraction number if it is possible such as 6.5 etc..
-    
-    in the end you should explain why you gave him this band score and what he should do to improve it
+   
     
     i want the structure of your response looks like:
-    first in the beginning write the band score for example: Bnnd Score : ....
+    first in the beginning write the band score it should not be a decimal number for example: Bnnd Score : ....
     
     then write an about your evaluation in details and explain why this eesay deserve this band score
     after that write suggetions to improve the writing in organized points
@@ -518,7 +514,8 @@ tas_academic_task1 = f"""
     - presenting the response in an appropriate format.
     
         
-    you should be fair when you assess this criteria and give a band score and provide some explanation 
+    you should be fair when you assess this criteria and give a precise band score and provide some explanation 
+    important NOTE: when you give the band score it should be a whole number not a decimal number between 0 to 9 and when you give a decimal number round it   
     
     Below are the band descriptors for the task response task 1 criterion:
     
@@ -543,14 +540,16 @@ tas_academic_task1 = f"""
     
     Band 4: The response is an attempt to address the task. Few key features have been selected.  Few key features have been selected.
     
-    Band 3: Key features/bullet points which are presented may be irrelevant, repetitive, inaccurate or inappropriate. The response does not address the requirements of the task (possibly because of misunderstanding of the data/diagram/situation). Key features/bullet points which are presented may be largely irrelevant. Limited information is presented, and this may be used repetitively.
+    Band 3: Key features/bullet points which are presented may be irrelevant, repetitive, inaccurate or inappropriate. 
+    The response does not address the requirements of the task (possibly because of misunderstanding of the data/diagram/situation). Key features/bullet points which are presented may be largely irrelevant. Limited information is presented, and this may be used repetitively.
     
     Band 2: The content barely relates to the task.
     
     Band 1: The content is wholly unrelated to the task. Any copied rubric must be discounted. Responses of 20 words or fewer are rated at Band 1.
     
+    
     i want the structure of your response looks like:
-    first in the beginning write the band score for example: Bnnd Score : ....
+    first in the beginning write the band score it should not be a decimal number for example: Bnnd Score : ....
     
     then write an about your evaluation in details and explain why this eesay deserve this band score
     after that write suggetions to improve the writing in organized points
@@ -575,7 +574,8 @@ This Writing {task} also has a largely predictable output in that each task sets
 
 
 
-you should be fair when you assess this criteria and give a band score and provide some explanation 
+you should be fair when you assess this criteria and give a precise band score and provide some explanation 
+    important NOTE: when you give the band score it should be a whole number not a decimal number between 0 to 9 and when you give a decimal number round it  
     
     Below are the band descriptors for the task response task 1 criterion:
     
@@ -610,8 +610,9 @@ you should be fair when you assess this criteria and give a band score and provi
     
     Band 1: The content is wholly unrelated to the task. Any copied rubric must be discounted. Responses of 20 words or fewer are rated at Band 1.
     
+    
     i want the structure of your response looks like:
-    first in the beginning write the band score for example: Bnnd Score : ....
+    first in the beginning write the band score it should not be a decimal number for example: Bnnd Score : ....
     
     then write an about your evaluation in details and explain why this eesay deserve this band score
     after that write suggetions to improve the writing in organized points
@@ -645,7 +646,7 @@ def evaluate2(prompt):
             st.write(task_ch)
             task_score = float(extract_digit_from_essay(task_ch))
             
-            overall_band_score.append(task_score)
+            overall_band_score.append(round(task_score))
             break  # Break out of the while loop if the generation is successful
         except Exception  as e:
             print("An internal error has occurred:", e)
@@ -707,7 +708,7 @@ if button:
         st.markdown("## Lexical Resources")
         evaluate2(lex_prompt)
         st.markdown('---')
-        st.markdown("## Grammar and Acurrecy")
+        st.markdown("## Grammar and Acurracy")
         evaluate2(gr_prompt)
         st.markdown('**- Grammar and Spelling mistakes**')
         grammar_spling()
