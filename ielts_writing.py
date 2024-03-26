@@ -17,17 +17,19 @@ hide_st_style = """
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
-analytics_iframe = """
-<iframe src="https://cdn.bayanplus.co/bp.js" data-pid="UJgn4yk2" width="0" height="0" frameborder="0"></iframe>
-"""
-
-st.markdown(analytics_iframe, unsafe_allow_html=True)
-
-
-import streamlit.components.v1 as components
-analytics_url = "https://cdn.bayanplus.co/bp.js?pid=UJgn4yk2"
-
-components.iframe(analytics_url, width=0, height=0, scrolling=False)
+analytics_script = """
+    <script>
+    (function() {
+        var script = document.createElement('script');
+        script.defer = true;
+        script.src = 'https://cdn.bayanplus.co/bp.js';
+        script.setAttribute('data-pid', 'UJgn4yk2');
+        document.head.appendChild(script);
+    })();
+    </script>
+    """
+    
+components.html(analytics_script, height=0)
 st.markdown("""
     <style>
     .sidebar .sidebar-content {
