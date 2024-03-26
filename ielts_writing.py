@@ -23,6 +23,14 @@ analytics_iframe = """
 
 st.markdown(analytics_iframe, unsafe_allow_html=True)
 
+
+import streamlit.components.v1 as components
+
+analytics_script = """
+<script defer src="https://cdn.bayanplus.co/bp.js" data-pid="UJgn4yk2"></script>
+"""
+
+components.html(analytics_script, height=0)
 st.markdown("""
     <style>
     .sidebar .sidebar-content {
