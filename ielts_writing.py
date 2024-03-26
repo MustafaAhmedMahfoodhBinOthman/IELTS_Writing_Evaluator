@@ -17,8 +17,11 @@ hide_st_style = """
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
-st.markdown("""<script defer src="https://cdn.bayanplus.co/bp.js" data-pid="UJgn4yk2"></script>
-""",  unsafe_allow_html=True)
+analytics_iframe = """
+<iframe src="https://cdn.bayanplus.co/bp.js" data-pid="UJgn4yk2" width="0" height="0" frameborder="0"></iframe>
+"""
+
+st.markdown(analytics_iframe, unsafe_allow_html=True)
 
 st.markdown("""
     <style>
