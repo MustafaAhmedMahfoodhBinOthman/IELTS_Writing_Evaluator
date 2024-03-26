@@ -16,20 +16,7 @@ hide_st_style = """
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
-import streamlit.components.v1 as components
-analytics_script = """
-    <script>
-    (function() {
-        var script = document.createElement('script');
-        script.defer = true;
-        script.src = 'https://cdn.bayanplus.co/bp.js';
-        script.setAttribute('data-pid', 'UJgn4yk2');
-        document.head.appendChild(script);
-    })();
-    </script>
-    """
-    
-components.html(analytics_script, height=0)
+
 st.markdown("""
     <style>
     .sidebar .sidebar-content {
