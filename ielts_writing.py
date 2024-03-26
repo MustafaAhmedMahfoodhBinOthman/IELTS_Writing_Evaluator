@@ -16,7 +16,7 @@ hide_st_style = """
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
-
+import streamlit.components.v1 as components
 analytics_script = """
     <script>
     (function() {
