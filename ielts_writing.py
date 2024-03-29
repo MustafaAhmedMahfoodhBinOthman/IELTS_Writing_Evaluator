@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import random
 import re
 from PIL import Image
+import os
 
 hide_st_style = """
             <style>
@@ -37,15 +38,20 @@ st.markdown("""
     }
     </style>
     """, unsafe_allow_html=True)
-Claude_API_KEY = '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'
+# Claude_API_KEY = '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'
 
-Gemini_API_Key = 'AIzaSyAtnlV6rfm_OsSt9M_w9ZaiFn3NjdjSVuw' #mustafabinothman22
-Gemini_API_Key2 = 'AIzaSyDbU_8cAQCAhr59bqtGf40FV-92KCKkLWs' #mustafanotion
-Gemini_API_Key3 = 'AIzaSyBOb6xrGvLxRBvgMEUyWvTSGKZVDGT4j3w' #mustafabinothman2003
-Gemini_API_Key4 = 'AIzaSyB5Cy4KIg4xKwz2poq3sywJEvqI0BL10iQ' #mustafabinothman2023
-Gemini_API_Key5 = 'AIzaSyBUpws7IJIKo9rZI1YKSBPQj_RpPWwTqFo' #www.binothman24
+# Gemini_API_Key = 'AIzaSyAtnlV6rfm_OsSt9M_w9ZaiFn3NjdjSVuw' #mustafabinothman22
+# Gemini_API_Key2 = 'AIzaSyDbU_8cAQCAhr59bqtGf40FV-92KCKkLWs' #mustafanotion
+# Gemini_API_Key3 = 'AIzaSyBOb6xrGvLxRBvgMEUyWvTSGKZVDGT4j3w' #mustafabinothman2003
+# Gemini_API_Key4 = 'AIzaSyB5Cy4KIg4xKwz2poq3sywJEvqI0BL10iQ' #mustafabinothman2023
+# Gemini_API_Key5 = 'AIzaSyBUpws7IJIKo9rZI1YKSBPQj_RpPWwTqFo' #www.binothman24
+Gemini_API_Key = os.getenv('Gemini_API_Key') #mustafabinothman22
+Gemini_API_Key2 = os.getenv('Gemini_API_Key2') #mustafanotion
+Gemini_API_Key3 = os.getenv('Gemini_API_Key3') #mustafabinothman2003
+Gemini_API_Key4 = os.getenv('Gemini_API_Key4') #mustafabinothman2023
+Gemini_API_Key5 = os.getenv('Gemini_API_Key5') #www.binothman24
 
-keys = ['AIzaSyAtnlV6rfm_OsSt9M_w9ZaiFn3NjdjSVuw','AIzaSyDbU_8cAQCAhr59bqtGf40FV-92KCKkLWs','AIzaSyBOb6xrGvLxRBvgMEUyWvTSGKZVDGT4j3w','AIzaSyB5Cy4KIg4xKwz2poq3sywJEvqI0BL10iQ','AIzaSyBUpws7IJIKo9rZI1YKSBPQj_RpPWwTqFo']
+keys = [Gemini_API_Key,Gemini_API_Key2,Gemini_API_Key3,Gemini_API_Key4,Gemini_API_Key5]
 used_key = random.choice(keys)
 
 
