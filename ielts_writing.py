@@ -1,6 +1,7 @@
 import streamlit as st
 # import pytesseract
 import google.generativeai as genai
+from streamlit.components.v1 import html
 from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 from PIL import Image
 import matplotlib.pyplot as plt
@@ -17,6 +18,7 @@ hide_st_style = """
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
+html('<script defer src="https://cdn.bayanplus.co/bp.js" data-pid="UJgn4yk2"></script>')
 st.markdown("""
     <style>
     .sidebar .sidebar-content {
