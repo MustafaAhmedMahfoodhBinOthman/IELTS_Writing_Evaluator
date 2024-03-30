@@ -263,7 +263,10 @@ if task_image is not None:
 
 
 essay = st.text_area(label='**Write or paste the essay**', height=600, value=st.session_state.essay)
-num_words = len(essay.split())
+if essay:  # Check if essay is not None and not an empty string
+    num_words = len(essay.split())
+else:
+    num_words = 0
 q_words = len(question.split())
 st.write('Number of Words:    ',num_words)
 button = st.button('Evaluate')
