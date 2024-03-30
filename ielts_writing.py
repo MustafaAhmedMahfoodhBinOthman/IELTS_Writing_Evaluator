@@ -361,18 +361,22 @@ def synonym(api):
     
     genai.configure(api_key = api)
     # model = genai.GenerativeModel('gemini-1.0-pro-latest')
-    while True:
+    max_retries = 10
+    retries = 0
+    while retries < max_retries:
         try:
-            claude_model2(haiku, sy_prompt)
-            # response2 = model.generate_content(sy_prompt, stream=True)
-            # response2.resolve()
-            # synonyms = response2.text
-            # st.write(synonyms)
+            # claude_model2(haiku, sy_prompt)
+            response2 = model.generate_content(sy_prompt, stream=True)
+            response2.resolve()
+            synonyms = response2.text
+            st.write(synonyms)
             break  # Break out of the while loop if the generation is successful
         except Exception as e:
             print("An error has occurred:", e)
             print("Retrying...")
-            continue 
+            continue
+    else:
+        st.error('Error') 
 
 def rewrite_essay(api):
     # re_prompt = f"""
