@@ -18,7 +18,6 @@ hide_st_style = """
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
-html('<script defer src="https://cdn.bayanplus.co/bp.js" data-pid="UJgn4yk2"></script>')
 
     
     
