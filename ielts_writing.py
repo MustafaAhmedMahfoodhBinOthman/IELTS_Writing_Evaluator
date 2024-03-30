@@ -1,23 +1,27 @@
 import streamlit as st
 import anthropic
 import google.generativeai as genai
-from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
+from wordcloud import WordCloud, STOPWORDS
 from PIL import Image
 import matplotlib.pyplot as plt
 import random
 import re
 import os
 
-hide_st_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_st_style, unsafe_allow_html=True)
 
+# hide_st_style = """
+#             <style>
+#             #MainMenu {visibility: hidden;}
+#             footer {visibility: hidden;}
+#             header {visibility: hidden;}
+#             </style>
+#             """
+# st.markdown(hide_st_style, unsafe_allow_html=True)
 
+# html('<script defer src="https://cdn.bayanplus.co/bp.js" data-pid="UJgn4yk2"></script>')
+
+    
+    
 st.markdown("""
     <style>
     .sidebar .sidebar-content {
@@ -36,7 +40,17 @@ st.markdown("""
     }
     </style>
     """, unsafe_allow_html=True)
+# Claude_API_KEY = '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'
+
+# Gemini_API_Key = 'AIzaSyAtnlV6rfm_OsSt9M_w9ZaiFn3NjdjSVuw' #mustafabinothman22
+# Gemini_API_Key2 = 'AIzaSyDbU_8cAQCAhr59bqtGf40FV-92KCKkLWs' #mustafanotion
+# Gemini_API_Key3 = 'AIzaSyBOb6xrGvLxRBvgMEUyWvTSGKZVDGT4j3w' #mustafabinothman2003
+# Gemini_API_Key4 = 'AIzaSyB5Cy4KIg4xKwz2poq3sywJEvqI0BL10iQ' #mustafabinothman2023
+# Gemini_API_Key5 = 'AIzaSyBUpws7IJIKo9rZI1YKSBPQj_RpPWwTqFo' #www.binothman24
+
+
 Claude_API_KEY = os.getenv('Claude_API_KEY')
+
 Gemini_API_Key = os.getenv('Gemini_API_Key') #mustafabinothman22
 Gemini_API_Key2 = os.getenv('Gemini_API_Key2') #mustafanotion
 Gemini_API_Key3 = os.getenv('Gemini_API_Key3') #mustafabinothman2003
@@ -52,7 +66,6 @@ model_vision = genai.GenerativeModel('gemini-pro-vision')
 
 type_check = 'primary'
 type_take = 'secondary'
-
 
 
 st.sidebar.title('IELTS Writing Evaluator (Free)')
@@ -191,7 +204,7 @@ value= ''
 
 def essay_image(api_key, image_pil):
     
-    max_retries = 5
+    max_retries = number_of_tries
     retries = 0
     while retries < max_retries:
         try:
@@ -1086,4 +1099,7 @@ if button:
         st.markdown('### a rewritten version of your essay')
         rewrite_essay(Gemini_API_Key3)
         
+        
+        print((task1_band_score))
+        print((task2_band_score))
         
