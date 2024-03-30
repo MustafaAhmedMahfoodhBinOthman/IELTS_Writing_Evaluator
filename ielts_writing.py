@@ -58,7 +58,7 @@ model_vision = genai.GenerativeModel('gemini-pro-vision')
 
 type_check = 'primary'
 type_take = 'secondary'
-
+number_of_tries = 5
 
 st.sidebar.title('IELTS Writing Evaluator (Free)')
 # st.sidebar.write('This is currently in Beta version launched on 11/3/2024')
@@ -272,7 +272,7 @@ button = st.button('Evaluate')
 
 
 list_of_repeated_words = []
-number_of_tries = 5
+
 def words_charts():
     from collections import Counter
 
