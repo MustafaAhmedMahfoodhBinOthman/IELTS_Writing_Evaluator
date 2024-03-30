@@ -41,13 +41,22 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 
-Claude_API_KEY = os.getenv('Claude_API_KEY')
+# Claude_API_KEY = os.getenv('Claude_API_KEY')
 
-Gemini_API_Key = os.getenv('Gemini_API_Key') #mustafabinothman22
-Gemini_API_Key2 = os.getenv('Gemini_API_Key2') #mustafanotion
-Gemini_API_Key3 = os.getenv('Gemini_API_Key3') #mustafabinothman2003
-Gemini_API_Key4 = os.getenv('Gemini_API_Key4') #mustafabinothman2023
-Gemini_API_Key5 = os.getenv('Gemini_API_Key5') #www.binothman24
+# Gemini_API_Key = os.getenv('Gemini_API_Key') #mustafabinothman22
+# Gemini_API_Key2 = os.getenv('Gemini_API_Key2') #mustafanotion
+# Gemini_API_Key3 = os.getenv('Gemini_API_Key3') #mustafabinothman2003
+# Gemini_API_Key4 = os.getenv('Gemini_API_Key4') #mustafabinothman2023
+# Gemini_API_Key5 = os.getenv('Gemini_API_Key5') #www.binothman24
+
+Claude_API_KEY = st.secrets['Claude_API_KEY']
+Gemini_API_Key = st.secrets['Gemini_API_Key'] #mustafabinothman22
+Gemini_API_Key2 = st.secrets['Gemini_API_Key2'] #mustafanotion
+Gemini_API_Key3 = st.secrets['Gemini_API_Key3'] #mustafabinothman2003
+Gemini_API_Key4 = st.secrets['Gemini_API_Key4'] #mustafabinothman2023
+Gemini_API_Key5 = st.secrets['Gemini_API_Key5'] #www.binothman24
+
+
 
 keys = [Gemini_API_Key,Gemini_API_Key2,Gemini_API_Key3,Gemini_API_Key4,Gemini_API_Key5]
 used_key = random.choice(keys)
