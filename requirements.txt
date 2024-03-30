@@ -4,4 +4,5 @@ google.generativeai
 wordcloud
 Pillow
 matplotlib
+anthropic
 
