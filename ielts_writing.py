@@ -1104,7 +1104,7 @@ if button:
         synonym(Gemini_API_Key2)
         st.markdown('---')
         
-        st.markdown('### a rewritten version of your essay')
+        st.markdown('### Improved version of your essay')
         rewrite_essay(Gemini_API_Key3)
         
         
