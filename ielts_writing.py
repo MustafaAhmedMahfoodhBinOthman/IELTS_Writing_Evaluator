@@ -111,7 +111,11 @@ if select_task == 'Task 1':
         st.markdown("**2- After you upload the photo check the written essay and edit it if there any issues**")
         st.markdown("**3- If one photo wasn't enough to upload all the essay you can cancel the photo and upload the other photos (it will automatically add the text with first one)**")
     else:
-        pass
+        task_image= st.file_uploader('Please upload a photo of the essay', type=['png', 'jpg'] )
+        st.markdown("> ✅ **Important Notes** ")
+        st.markdown("**1- Make sure you upload a high quality photo with clear font for better results**")
+        st.markdown("**2- After you upload the photo check the written essay and edit it if there any issues**")
+        st.markdown("**3- If one photo wasn't enough to upload all the essay you can cancel the photo and upload the other photos (it will automatically add the text with first one)**")
     
     
     # essay_image= st.file_uploader('if you have a written essay upload it (currently is unsupported it is coming soon)', type=['png', 'jpg'], accept_multiple_files=False,)
