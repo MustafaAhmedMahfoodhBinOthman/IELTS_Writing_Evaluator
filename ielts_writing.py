@@ -7,7 +7,12 @@ import matplotlib.pyplot as plt
 import random
 import re
 import os
-
+import streamlit.components.v1 as components
+with open("BayanPlusTracking.html", "r") as f:
+    analytics_html = f.read()
+    
+components.html(analytics_html = f.read()
+, height=0, width=0)
 
 hide_st_style = """
             <style>
