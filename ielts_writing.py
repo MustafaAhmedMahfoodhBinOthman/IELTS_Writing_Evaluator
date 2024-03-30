@@ -190,7 +190,7 @@ value= ''
 
 def essay_image(api_key, image_pil):
     
-    max_retries = number_of_tries
+    max_retries = 5
     retries = 0
     while retries < max_retries:
         try:
