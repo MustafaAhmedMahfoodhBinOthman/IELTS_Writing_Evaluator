@@ -1,8 +1,6 @@
 streamlit
-pytesseract
+anthropic
 google.generativeai
 wordcloud
 Pillow
 matplotlib
-
-anthropic
