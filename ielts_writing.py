@@ -1,4 +1,5 @@
 import streamlit as st
+import anthropic
 import google.generativeai as genai
 from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 from PIL import Image
