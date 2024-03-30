@@ -1,13 +1,10 @@
 import streamlit as st
-# import pytesseract
 import google.generativeai as genai
-
 from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 from PIL import Image
 import matplotlib.pyplot as plt
 import random
 import re
-from PIL import Image
 import os
 
 hide_st_style = """
@@ -38,13 +35,7 @@ st.markdown("""
     }
     </style>
     """, unsafe_allow_html=True)
-# Claude_API_KEY = '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'
-
-# Gemini_API_Key = 'AIzaSyAtnlV6rfm_OsSt9M_w9ZaiFn3NjdjSVuw' #mustafabinothman22
-# Gemini_API_Key2 = 'AIzaSyDbU_8cAQCAhr59bqtGf40FV-92KCKkLWs' #mustafanotion
-# Gemini_API_Key3 = 'AIzaSyBOb6xrGvLxRBvgMEUyWvTSGKZVDGT4j3w' #mustafabinothman2003
-# Gemini_API_Key4 = 'AIzaSyB5Cy4KIg4xKwz2poq3sywJEvqI0BL10iQ' #mustafabinothman2023
-# Gemini_API_Key5 = 'AIzaSyBUpws7IJIKo9rZI1YKSBPQj_RpPWwTqFo' #www.binothman24
+Claude_API_KEY = os.getenv('Claude_API_KEY')
 Gemini_API_Key = os.getenv('Gemini_API_Key') #mustafabinothman22
 Gemini_API_Key2 = os.getenv('Gemini_API_Key2') #mustafanotion
 Gemini_API_Key3 = os.getenv('Gemini_API_Key3') #mustafabinothman2003
@@ -62,14 +53,15 @@ type_check = 'primary'
 type_take = 'secondary'
 
 
+
 st.sidebar.title('IELTS Writing Evaluator (Free)')
-st.sidebar.write('This is currently in Beta version launched on 11/3/2024')
-st.sidebar.write('There will be many special features and big improvments coming soon😊')
+# st.sidebar.write('This is currently in Beta version launched on 11/3/2024')
+# st.sidebar.write('There will be many special features and big improvments coming soon😊')
 
 side_check_button = st.sidebar.button('Check Your Essay', type=type_check, use_container_width=True)
-side_take_button = st.sidebar.button("Take a Test (it's coming soon)", type=type_take, use_container_width=True, disabled=True)
+# side_take_button = st.sidebar.button("Take a Test (it's coming soon)", type=type_take, use_container_width=True, disabled=True)
 
-st.sidebar.write("if there is any issue in the performance please contact me to solve that problem")
+st.sidebar.write("if there is any issue in the performance or any suggetions please contact me")
 
 st.sidebar.write("Email: mustafabinothman2023@gmail.com")
 st.sidebar.write("Telegram:  https://t.me/mustafa_binothman")
@@ -77,56 +69,28 @@ st.sidebar.markdown("Developed by **Mustafa Bin Othman**")
 
 
 st.title('IELTS Writing Evaluator (Free)')
-st.write('This is a high-quality AI that is competent in evaluating IELTS writing. It uses advanced LLMs to make an accurate analysis of IELTS essays.')
-
-#make the user take a test
-# the problem is that the timer and the text input does not work in the same time
-# def take_test():
-#     import time
-#     import asyncio
-#     def input_area():
-#         question = st.text_area(label='**Enter the question**')
-#         essay = st.text_area(label='**Write your essay**', height=700)
-#         num_words = len(essay.split())
-#         q_words = len(question.split())
-#         st.write('Number of Words:', num_words)
-#         button = st.button('Evaluate')
-
-#     async def countdown_timer(duration, task):
-#         st.header(f"Task {task} Timer")
-#         seconds = duration * 60  # Convert minutes to seconds
-#         placeholder = st.empty()  # Create a placeholder
-
-#         while seconds > 0:
-#             mins, secs = divmod(seconds, 60)  # Get minutes and seconds
-#             timeformat = '{:02d}:{:02d}'.format(mins, secs)  # Format time as mm:ss
-#             placeholder.subheader(timeformat)  # Update the placeholder
-#             await asyncio.sleep(1)  # Asynchronous sleep for 1 second
-#             seconds -= 1
-
-#         placeholder.write("Time's up!")  # Update the placeholder after countdown
-#     async def main():
-#         select_task = st.selectbox("Select Task", ["Task 1", "Task 2"])
-#         if select_task == "Task 1":
-#             await asyncio.gather(input_area(),await countdown_timer(20, 1))  # 20 minutes for Task 1
-#         elif select_task == "Task 2":
-#             await asyncio.gather(input_area(),await countdown_timer(40, 2))  # 40 minutes for Task 2
-
-#     st.write("Running input area and countdown timer concurrently...")
-#     asyncio.run(main())
+st.write('This is a high-quality AI that is competent in evaluating IELTS writing. It uses advanced LLMs to make a high effeciant evaluation .')
 
 
 task = ''
 gen_acad = ''
 # st.markdown('**Please Select which task you want to evlauate**')
-select_task = st.selectbox('**Please Select which task you want to evlauate**', ['Task 1', 'Task 2'])
+select_task = st.selectbox('**Please Select the type of task**', ['Task 1', 'Task 2'])
+
+
 
 if select_task == 'Task 1':
     task = 'Task 1'
     gen_aca = st.selectbox('**Academic or General essay**', ['Academic', 'General'])
     gen_acad = gen_aca
     if gen_acad == 'Academic':
-        chart_image = st.file_uploader('Please upload Task 1 chart/map', type=['png', 'jpg'] )
+        chart_image = st.file_uploader('Please upload Task 1 chart/map etc.. (optional)', type=['png', 'jpg'] )
+        st.write("if you have written your essay in a paper, take a photo and upload it 👇")
+        task_image= st.file_uploader('Please upload a photo of the essay', type=['png', 'jpg'] )
+        st.markdown("> ✅ **Important Notes** ")
+        st.markdown("**1- Make sure you upload a high quality photo with clear font for better results**")
+        st.markdown("**2- After you upload the photo check the written essay and edit it if there any issues**")
+        st.markdown("**3- If one photo wasn't enough to upload all the essay you can cancel the photo and upload the other photos (it will automatically add the text with first one)**")
     else:
         pass
     
@@ -134,49 +98,175 @@ if select_task == 'Task 1':
     # essay_image= st.file_uploader('if you have a written essay upload it (currently is unsupported it is coming soon)', type=['png', 'jpg'], accept_multiple_files=False,)
 else:
     task = 'Task 2'
-    # essay_image= st.file_uploader('if you have a written essay upload it (currently is unsupported it is coming soon)', type=['png', 'jpg'], accept_multiple_files=False)
-
+    st.write("if you have written your essay in a paper take a photo and upload it 👇")
+    
+    task_image= st.file_uploader('Please upload a photo of the essay', type=['png', 'jpg'] )
+    st.markdown("> ✅ **Important Notes** ")
+    st.markdown("**1- Make sure you upload a high quality photo with clear font for better results**")
+    st.markdown("**2- After you upload the photo check the written essay and edit it if there any issues**")
+    st.markdown("**3- If one photo wasn't enough to upload all the essay, you can cancel the photo and upload the other photos (it will automatically add the text with first one)**")
 # if task == 'Task 1':
 #     if chart_image is not None:
 #             st.image(chart_image, width=400)
 
+
+opus = "claude-3-opus-20240229"
+sonnet = "claude-3-sonnet-20240229"
+haiku = "claude-3-haiku-20240307"
+overall_band_score = []
+def claude_model(model, prompt):
+    client = anthropic.Anthropic(
+# defaults to os.environ.get("ANTHROPIC_API_KEY")
+    api_key=Claude_API_KEY,
+)
+
+    message = client.messages.create(
+    model=model,
+    max_tokens=1000,
+    temperature=0.0,
+    # system="Respond only in Yoda-speak.",
+    messages=[
+        {"role": "user", "content": prompt}
+]
+)
+    content_block = message.content[0]
+    
+    # st.write(content_block.text)
+    remove_band_score(content_block.text)
+    # task_score = float(extract_digit_from_essay(content_block.text))
+    # overall_band_score.append((task_score))
+    
+
+def claude_model2(model, prompt):
+    client = anthropic.Anthropic(
+# defaults to os.environ.get("ANTHROPIC_API_KEY")
+    api_key=Claude_API_KEY,
+)
+
+    message = client.messages.create(
+    model=model,
+    max_tokens=1000,
+    temperature=0.0,
+    # system="Respond only in Yoda-speak.",
+    messages=[
+        {"role": "user", "content": prompt}
+]
+)
+    content_block = message.content[0]
+    st.write(content_block.text)
+    
+   
+
+
 described_image = ''  
         
-def decripe_image(api):
+def decripe_image(api, image):
     image_prompt = 'only describe the image and do not add any additional information that the image do not present'
     genai.configure(api_key=api)
     model_vision = genai.GenerativeModel('gemini-pro-vision')
-
-    try:
-        response2 = model_vision.generate_content([image_prompt, image_pil])
-        response2.resolve()
-        describe = response2.text
-        described_image = describe
-        # print('---------------')
-        print(len(described_image))
-    except Exception as e:
-        print("An error has occurred:", e)
-        print("Retrying...")
+    while True:
+        try:
+            response2 = model_vision.generate_content([image_prompt, image])
+            response2.resolve()
+            describe = response2.text
+            described_image = describe
+            # print('---------------')
+            print(len(described_image))
+            break
+        except Exception as e:
+            print("An error has occurred:", e)
+            print("Retrying...")
+            continue
 
 if task == 'Task 1' and gen_acad == 'Academic' :
     if chart_image is not None:
         image_pil = Image.open(chart_image)
+        decripe_image(used_key, image_pil)
         st.image(image_pil, width=500)
         # decripe_image(used_key, image_pil)
         
 
+value= ''
+
+def essay_image(api_key, image_pil):
+    
+    max_retries = number_of_tries
+    retries = 0
+    while retries < max_retries:
+        try:
+            image_prompt = 'I want you to write what is written here in this image'
+            genai.configure(api_key=api_key)
+            model_vision = genai.GenerativeModel('gemini-pro-vision')
+            response2 = model_vision.generate_content([image_prompt, image_pil])
+            response2.resolve()
+            describe = response2.text
+            prompt_image = f"""
+            You will be given text extracted from one or more images, which together should form an IELTS essay. 
+            Your task is to carefully analyze the extracted text from each image, 
+            ignoring any text that is not part of the essay. It is crucial that you do not make any changes to the essay's content, including correcting spelling or grammar, 
+            the extracted text is {describe}
+            Instructions:
+
+            1- Read through the extracted text from each provided image, looking for the main body of the IELTS essay.
+
+            2- Ignore any text that appears to be unrelated to the IELTS essay, such as:
+                a. Headers or footers containing page numbers, dates, or other irrelevant information.
+                b. Instructions or prompts related to the IELTS writing task.
+                c. Personal notes or comments not intended to be part of the essay.
+                d. Incomplete sentences or fragments that do not contribute to the essay's content.
+
+            3- If there is no unrelated text in the extracted text from the image and the entire text forms a complete IELTS essay, return the essay text as-is, without adding any additional information or making any changes to the content.
+
+            4- Do not make any changes to the essay's content, including correcting spelling, grammar, or punctuation errors. The essay should be preserved in its original form
+
+            
+            """
+            response = model.generate_content(prompt_image, stream=True)
+            response.resolve()
+            rewrite = response.text
+            return rewrite
+            break
+        except Exception  as e:
+            retries+=1
+            print("An internal error has occurred:", e)
+            print("Retrying...")
+            continue
+    else:
+        st.error('something went wrong please try later')
 
 
 question = st.text_area(label='**Enter the question of the essay**')
 # st.markdown('### Write the essay')
-essay = st.text_area(label='**Write or Paste the essay**', height= 600)
+if 'essay' not in st.session_state:
+    st.session_state.essay = value
+
+if 'image_processed' not in st.session_state:
+    st.session_state.image_processed = False
+
+if task_image is not None:
+    if not st.session_state.image_processed or task_image != st.session_state.last_uploaded_image:
+        image_pil = Image.open(task_image)
+        extracted_text = essay_image(Gemini_API_Key, image_pil)
+        if st.session_state.essay:
+            st.session_state.essay = st.session_state.essay + '\n' + extracted_text
+        else:
+            st.session_state.essay = extracted_text
+        st.session_state.image_processed = True
+        st.session_state.last_uploaded_image = task_image
+
+
+
+essay = st.text_area(label='**Write or paste the essay**', height=600, value=st.session_state.essay)
 num_words = len(essay.split())
 q_words = len(question.split())
 st.write('Number of Words:    ',num_words)
 button = st.button('Evaluate')
 
-list_of_repeated_words = []
 
+
+
+list_of_repeated_words = []
+number_of_tries = 5
 def words_charts():
     from collections import Counter
 
@@ -211,22 +301,55 @@ def words_charts():
     st.pyplot(plt)
 
 def synonym(api):
-    sy_prompt = f"""Please provide three synonyms for each of the five words I will give you,
-    closely related to the meaning of the word in the context of this essay {essay}. Your response should include words suitable for IELTS writing 
-    to enhance the score and should avoid repeating the same word. The words should be 100% related to the intended meaning 
-    in the context of the word from the provided IELTS writing essay. Please list the words followed by their synonyms in order,
-    without any additional information unrelated to the task. please if the synonym is not suitable for the context of the word do not write it 
-The words are {list_of_repeated_words} from the IELTS writing essay {essay}.
-and you should organize them 
+#     sy_prompt = f"""Please provide three synonyms for each of the five words I will give you,
+#     closely related to the meaning of the word in the context of this essay {essay}. Your response should include words suitable for IELTS writing 
+#     to enhance the score and should avoid repeating the same word. The words should be 100% related to the intended meaning 
+#     in the context of the word from the provided IELTS writing essay. Please list the words followed by their synonyms in order,
+#     without any additional information unrelated to the task. please if the synonym is not suitable for the context of the word do not write it 
+# The words are {list_of_repeated_words} from the IELTS writing essay {essay}.
+# and you should organize them 
+#     """
+    
+    sy_prompt = f"""As an English language expert, your task is to provide three context-appropriate synonyms for each of the five words given from an IELTS writing essay from this repeated words {list_of_repeated_words} in this essay {essay}. 
+    The synonyms should be carefully chosen to maintain the intended meaning of the words within the essay's context and to enhance the writing score. 
+    Avoid repeating the same word or suggesting synonyms that do not fit the context. 
+    
+    Instructions:
+
+    1- Review the provided IELTS writing essay and the list of five repeated words.
+
+    2- For each word, provide three synonyms that are suitable for the word's intended meaning within the essay's context.
+
+    3- Ensure that the suggested synonyms are appropriate for IELTS writing and can help enhance the writing score.
+
+    4- Present the synonyms in the following format:
+    Word 1:
+
+    Synonym 1
+    Synonym 2
+    Synonym 3
+    Word 2:
+
+    Synonym 1
+    Synonym 2
+    Synonym 3
+    (Repeat the format for all five words)
+
+    5- If a word has no suitable synonyms that fit the context, skip that word and move on to the next one.
+
+    Remember to focus solely on providing context-appropriate synonyms without including any additional information unrelated to the task.
     """
+    
+    
     genai.configure(api_key = api)
     # model = genai.GenerativeModel('gemini-1.0-pro-latest')
     while True:
         try:
-            response2 = model.generate_content(sy_prompt, stream=True)
-            response2.resolve()
-            synonyms = response2.text
-            st.write(synonyms)
+            claude_model2(haiku, sy_prompt)
+            # response2 = model.generate_content(sy_prompt, stream=True)
+            # response2.resolve()
+            # synonyms = response2.text
+            # st.write(synonyms)
             break  # Break out of the while loop if the generation is successful
         except Exception as e:
             print("An error has occurred:", e)
@@ -234,16 +357,37 @@ and you should organize them
             continue 
 
 def rewrite_essay(api):
-    re_prompt = f"""
-    pretend you are English teacher and you have experience in IELTS writing essays 
-    your task is to rewrite this IELTS writing essay {essay} based on this question {question}to a better version and match 
-    IELTS requirements in IELTS academic writing {task}, please do not write the headline of the paragraph
-    and it must be more than 250 words and less than 330 words if task 2 and more than 150 and less than 200 if task 1
+    # re_prompt = f"""
+    # pretend you are English teacher and you have experience in IELTS writing essays 
+    # your task is to rewrite this IELTS writing essay {essay} based on this question {question}to a better version and match 
+    # IELTS requirements in IELTS academic writing {task}, please do not write the headline of the paragraph
+    # and it must be more than 250 words and less than 330 words if task 2 and more than 150 and less than 200 if task 1
     
-    In your revised essay, focus on refining the structure, coherence, and language to meet the IELTS academic writing standards. Ensure that the essay effectively addresses the question, 
-    demonstrates a clear understanding of the topic, and presents well-developed ideas with supporting examples and evidence. Additionally, pay attention to grammar, vocabulary, 
-    and sentence structure to create a more polished and coherent essay that meets the requirements for IELTS academic writing.
+    # In your revised essay, focus on refining the structure, coherence, and language to meet the IELTS academic writing standards. Ensure that the essay effectively addresses the question, 
+    # demonstrates a clear understanding of the topic, and presents well-developed ideas with supporting examples and evidence. Additionally, pay attention to grammar, vocabulary, 
+    # and sentence structure to create a more polished and coherent essay that meets the requirements for IELTS academic writing.
+    # """
+    
+    re_prompt = f"""
+    As an experienced IELTS writing teacher, your task is to rewrite the given IELTS writing essay {essay} based on the provided question {question}, ensuring that it meets the IELTS academic writing requirements for the specified task {task}. The revised essay should focus on refining the structure, coherence, and language while effectively addressing the question and presenting well-developed ideas with supporting examples and evidence.
+
+    Instructions:
+
+    Carefully review the given IELTS writing essay, question, and the specified task (Task 1 or Task 2).
+    Analyze the essay's structure, coherence, and language, identifying areas that need improvement to meet IELTS academic writing standards.
+    Rewrite the essay, focusing on the following aspects:
+    a. Ensure that the essay effectively addresses the question and demonstrates a clear understanding of the topic.
+    b. Present well-developed ideas with supporting examples and evidence.
+    c. Improve the essay's structure and coherence, ensuring a logical flow of ideas and smooth transitions between paragraphs.
+    d. Refine the language, paying attention to grammar, vocabulary, and sentence structure to create a more polished and coherent essay.
+    Ensure that the revised essay meets the word count requirements:
+    For Task 2: The essay must be more than 250 words and less than 330 words.
+    For Task 1: The essay must be more than 150 words and less than 200 words.
+    Do not include the headline of the paragraph in the revised essay.
+    Remember to focus on creating a revised essay that meets the IELTS academic writing standards and effectively addresses the given question while staying within the specified word count range and do not write the count of words in your rewrite essay.
+    
     """
+    
     genai.configure(api_key = api)
     # model = genai.GenerativeModel('gemini-1.0-pro-latest')
     
@@ -252,8 +396,9 @@ def rewrite_essay(api):
         num_word = 150
     else:
         num_word = 250
-    
-    while True:
+    max_retries = number_of_tries
+    retries = 0
+    while retries < max_retries:
         try:
             while True:
                 response = model.generate_content(re_prompt, stream=True)
@@ -275,7 +420,33 @@ def rewrite_essay(api):
             print("An error has occurred:", e)
             print("Retrying...")
             continue
-   
+    else:
+        print("Maximum retries reached. Switching to claude_model.")
+        while True:
+            client = anthropic.Anthropic(api_key=Claude_API_KEY,)
+            message = client.messages.create(
+            model=haiku,
+            max_tokens=1000,
+            temperature=0.0,
+            # system="Respond only in Yoda-speak.",
+            messages=[
+                {"role": "user", "content": re_prompt}
+        ]
+        )
+            content_block = message.content[0]
+            re_write = content_block.text
+            word_count = len(re_write.split())
+                
+            if word_count >= num_word and word_count < (num_word + 40):
+                    st.write(re_write)
+                    st.write('Number of Words:', word_count)
+                    # print("Essay generated successfully.")
+                    print(num_word)
+                    break  # Break out of the loop if the essay meets the word count requirement
+            else:
+                    # print("The generated essay is under 250 words. Regenerating...")
+                    continue 
+          # Break out o
 def count_words():
     more_details = st.button('more details')
     if more_details:
@@ -288,12 +459,11 @@ def count_words():
 
 
 #prompts
-tas_prompt = f"""
-    you are an IELTS examiner and your roll is to check IELTS Writing Essays
-    in {task}, your task is to check only the TASK RESPONSE in this {essay} based on the TASK RESPONSE official asssement provided by IELTS.org
-    i will give you the instructions how to measure the TASK RESPONSE according to the IELTS official website and you should follow it 
-    
-    For {task} of both AC Writing tests, candidates are required to formulate and 
+tas_prompt= f"""
+You are an IELTS examiner and your role is to assess IELTS Writing Essays. In this task {task}, your focus is to evaluate only the TASK RESPONSE of the given essay {essay} based on the official Task Response assessment criteria provided by IELTS.org.
+
+Instructions for assessing Task Response:
+For {task} of both AC Writing tests, candidates are required to formulate and 
     develop a position in relation to a given prompt in the form of a question or 
     statement, using a minimum of 250 words and the number of words that the candidate has been written is {num_words}. 
     Ideas should be supported by evidence, 
@@ -307,13 +477,10 @@ tas_prompt = f"""
     - how relevant the candidate’s ideas are to the task. 
     - how clearly the candidate opens the discourse, establishes their position and formulates conclusions. 
     - how appropriate the format of the response is to the task.
+Be objective and unbiased in your assessment, ensuring that your evaluation is based solely on the IELTS criteria and not influenced by the essay's topic, stance, or the candidate's language background.
 
-    you should be fair when you assess this criteria and give a precise band score and provide some explanation 
-    important NOTE: when you give the band score it should be a whole number not a decimal number between 0 to 9 and when you give a decimal number round it  
-    
-    Below are the band descriptors for the TR criterion:
-    
-     Band 9: The prompt is appropriately addressed and explored in depth. A clear and fully developed position is presented which directly answers the question/s. Ideas are relevant, fully extended and well supported. Any lapses in content or support are extremely rare.
+Band descriptors for the TR criterion:
+    Band 9: The prompt is appropriately addressed and explored in depth. A clear and fully developed position is presented which directly answers the question/s. Ideas are relevant, fully extended and well supported. Any lapses in content or support are extremely rare.
 
     Band 8: The prompt is appropriately and sufficiently addressed. A clear and well-developed position is presented in response to the question/s. Ideas are relevant, well extended and supported. There may be occasional omissions or lapses in content.
     
@@ -333,21 +500,32 @@ tas_prompt = f"""
 
     Band 0: The candidate did not attempt the task, so no assessment of task response can be made.
      
-    
-    
-    i want the structure of your response looks like:
-    first in the beginning write the band score it should not be a decimal number for example: Bnnd Score : ....
-    
-    then write an about your evaluation in details and explain why this eesay deserve this band score
-    after that write suggetions to improve the writing in organized points
-   
-    
-    """
+
+Structure your response as follows:
+
+Band Score: Provide a whole number score between 0 and 9. If your initial assessment yields a decimal score, round it to the nearest whole number.
+
+Evaluation: To guide your evaluation, follow these steps:
+1- Carefully review the essay prompt and the candidate's response.
+2- Analyze how well the candidate addresses all parts of the prompt. Consider the relevance and clarity of the presented position, main ideas, and supporting examples.
+3- Evaluate the development and extension of the main ideas. Are they sufficiently explained and supported with relevant examples or evidence?
+4- Assess the coherence and cohesion of the response. Is there a logical flow of ideas, with clear connections between paragraphs?
+5- Determine the band score (1-9) for Task Response based on the official IELTS band descriptors. Provide a brief justification for your score.
+6- Identify 2-3 specific strengths of the essay's Task Response, providing examples from the text to support your points.
+7- Suggest 2-3 areas for improvement, offering concrete examples and actionable advice on how to enhance the Task Response.
+8- Comment on the essay's adherence to the minimum word count (250 words) and how it impacts the Task Response. If the essay is under the word count, suggest ways to expand the content.
+9- Provide an overall assessment of the essay's Task Response, highlighting the main takeaways and offering encouragement for future improvement.
+
+Please note that your evaluation should be unbiased and based solely on the IELTS Task Response criteria. Assess the essay fairly and objectively, regardless of its topic or the candidate's personal background.
+
+Remember to maintain a supportive and constructive tone throughout your evaluation. Your goal is to provide valuable insights and practical suggestions that can help the candidate refine their IELTS writing skills and achieve their desired band score.
+"""
+
+
 co_prompt = f"""
-    you are an IELTS examiner and your roll is to check IELTS Writing Essays
-    in {task}, your task is to check only the COHERENCE AND COHESION in this {essay}  based on the COHERENCE AND COHESION official asssement provided by IELTS.org
-    i will give you the instructions how to measure the COHERENCE AND COHESION according to the IELTS official website and you should follow it
+    You are an IELTS examiner and your role is to assess IELTS Writing Essays. In this task {task}, your focus is to evaluate only the COHERENCE AND COHESION of the given essay {essay} based on the official COHERENCE AND COHESION assessment criteria provided by IELTS.org.
     
+    Instructions for assessing COHERENCE AND COHESION:
     COHERENCE AND COHESION (CC) 
     This criterion is concerned with the overall organisation and logical development of 
     the message: how the response organises and links information, ideas and language. 
@@ -367,9 +545,8 @@ co_prompt = f"""
       response, e.g. [First of all | In conclusion], and to signal the relationship between 
       ideas and/or information, e.g. [as a result | similarly]
       
-    you should be fair when you assess this criteria and give a precise band score and provide some explanation 
-    important NOTE: when you give the band score it should be a whole number not a decimal number between 0 to 9 and when you give a decimal number round it  
-    
+    Be objective and unbiased in your assessment, ensuring that your evaluation is based solely on the IELTS criteria and not influenced by the essay's topic, stance, or the candidate's language background.
+
     Below are the band descriptors for the CC criterion:
     
     Band 9: The message can be followed effortlessly. Cohesion is used in such a way that it very rarely attracts attention. Any lapses in coherence or cohesion are minimal. Paragraphing is skilfully managed.
@@ -394,18 +571,31 @@ co_prompt = f"""
    
    
    
-    i want the structure of your response looks like:
-    first in the beginning write the band score it should not be a decimal number for example: Bnnd Score : ....
+    Structure your response as follows:
+
+Band Score: Provide a whole number score between 0 and 9. If your initial assessment yields a decimal score, round it to the nearest whole number.
+
+Evaluation: To guide your evaluation, follow these steps:
+1- Carefully review the essay prompt and the candidate's response.
+2- Analyze the organization of information in the response. Is there a clear overview statement and a logical progression of ideas?
+3- Evaluate the use of cohesive devices (e.g., linking words, pronouns, synonyms) to connect ideas within and between sentences and paragraphs. Are they used effectively and appropriately?
+4- Assess the clarity and ease of understanding throughout the response. Is the information presented in a way that is easy to follow and comprehend?
+5- Determine the band score (1-9) for Coherence and Cohesion based on the official IELTS band descriptors. Provide a brief justification for your score.
+6- Identify 2-3 specific strengths of the response's Coherence and Cohesion, providing examples from the text to support your points.
+7- Suggest 2-3 areas for improvement, offering concrete examples and actionable advice on how to enhance the Coherence and Cohesion.
+8- Comment on the response's adherence to the suggested paragraph structure for Academic Writing Task 2 (e.g., introduction, overview, body paragraphs) and how it impacts the Coherence and Cohesion.
+9- Provide an overall assessment of the response's Coherence and Cohesion, highlighting the main takeaways and offering encouragement for future improvement.
+
+Please note that your evaluation should be unbiased and based solely on the IELTS coherence and cohesion criteria. Assess the essay fairly and objectively, regardless of its topic or the candidate's personal background.
     
-    then write an about your evaluation in details and explain why this eesay deserve this band score
-    after that write suggetions to improve the writing in organized points
-    
+Remember to maintain a supportive and constructive tone throughout your evaluation. Your goal is to provide valuable insights and practical suggestions that can help the candidate refine their IELTS  Writing {task} skills and achieve their desired band score.
     """
+
+
 lex_prompt = f"""
-    you are an IELTS examiner and your roll is to check IELTS Writing Essays
-    in {task}, your task is to check only the LEXICAL RESOURCE in this {essay} based on the LEXICAL RESOURCE official asssement provided by IELTS.org
-    i will give you the instructions how to measure the LEXICAL RESOURCE according to the IELTS official website and you should follow it
+    You are an IELTS examiner and your role is to assess IELTS Writing Essays. In this task {task}, your focus is to evaluate only the LEXICAL RESOURCE of the given essay {essay} based on the official LEXICAL RESOURCE assessment criteria provided by IELTS.org.
     
+    Instructions for assessing LEXICAL RESOURCE:
     LEXICAL RESOURCE (LR) :
     This criterion refers to the range of vocabulary the candidate has used and the 
     accuracy and appropriacy of that use in terms of the specific task. 
@@ -420,10 +610,9 @@ lex_prompt = f"""
     - the density and communicative effect of errors in spelling. 
     - the density and communicative effect of errors in word formation.
     
-    you should be fair when you assess this criteria and give a precise band score and provide some explanation 
-    important NOTE: when you give the band score it should be a whole number not a decimal number between 0 to 9 and when you give a decimal number round it  
+    Be objective and unbiased in your assessment, ensuring that your evaluation is based solely on the IELTS criteria and not influenced by the essay's topic, stance, or the candidate's language background.
     
-    Below are the band descriptors for the LR criterion:
+    Band descriptors for the LR criterion:
     
     Band 9: Full flexibility and precise use are widely evident. A wide range of vocabulary is used accurately and appropriately with very natural and sophisticated control of lexical features. Minor errors in spelling and word formation are extremely rare and have minimal impact on communication.
         
@@ -446,17 +635,31 @@ lex_prompt = f"""
     Band 0: The candidate did not attempt the task, so no assessment of lexical resource can be made.
     
     
-    i want the structure of your response looks like:
-    first in the beginning write the band score it should not be a decimal number for example: Bnnd Score : ....
+    Structure your response as follows:
+
+Band Score: Provide a whole number score between 0 and 9. If your initial assessment yields a decimal score, round it to the nearest whole number.
+
+Evaluation: To guide your evaluation, follow these steps:
+1- Carefully review the essay prompt and the candidate's response.
+2- Analyze the range and variety of vocabulary used in the essay. Is there evidence of a broad lexical repertoire?
+3- Evaluate the accuracy and appropriateness of the vocabulary used. Are words and phrases employed correctly and effectively to convey meaning?
+4- Assess the candidate's ability to use less common lexical items, such as idiomatic expressions, colloquialisms, or subject-specific terminology, where appropriate.
+5- Examine the candidate's skill in conveying precise meaning through their choice of words and phrases. Are they able to express ideas clearly and specifically?
+6- Determine the band score (1-9) for Lexical Resource based on the official IELTS band descriptors. Provide a brief justification for your score.
+7- Identify 2-3 specific strengths of the essay's Lexical Resource, providing examples from the text to support your points.
+8- Suggest 2-3 areas for improvement, offering concrete examples and actionable advice on how to enhance the Lexical Resource.
+9- Comment on the candidate's ability to paraphrase the language from the prompt effectively and avoid repetition of words or phrases.
+10- Provide an overall assessment of the essay's Lexical Resource, highlighting the main takeaways and offering encouragement for future improvement.
+
+Please note that your evaluation should be unbiased and based solely on the IELTS lexical resource criteria. Assess the essay fairly and objectively, regardless of its topic or the candidate's personal background.
     
-    then write an about your evaluation in details and explain why this eesay deserve this band score
-    after that write suggetions to improve the writing in organized points
-    
+Remember to maintain a supportive and constructive tone throughout your evaluation. Your goal is to provide valuable insights and practical suggestions that can help the candidate refine their IELTS writing {task} skills and achieve their desired band score.
     """
+
 gr_prompt = f"""
-    you are an IELTS examiner and your roll is to check IELTS Writing Essays
-    in {task}, your task is to check only the grammar in this {essay} only grammar based on the grammar official asssement provided by IELTS.org
-    i will give you the instructions how to measure the grammar according to the IELTS official website and you should follow it
+    You are an IELTS examiner and your role is to assess IELTS Writing Essays. In this task {task}, your focus is to evaluate only the GRAMMATICAL RANGE AND ACCURACY of the given essay {essay} based on the official GRAMMATICAL RANGE AND ACCURACY assessment criteria provided by IELTS.org.
+
+    Instructions for assessing GRAMMATICAL RANGE AND ACCURACY:
     GRAMMATICAL RANGE AND ACCURACY (GRA):
     This criterion refers to the range and accurate use of the candidate'’'s grammatical 
     resource via the candidate's writing at sentence level. 
@@ -468,11 +671,11 @@ gr_prompt = f"""
     - the density and communicative effect of grammatical errors.
     - the accurate and appropriate use of punctuation.
     
-    you should be fair when you assess this criteria and give a precise band score and provide some explanation 
-    important NOTE: when you give the band score it should be a whole number not a decimal number between 0 to 9 and when you give a decimal number round it  
-    
-    Below are the band descriptors for the GRA criterion:
 
+    Be objective and unbiased in your assessment, ensuring that your evaluation is based solely on the IELTS criteria and not influenced by the essay's topic, stance, or the candidate's language background.
+    
+    Band descriptors for the GRA criterion:
+    
     Band 9: A wide range of structures is used with full flexibility and control. Punctuation and grammar are used appropriately throughout. Minor errors are extremely rare and have minimal impact on communication.
     
     Band 8: A wide range of structures is flexibly and accurately used. The majority of sentences are error-free, and punctuation is well managed. Occasional, non-systematic errors and inappropriacies occur, but have minimal impact on communication.
@@ -495,18 +698,50 @@ gr_prompt = f"""
    
    
     
-    i want the structure of your response looks like:
-    first in the beginning write the band score it should not be a decimal number for example: Bnnd Score : ....
+    Structure your response as follows:
+
+    Band Score: Provide a whole number score between 0 and 9. If your initial assessment yields a decimal score, round it to the nearest whole number.
+
+    Evaluation: To guide your evaluation, follow these steps:
+    1- Carefully review the essay prompt and the candidate's response.
+    2- Analyze the range and variety of grammatical structures used in the essay. Is there evidence of a broad grammatical repertoire?
+    3- Evaluate the accuracy and appropriateness of the grammatical structures employed. Are sentences constructed correctly and effectively to convey meaning?
+    4- Assess the candidate's ability to use complex grammatical structures, such as subordinate clauses, conditional sentences, or passive voice, where appropriate.
+    5- Examine the candidate's skill in producing error-free sentences. Are there minimal or no grammatical errors that impede understanding?
+    6- Determine the band score (1-9) for Grammatical Range and Accuracy based on the official IELTS band descriptors. Provide a brief justification for your score.
+    7- Identify 2-3 specific strengths of the essay's Grammatical Range and Accuracy, providing examples from the text to support your points.
+    8- Suggest 2-3 areas for improvement, offering concrete examples and actionable advice on how to enhance the Grammatical Range and Accuracy.
+    9- Comment on the candidate's ability to maintain grammatical control in longer, more complex sentences and avoid errors that impede understanding.
+    10- Provide an overall assessment of the essay's Grammatical Range and Accuracy, highlighting the main takeaways and offering encouragement for future improvement.
+
+    Please note that your evaluation should be unbiased and based solely on the IELTS GRAMMATICAL RANGE AND ACCURACY criteria. Assess the essay fairly and objectively, regardless of its topic or the candidate's personal background.
     
-    then write an about your evaluation in details and explain why this eesay deserve this band score
-    after that write suggetions to improve the writing in organized points
+    Remember to maintain a supportive and constructive tone throughout your evaluation. Your goal is to provide valuable insights and practical suggestions that can help the candidate refine their IELTS writing {task} skills and achieve their desired band score.
     """
 
-tas_academic_task1 = f"""
-    you are an IELTS examiner and your roll is to check IELTS Writing Essays
-    in academic {task}, your task is to check only the TASK RESPONSE in this {essay} based on the TASK RESPONSE official asssement provided by IELTS.org
-    i will give you the instructions how to measure the TASK RESPONSE according to the IELTS official website and you should follow it 
+
+task1_band_score = []
+task2_band_score = []
+def remove_band_score(result):
+    num = float(extract_digit_from_essay(result))
+    pattern = re.compile(r'(\*{2})?Band Score:?(\*{2})?\s*\d+(\*{2})?\n+', re.IGNORECASE)
+    cleaned_result= pattern.sub('', result)
+    st.markdown(f"**Criteria Score: {round(num + 0.1)}**")
+    if task == 'Task 1':
+        
+        task1_band_score.append((round(num + 0.1)))
+    else:
+        task2_band_score.append((round(num + 0.1)))
+    st.write(cleaned_result)
+    # print(cleaned_result)
+    # print('---------')
     
+
+
+tas_academic_task1 = f"""
+    You are an IELTS examiner and your role is to assess IELTS Writing Essays. In this task {task}, your focus is to evaluate only the Task Response of the given essay {essay} based on the official Task Response assessment criteria provided by IELTS.org.
+
+    Instructions for assessing Task Response in {task}:
     This Writing {task} has a defined input and a largely predictable output. It is basically an 
     information-transfer task, which relates narrowly to the factual content of a diagram, 
     graph, table, chart, map or other visual input, not to speculative explanations that lie 
@@ -520,10 +755,9 @@ tas_academic_task1 = f"""
     - presenting the response in an appropriate format.
     
         
-    you should be fair when you assess this criteria and give a precise band score and provide some explanation 
-    important NOTE: when you give the band score it should be a whole number not a decimal number between 0 to 9 and when you give a decimal number round it   
+    Be objective and unbiased in your assessment, ensuring that your evaluation is based solely on the IELTS criteria .
     
-    Below are the band descriptors for the task response task 1 criterion:
+    band descriptors for the task response task 1 criterion:
     
     Band 9: All the requirements of the task are fully and appropriately satisfied.
     
@@ -554,17 +788,27 @@ tas_academic_task1 = f"""
     Band 1: The content is wholly unrelated to the task. Any copied rubric must be discounted. Responses of 20 words or fewer are rated at Band 1.
     
     
-    i want the structure of your response looks like:
-    first in the beginning write the band score it should not be a decimal number for example: Bnnd Score : ....
-    
-    then write an about your evaluation in details and explain why this eesay deserve this band score
-    after that write suggetions to improve the writing in organized points
+    Structure your response as follows:
 
-"""
+    Band Score: Provide a whole number score between 0 and 9. If your initial assessment yields a decimal score, round it to the nearest whole number.
+
+    Evaluation: To guide your evaluation, follow these steps:
+    1- Carefully review the task prompt and the candidate's response.
+    2- Analyze how accurately and completely the candidate summarizes the information from the graph, table, chart, or diagram. Consider the inclusion of key features and trends.
+    3- Evaluate the candidate's ability to make relevant comparisons between data points or visual elements. Are the comparisons meaningful and well-supported?
+    4- Assess the clarity and coherence of the response. Is there a logical flow of information, with clear connections between sentences and paragraphs?
+    5- Determine the band score (1-9) for Task Response based on the official IELTS band descriptors. Provide a brief justification for your score.
+    6- Identify 2-3 specific strengths of the response's Task Response, providing examples from the text to support your points.
+    7- Suggest 2-3 areas for improvement, offering concrete examples and actionable advice on how to enhance the Task Response.
+    8- Comment on the response's adherence to the minimum word count (150 words) and how it impacts the Task Response. If the response is under the word count, suggest ways to expand the content.
+    9- Provide an overall assessment of the response's Task Response, highlighting the main takeaways and offering encouragement for future improvement.
+
+    Please note that your evaluation should be unbiased and based solely on the IELTS Task Response criteria. Assess the essay fairly and objectively, regardless of its topic or the candidate's personal background.
+
+Remember to maintain a supportive and constructive tone throughout your evaluation. Your goal is to provide valuable insights and practical suggestions that can help the candidate refine their IELTS Academic Writing Task 1 skills and achieve their desired band score."""
 
 tas_general_task1 = f"""
-you are an IELTS examiner and your roll is to check IELTS Writing Essays
-in General {task}, your task is to check only the TASK RESPONSE in this {essay} based on the TASK RESPONSE official asssement provided by IELTS.org
+you are an IELTS examiner and your roll is to check IELTS Writing Essays in General {task}, your task is to check only the TASK RESPONSE in this {essay} based on the TASK RESPONSE official asssement provided by IELTS.org
 i will give you the instructions how to measure the TASK RESPONSE according to the IELTS official website and you should follow it 
     
 This Writing {task} also has a largely predictable output in that each task sets out the 
@@ -576,8 +820,6 @@ This Writing {task} also has a largely predictable output in that each task sets
     - extend these three functions appropriately and relevantly. 
     - use an appropriate format for the letter. 
     - consistently use a tone appropriate to the task.
-
-
 
 
 you should be fair when you assess this criteria and give a precise band score and provide some explanation 
@@ -617,12 +859,24 @@ you should be fair when you assess this criteria and give a precise band score a
     Band 1: The content is wholly unrelated to the task. Any copied rubric must be discounted. Responses of 20 words or fewer are rated at Band 1.
     
     
-    i want the structure of your response looks like:
-    first in the beginning write the band score it should not be a decimal number for example: Bnnd Score : ....
-    
-    then write an about your evaluation in details and explain why this eesay deserve this band score
-    after that write suggetions to improve the writing in organized points
+    Structure your response as follows:
 
+    Band Score: Provide a whole number score between 0 and 9. If your initial assessment yields a decimal score, round it to the nearest whole number.
+
+    Evaluation: To guide your evaluation, follow these steps:
+    1- Carefully review the essay prompt and the candidate's response.
+    2- Analyze how well the candidate fulfills the purpose of the task, such as making a request, giving information, or explaining a situation. Consider the clarity and effectiveness of the message.
+    3- Evaluate the candidate's coverage of all required points mentioned in the prompt. Are all key points addressed adequately?
+    4- Assess the appropriateness of the tone and style of the response for the given context and recipient. Is the language formal or informal, polite or friendly, as required by the situation?
+    5- Determine the band score (1-9) for Task Response based on the official IELTS band descriptors. Provide a brief justification for your score.
+    6- Identify 2-3 specific strengths of the response's Task Response, providing examples from the text to support your points.
+    7- Suggest 2-3 areas for improvement, offering concrete examples and actionable advice on how to enhance the Task Response.
+    8- Comment on the response's adherence to the minimum word count (150 words) and how it impacts the Task Response. If the response is under the word count, suggest ways to expand the content.
+    9- Provide an overall assessment of the response's Task Response, highlighting the main takeaways and offering encouragement for future improvement.
+
+    Please note that your evaluation should be unbiased and based solely on the IELTS Task Response criteria. Assess the essay fairly and objectively, regardless of its topic or the candidate's personal background.
+
+    Remember to maintain a supportive and constructive tone throughout your evaluation. Your goal is to provide valuable insights and practical suggestions that can help the candidate refine their IELTS General Training Writing Task 1 skills and achieve their desired band score.
 """
 
 task_response = f""""""
@@ -641,53 +895,141 @@ def extract_digit_from_essay(essay):
     else:
         return None
  
-overall_band_score = []
+
+# overall_band_score = []
 def evaluate2(prompt):
     genai.configure(api_key = used_key)
-    while True:
+    max_retries = number_of_tries
+    retries = 0
+    while retries < max_retries:
         try:
+            # st.markdown('### Gemini')
             task = model.generate_content(prompt, stream=True)
             task.resolve()
             task_ch = task.text
-            st.write(task_ch)
-            task_score = float(extract_digit_from_essay(task_ch))
-            
-            overall_band_score.append(round(task_score))
+            remove_band_score(task_ch)
+           
             break  # Break out of the while loop if the generation is successful
         except Exception  as e:
-            print("An internal error has occurred:", e)
+            retries += 1
+            print("An internal error has occurred: now will use ", e)
             print("Retrying...")
             continue
+        
+    else:
+        claude_model(haiku, prompt)
     
-def grammar_spling():
-    prompt = f"""As a grammar checker, your task is to carefully review the provided essay {essay} and identify any misspelled words and incorrect grammar. 
-    When you encounter misspelled words, please provide the correct spelling, taking into account the differences between British and American English. 
-    For incorrect grammar, you should also provide the correct grammar structure and an explanation of its correctness.
-    providing accurate corrections for misspelled words and grammar errors. When addressing spelling, please consider both British and American English conventions. 
-    Additionally, your explanations should help the writer understand why the provided corrections are accurate and how they improve the overall language usage in the essay.
+def grammar_spelling():
+#     prompt = f"""As a grammar checker, your task is to carefully review the provided essay {essay} and identify any misspelled words and incorrect grammar. 
+#     When you encounter misspelled words, please provide the correct spelling, taking into account the differences between British and American English. 
+#     For incorrect grammar, you should also provide the correct grammar structure and an explanation of its correctness.
+#     providing accurate corrections for misspelled words and grammar errors. When addressing spelling, please consider both British and American English conventions. 
+#     Additionally, your explanations should help the writer understand why the provided corrections are accurate and how they improve the overall language usage in the essay.
    
-    Note: you should only highlight the misuse of grammar and provide the correct structure and do not rewrite the correct essay 
-   if there are no misspelling mistakes or incorrect grammar you should write your grammar and spelling is correct 
+#     Note: you should only highlight the misuse of grammar and provide the correct structure and do not rewrite the correct essay 
+#    if there are no misspelling mistakes or incorrect grammar you should write your grammar and spelling is correct 
+#     """
+    
+    # prompt = f"""As a grammar checker, your task is to carefully review the provided essay {essay} and identify any misspelled words and incorrect grammar. 
+    # Provide accurate corrections and explanations to help the writer understand and improve their language usage.
+
+    # Instructions:
+
+    # Read through the essay carefully, focusing on identifying misspelled words and incorrect grammar.
+    # For misspelled words:
+    # a. Provide the correct spelling of the word.
+    # b. Consider both British and American English conventions when providing the correct spelling.
+    # For incorrect grammar:
+    # a. Highlight the specific part of the sentence or phrase that contains the grammatical error.
+    # b. Provide the correct grammar structure.
+    # c. Explain why the provided correction is accurate and how it improves the language usage in the essay.
+    # If there are no misspelling mistakes or incorrect grammar, simply state: "Your grammar and spelling are correct."
+    # Remember to focus on providing accurate corrections and explanations without rewriting the entire essay. Your feedback should help the writer understand their mistakes and learn how to improve their language usage.
+    # """
+    
+    prompt = f"""
+    As an advanced grammar checker, your task is to meticulously review the provided essay {essay} and identify any misspelled words and grammatical errors. Provide accurate corrections and clear explanations to help the writer understand and improve their language usage.
+
+Instructions:
+
+Carefully read through the essay, focusing on identifying misspelled words and grammatical errors.
+
+For misspelled words:
+a. Provide the correct spelling of the word.
+b. Consider both British and American English conventions when providing the correct spelling.
+c. If a word is correctly spelled but used incorrectly in the context, provide an explanation and suggest a more appropriate word if necessary.
+
+For grammatical errors:
+a. Highlight the specific part of the sentence or phrase that contains the grammatical error.
+b. Provide the correct grammar structure.
+c. Explain why the provided correction is accurate and how it improves the language usage in the essay.
+d. If the error involves a complex grammar rule, provide a concise explanation to help the writer understand the underlying principle. Consider including links to reputable grammar resources or specific exercises to practice the identified areas of improvement.
+
+Be cautious not to identify correctly spelled words as misspellings. Focus only on actual misspelled words to avoid confusing the writer.
+
+If there are no misspelling mistakes or grammatical errors, provide a positive acknowledgment, such as: "Great job! Your grammar and spelling are accurate throughout the essay."
+
+Maintain a supportive and encouraging tone in your feedback. Provide constructive suggestions and explanations that motivate the writer to continue improving their language skills.
+
+Focus on providing accurate corrections and explanations without rewriting the entire essay. Your feedback should help the writer understand their mistakes and learn how to improve their language usage.
+
+If you encounter an error that you are unsure about, it's better to skip it rather than provide an incorrect correction. Prioritize accuracy over identifying every potential error.
+
+If the essay contains recurring errors or patterns, provide a more detailed explanation of the underlying grammar rule to help the writer avoid making the same mistakes in the future.
+
+If the essay has a few awkward or unclear sentences that don't necessarily contain grammatical errors, provide suggestions on how to rephrase them for better clarity and coherence.
+
+After completing your review, provide a brief summary of the most common types of errors found in the essay, if any. This will help the writer identify patterns and areas for improvement.
+
+if there are no misspelling mistakes or incorrect grammar you should write your grammar and spelling is correct
+
+Remember, your goal is to provide accurate, helpful, and constructive feedback that enables the writer to enhance their grammar and spelling skills in the context of IELTS essay writing.
     """
-    while True:
+    # def function_reviwer(gra_spelling):
+    #     reviwer_prompt = f"""
+    #     You are an AI reviewer. Your task is to monitor the output of another AI called the Grammar and Spelling Checker. The Grammar and Spelling Checker's task is to review an IELTS writing essay and identify any misspellings or incorrect grammar usage.
+
+    #     Sometimes the Grammar and Spelling Checker makes mistakes, such as:
+    #     - Providing incorrect corrections
+    #     - Giving wrong information
+    #     - Rewriting the essay instead of focusing on corrections and explanations
+
+    #     Here is the output from the Grammar and Spelling Checker:
+    #     {gra_spelling}
+
+    #     Please review the output and provide the following:
+    #     1. Correct any mistakes made by the Grammar and Spelling Checker in identifying misspellings or grammar errors.
+    #     2. Remove any unnecessary rewriting of the essay and focus only on providing accurate corrections and explanations.
+    #     3. Improve the explanations and corrections provided by the Grammar and Spelling Checker, if needed, to make them clearer and more helpful for the writer.
+    #     """
+    #     task = model.generate_content(reviwer_prompt, stream=True)
+    #     task.resolve()
+    #     task_ch = task.text
+    #     st.write(task_ch)
+    #     print(task_ch)
+    max_retries = number_of_tries
+    retries = 0
+    while retries < max_retries:
         try:
+            # gra_spelling = claude_model2(haiku, prompt)
+            
             task = model.generate_content(prompt, stream=True)
             task.resolve()
             task_ch = task.text
             st.write(task_ch)
-            
+            # function_reviwer(task_ch)
             
             break  # Break out of the while loop if the generation is successful
         except Exception  as e:
+            retries+=1
             print("An internal error has occurred:", e)
             print("Retrying...")
             continue
+    else:
+        claude_model2(haiku, prompt)
 
-# def extract_hand_written():
-#     pytesseract.pytesseract.tesseract_cmd = 'C:/Users/B/Desktop/IELTS-WRITING-PROJECT/Tesseract/tesseract.exe'
-#     image_path = essay_image
-#     extracted_text = pytesseract.image_to_string(Image.open(image_path))
-#     print(extracted_text)
+
+
 
 if button:
     
@@ -702,7 +1044,7 @@ if button:
     else:
         
         st.markdown('---')
-        decripe_image(used_key)
+        # decripe_image(used_key)
         
         st.markdown("## Task Response")
         evaluate2(task_response)
@@ -717,11 +1059,15 @@ if button:
         st.markdown("## Grammar and Acurracy")
         evaluate2(gr_prompt)
         st.markdown('**- Grammar and Spelling mistakes**')
-        grammar_spling()
+        grammar_spelling()
         
         st.markdown('---')
-        overall_score = round(sum(overall_band_score) /4)
-        st.markdown(f"## Overall Band Score: {float(overall_score)} / 9")
+        
+        if task == 'Task 1':
+            overall_score = round(sum(task1_band_score) /4)
+        else:
+            overall_score = round(sum(task2_band_score) /4)
+        st.markdown(f"## {task} Band Score: {float(overall_score)} / 9")
         st.markdown('---')
         st.markdown('## Here is the most repeated words in your essay')
         stop_w = set(STOPWORDS)
@@ -736,8 +1082,7 @@ if button:
         synonym(Gemini_API_Key2)
         st.markdown('---')
         
-        st.markdown('### Here is a rewritten version of your essay')
+        st.markdown('### a rewritten version of your essay')
         rewrite_essay(Gemini_API_Key3)
         
-        # print((overall_band_score))
         
