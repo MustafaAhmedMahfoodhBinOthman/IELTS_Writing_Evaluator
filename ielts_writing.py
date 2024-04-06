@@ -300,7 +300,7 @@ def words_charts():
     # Remove punctuation and convert to lowercase
     essay_cleaned = re.sub(r'[^\w\s]', '', essay).lower()
 
-    excluded_words = ['were','it','of','the','it','from','was','my','these', 'your', 'you', 'this', 'because', 'other', 'before', 'after', 'should', 'would', 'can', 'be', 'why', 'where', 'when', 'what', "don't", 'does', 'do', 'how', 'which', 'that', 'me', 'am', 'i', "hasn't", "havn't", 'we', 'they', 'she', 'he', 'us', 'our', 'its', 'their', 'them', 'her', 'him', 'his', 'while', 'it', 'while', 'about', 'are', 'is', 'has', 'have', 'at', 'in', 'on', 'of', 'to', 'from', 'for', 'with', 'by', 'as', 'and', 'or', 'but', 'nor', 'so', 'yet', 'the', 'a', 'an', 'not','afghanistan', 'albania', 'algeria', 'andorra', 'angola', 'antigua and barbuda', 'argentina', 'armenia', 'australia', 'austria', 'azerbaijan', 'bahamas', 'bahrain', 'bangladesh', 'barbados', 'belarus', 'belgium', 'belize', 'benin', 'bhutan', 'bolivia', 'bosnia and herzegovina', 'botswana', 'brazil', 'brunei', 'bulgaria', 'burkina faso', 'burundi', 'cabo verde', 'cambodia', 'cameroon', 'canada', 'central african republic', 'chad', 'chile', 'china', 'colombia', 'comoros', 'congo', 'costa rica', 'croatia', 'cuba', 'cyprus', 'czechia', 'denmark', 'djibouti', 'dominica', 'dominican republic', 'ecuador', 'egypt', 'el salvador', 'equatorial guinea', 'eritrea', 'estonia', 'eswatini', 'ethiopia', 'fiji', 'finland', 'france', 'gabon', 'gambia', 'georgia', 'germany', 'ghana', 'greece', 'grenada', 'guatemala', 'guinea', 'guinea-bissau', 'guyana', 'haiti', 'honduras', 'hungary', 'iceland', 'india', 'indonesia', 'iran', 'iraq', 'ireland', 'israel', 'italy', 'jamaica', 'japan', 'jordan', 'kazakhstan', 'kenya', 'kiribati', 'kuwait', 'kyrgyzstan', 'laos', 'latvia', 'lebanon', 'lesotho', 'liberia', 'libya', 'liechtenstein', 'lithuania', 'luxembourg', 'madagascar', 'malawi', 'malaysia', 'maldives', 'mali', 'malta', 'marshall islands', 'mauritania', 'mauritius', 'mexico', 'micronesia', 'moldova', 'monaco', 'mongolia', 'montenegro', 'morocco', 'mozambique', 'myanmar', 'namibia', 'nauru', 'nepal', 'netherlands', 'new zealand', 'nicaragua', 'niger', 'nigeria', 'north korea', 'north macedonia', 'norway', 'oman', 'pakistan', 'palau', 'palestine', 'panama', 'papua new guinea', 'paraguay', 'peru', 'philippines', 'poland', 'portugal', 'qatar', 'romania', 'russia', 'rwanda', 'saint kitts and nevis', 'saint lucia', 'saint vincent and the grenadines', 'samoa', 'san marino', 'sao tome and principe', 'saudi arabia', 'senegal', 'serbia', 'seychelles', 'sierra leone', 'singapore', 'slovakia', 'slovenia', 'solomon islands', 'somalia', 'south africa', 'south korea', 'south sudan', 'spain', 'sri lanka', 'sudan', 'suriname', 'sweden', 'switzerland', 'syria', 'tajikistan', 'tanzania', 'thailand', 'timor-leste', 'togo', 'tonga', 'trinidad and tobago', 'tunisia', 'turkey', 'turkmenistan', 'tuvalu', 'uganda', 'ukraine', 'united arab emirates', 'united kingdom', 'united states', 'uruguay', 'uzbekistan', 'vanuatu', 'vatican city', 'venezuela', 'vietnam', 'yemen', 'zambia', 'zimbabwe', 'africa', 'antarctica', 'asia', 'europe', 'north america', 'south america', 'australia', 'states', 'united',]
+    excluded_words = ['were','it','of','the','it','from','was','my','these', 'your', 'you', 'this', 'because', 'other', 'before', 'after', 'should', 'would', 'can', 'be', 'why', 'where', 'when', 'what', "don't", 'does', 'do', 'how', 'which', 'that', 'me', 'am', 'i', "hasn't", "havn't", 'we', 'they', 'she', 'he', 'us', 'our', 'its', 'their', 'them', 'her', 'him', 'his', 'while', 'it', 'while', 'about', 'are', 'is', 'has', 'have', 'at', 'in', 'on', 'of', 'to', 'from', 'for', 'with', 'by', 'as', 'and', 'or', 'but', 'nor', 'so', 'yet', 'the', 'a', 'an', 'not','afghanistan', 'albania', 'algeria', 'andorra', 'angola', 'antigua and barbuda', 'argentina', 'armenia', 'australia', 'austria', 'azerbaijan', 'bahamas', 'bahrain', 'bangladesh', 'barbados', 'belarus', 'belgium', 'belize', 'benin', 'bhutan', 'bolivia', 'bosnia and herzegovina', 'botswana', 'brazil', 'brunei', 'bulgaria', 'burkina faso', 'burundi', 'cabo verde', 'cambodia', 'cameroon', 'canada', 'central african republic', 'chad', 'chile', 'china', 'colombia', 'comoros', 'congo', 'costa rica', 'croatia', 'cuba', 'cyprus', 'czechia', 'denmark', 'djibouti', 'dominica', 'dominican republic', 'ecuador', 'egypt', 'el salvador', 'equatorial guinea', 'eritrea', 'estonia', 'eswatini', 'ethiopia', 'fiji', 'finland', 'france', 'gabon', 'gambia', 'georgia', 'germany', 'ghana', 'greece', 'grenada', 'guatemala', 'guinea', 'guinea-bissau', 'guyana', 'haiti', 'honduras', 'hungary', 'iceland', 'india', 'indonesia', 'iran', 'iraq', 'ireland', 'israel', 'italy', 'jamaica', 'japan', 'jordan', 'kazakhstan', 'kenya', 'kiribati', 'kuwait', 'kyrgyzstan', 'laos', 'latvia', 'lebanon', 'lesotho', 'liberia', 'libya', 'liechtenstein', 'lithuania', 'luxembourg', 'madagascar', 'malawi', 'malaysia', 'maldives', 'mali', 'malta', 'marshall islands', 'mauritania', 'mauritius', 'mexico', 'micronesia', 'moldova', 'monaco', 'mongolia', 'montenegro', 'morocco', 'mozambique', 'myanmar', 'namibia', 'nauru', 'nepal', 'netherlands', 'new zealand', 'nicaragua', 'niger', 'nigeria', 'north korea', 'north macedonia', 'norway', 'oman', 'pakistan', 'palau', 'palestine', 'panama', 'papua new guinea', 'paraguay', 'peru', 'philippines', 'poland', 'portugal', 'qatar', 'romania', 'russia', 'rwanda', 'saint kitts and nevis', 'saint lucia', 'saint vincent and the grenadines', 'samoa', 'san marino', 'sao tome and principe', 'saudi arabia', 'senegal', 'serbia', 'seychelles', 'sierra leone', 'singapore', 'slovakia', 'slovenia', 'solomon islands', 'somalia', 'south africa', 'south korea', 'south sudan', 'spain', 'sri lanka', 'sudan', 'suriname', 'sweden', 'switzerland', 'syria', 'tajikistan', 'tanzania', 'thailand', 'timor-leste', 'togo', 'tonga', 'trinidad and tobago', 'tunisia', 'turkey', 'turkmenistan', 'tuvalu', 'uganda', 'ukraine', 'united arab emirates', 'united kingdom', 'united states', 'uruguay', 'uzbekistan', 'vanuatu', 'vatican city', 'venezuela', 'vietnam', 'yemen', 'zambia', 'zimbabwe', 'africa', 'antarctica', 'asia', 'europe', 'north america', 'south america', 'australia', 'states', 'united','january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december']
 
     # Split the essay into words and exclude words in the excluded_words list
     words = [word for word in essay_cleaned.split() if word not in excluded_words]
@@ -326,6 +326,45 @@ def words_charts():
     plt.ylabel('Counts')
     plt.title('Top 5 Most Repeated Words')
     st.pyplot(plt)
+
+
+def organaize_synonyms(api, synonyms):
+    sy_prompt = f"""
+    
+    you will be given a list of words with their synonyms and your task is to organaize them and make them in markdown format
+    and i want it like this format  below
+    the synonyms are: {synonyms}
+    
+    **the word:**
+
+    - Synonym 1
+    - Synonym 2
+    - Synonym 3
+    
+    
+
+    
+    """
+    
+    
+    genai.configure(api_key = api)
+    # model = genai.GenerativeModel('gemini-1.0-pro-latest')
+    max_retries = 10
+    retries = 0
+    while retries < max_retries:
+        try:
+            # claude_model2(haiku, sy_prompt)
+            response2 = model.generate_content(sy_prompt, stream=True)
+            response2.resolve()
+            synonyms = response2.text
+            st.markdown(synonyms)
+            break  # Break out of the while loop if the generation is successful
+        except Exception as e:
+            print("An error has occurred:", e)
+            print("Retrying...")
+            continue
+    else:
+        st.error('Error') 
 
 def synonym(api):
 #     sy_prompt = f"""Please provide three synonyms for each of the five words I will give you,
@@ -378,7 +417,7 @@ def synonym(api):
             response2 = model.generate_content(sy_prompt, stream=True)
             response2.resolve()
             synonyms = response2.text
-            st.write(synonyms)
+            organaize_synonyms(api, synonyms)
             break  # Break out of the while loop if the generation is successful
         except Exception as e:
             print("An error has occurred:", e)
