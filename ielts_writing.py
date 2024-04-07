@@ -794,14 +794,20 @@ task1_band_score = []
 task2_band_score = []
 def remove_band_score(result):
     num = float(extract_digit_from_essay(result))
-    pattern = re.compile(r'(\*{2})?Band Score:?(\*{2})?\s*\d+(\.\d+)?(\*{2})?\n+', re.IGNORECASE)
-    cleaned_result= pattern.sub('', result)
-    st.markdown(f"**Criteria Score: {round(num + 0.1)}**")
+    if '**Band Score**:' in result:
+        # print('True')
+        pattern = re.compile(r'\*{0,2}Band Score\*{0,2}:?\s*\*{0,2}\d+(\.\d+)?\*{0,2}\n?|\*+\n?', re.IGNORECASE)
+    else:
+        # print('False')
+        pattern = re.compile(r'(\*{2})?Band Score:?(\*{2})?\s*\d+(\.\d+)?(\*{2})?\n+', re.IGNORECASE)
+    cleaned_result = pattern.sub('', result)
+    print(num)
+    st.markdown(f"**Score: {round(num - 0.1)}**")
     if task == 'Task 1':
         
-        task1_band_score.append((round(num + 0.1)))
+        task1_band_score.append((round(num - 0.1)))
     else:
-        task2_band_score.append((round(num + 0.1)))
+        task2_band_score.append((round(num - 0.1)))
     st.write(cleaned_result)
     # print(cleaned_result)
     # print('---------')
