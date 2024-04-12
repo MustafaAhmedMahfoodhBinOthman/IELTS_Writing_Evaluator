@@ -1,4 +1,9 @@
 import streamlit as st
+st.set_page_config(
+    
+    page_title= 'IELTS Writing Evaluator'
+    # page_icon=
+)
 hide_st_style = """
             <style>
             #MainMenu {visibility: hidden;}
@@ -23,11 +28,7 @@ import streamlit.components.v1 as components
 #     components.html(html_code, height=0)
 
 
-st.set_page_config(
-    
-    page_title= 'IELTS Writing Evaluator'
-    # page_icon=
-)
+
     
 st.markdown(
     """
