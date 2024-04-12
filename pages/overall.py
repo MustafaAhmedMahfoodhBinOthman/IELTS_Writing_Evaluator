@@ -1,4 +1,9 @@
 import streamlit as st
+st.set_page_config(
+    
+    page_title= 'Overall Band score Calculator'
+    # page_icon=
+)
 hide_st_style = """
             <style>
             #MainMenu {visibility: hidden;}
@@ -9,11 +14,7 @@ hide_st_style = """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 # Function to calculate the overall band score
 
-st.set_page_config(
-    
-    page_title= 'Overall Band score Calculator'
-    # page_icon=
-)
+
 def calculate_overall_score(scores):
     average_score = sum(scores) / len(scores)
     # Rounding to the nearest half-band score
