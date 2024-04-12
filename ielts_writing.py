@@ -1,12 +1,12 @@
 import streamlit as st
-hide_st_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_st_style, unsafe_allow_html=True)
+# hide_st_style = """
+#             <style>
+#             #MainMenu {visibility: hidden;}
+#             footer {visibility: hidden;}
+#             header {visibility: hidden;}
+#             </style>
+#             """
+# st.markdown(hide_st_style, unsafe_allow_html=True)
 import anthropic
 import google.generativeai as genai
 from wordcloud import WordCloud, STOPWORDS
@@ -18,13 +18,33 @@ import os
 import csv
 import time
 import streamlit.components.v1 as components
-with open("BayanPlusTracking.html", "r") as f:
-    html_code = f.read()
-    components.html(html_code, height=0)
+# with open("BayanPlusTracking.html", "r") as f:
+#     html_code = f.read()
+#     components.html(html_code, height=0)
 
 
+st.set_page_config(
     
+    page_title= 'IELTS Writing Evaluator'
+    # page_icon=
+)
     
+st.markdown(
+    """
+    <style>
+        .st-emotion-cache-j7qwjs {
+            display: none;
+        }
+        .st-emotion-cache-sntl9t {
+            display: none;
+        }
+        .st-emotion-cache-1oe5cao {
+            display: none;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 st.markdown("""
     <style>
     .sidebar .sidebar-content {
@@ -43,21 +63,28 @@ st.markdown("""
     }
     </style>
     """, unsafe_allow_html=True)
-# Claude_API_KEY = os.getenv('Claude_API_KEY')
+Claude_API_KEY = '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'
 
+Gemini_API_Key = 'AIzaSyAtnlV6rfm_OsSt9M_w9ZaiFn3NjdjSVuw' #mustafabinothman22
+Gemini_API_Key2 = 'AIzaSyDbU_8cAQCAhr59bqtGf40FV-92KCKkLWs' #mustafanotion
+Gemini_API_Key3 = 'AIzaSyBOb6xrGvLxRBvgMEUyWvTSGKZVDGT4j3w' #mustafabinothman2003
+Gemini_API_Key4 = 'AIzaSyB5Cy4KIg4xKwz2poq3sywJEvqI0BL10iQ' #mustafabinothman2023
+Gemini_API_Key5 = 'AIzaSyBUpws7IJIKo9rZI1YKSBPQj_RpPWwTqFo' #www.binothman24
+
+
+# Claude_API_KEY = os.getenv('Claude_API_KEY')
 # Gemini_API_Key = os.getenv('Gemini_API_Key') #mustafabinothman22
 # Gemini_API_Key2 = os.getenv('Gemini_API_Key2') #mustafanotion
 # Gemini_API_Key3 = os.getenv('Gemini_API_Key3') #mustafabinothman2003
 # Gemini_API_Key4 = os.getenv('Gemini_API_Key4') #mustafabinothman2023
 # Gemini_API_Key5 = os.getenv('Gemini_API_Key5') #www.binothman24
 
-Claude_API_KEY = st.secrets["Claude_API_KEY"]
-Gemini_API_Key = st.secrets['Gemini_API_Key'] #mustafabinothman22
-Gemini_API_Key2 = st.secrets['Gemini_API_Key2'] #mustafanotion
-Gemini_API_Key3 = st.secrets['Gemini_API_Key3'] #mustafabinothman2003
-Gemini_API_Key4 = st.secrets['Gemini_API_Key4'] #mustafabinothman2023
-Gemini_API_Key5 = st.secrets['Gemini_API_Key5'] #www.binothman24
-
+# Claude_API_KEY = st.secrets['Claude_API_KEY']
+# Gemini_API_Key = st.secrets['Gemini_API_Key'] #mustafabinothman22
+# Gemini_API_Key2 = st.secrets['Gemini_API_Key2'] #mustafanotion
+# Gemini_API_Key3 = st.secrets['Gemini_API_Key3'] #mustafabinothman2003
+# Gemini_API_Key4 = st.secrets['Gemini_API_Key4'] #mustafabinothman2023
+# Gemini_API_Key5 = st.secrets['Gemini_API_Key5'] #www.binothman24
 
 
 keys = [Gemini_API_Key,Gemini_API_Key2,Gemini_API_Key3,Gemini_API_Key4,Gemini_API_Key5]
@@ -70,15 +97,31 @@ model_vision = genai.GenerativeModel('gemini-pro-vision')
 type_check = 'primary'
 type_take = 'secondary'
 
+st.sidebar.title("""
+                 
+                 
+                 
+              
+                 
+                 """)
 
 st.sidebar.title('IELTS Writing Evaluator (Free)')
 st.sidebar.write('This is currently in Beta version, and everyday it will be updated to reach better evalaution GOOD LUCK 😊⚡')
 # st.sidebar.write('There will be many special features and big improvments coming soon😊')
 
 side_check_button = st.sidebar.button('Check Your Essay', type=type_check, use_container_width=True)
+
+st.sidebar.write("If you want to calculate the overall band score of Task 1 and Task 2 press the button 👇")
+
+side_check_button2 = st.sidebar.button('Caculate overall Band Score', type=type_take, use_container_width=True)
+if side_check_button2:
+    st.switch_page("pages/overall.py")
+    # st.page_link("pages/overall.py", label="IELTS Overall Band Score Calculater", icon="🔶")
 # side_take_button = st.sidebar.button("Take a Test (it's coming soon)", type=type_take, use_container_width=True, disabled=True)
 
-st.sidebar.write("if there is any issue in the performance or any suggetions please contact me")
+
+st.sidebar.write('Now you can evaluate your essay via Telegram: https://t.me/ielts_writing_ai_bot')
+st.sidebar.write("If there is any issue in the performance or any suggetions please contact me")
 
 st.sidebar.write("Email: mustafabinothman2023@gmail.com")
 st.sidebar.write("Telegram:  https://t.me/mustafa_binothman")
@@ -109,28 +152,24 @@ def check_email(email):
 st.title('IELTS Writing Evaluator (Free)')
 st.write('This is a high-quality AI that is competent in evaluating IELTS writing. It uses advanced LLMs to make a high effeciant evaluation .')
 
-email = st.text_input('please enter your email')
-if st.button('Rigester'):
-        if not is_valid_gmail(email):
-            st.error('Please enter a valid Gmail email.')
-        else:
-            result = check_email(email)
-            if result is True:
-                st.success('Email already registered. You can use the website.')
-                # Add your website functionality here
-            elif result is False:
-                st.success('Email registered successfully. You can now use the website.')
-                # Add your website functionality here
-            else:
-                st.error('Invalid Gmail email. Please provide a valid Gmail address.')
+# email = st.text_input('please enter your email')
+# if st.button('Rigester'):
+#         if not is_valid_gmail(email):
+#             st.error('Please enter a valid Gmail email.')
+#         else:
+#             result = check_email(email)
+#             if result is True:
+#                 st.success('Email already registered. You can use the website.')
+#                 # Add your website functionality here
+#             elif result is False:
+#                 st.success('Email registered successfully. You can now use the website.')
+#                 # Add your website functionality here
+#             else:
+#                 st.error('Invalid Gmail email. Please provide a valid Gmail address.')
+
 task = ''
 gen_acad = ''
-# st.markdown('**Please Select which task you want to evlauate**')
 select_task = st.selectbox('**Please Select the type of task**', ['Task 1', 'Task 2'])
-
-
-
-
 
 if select_task == 'Task 1':
     task = 'Task 1'
@@ -152,7 +191,6 @@ if select_task == 'Task 1':
         st.markdown("**3- If one photo wasn't enough to upload all the essay you can cancel the photo and upload the other photos (it will automatically add the text with first one)**")
     
     
-    # essay_image= st.file_uploader('if you have a written essay upload it (currently is unsupported it is coming soon)', type=['png', 'jpg'], accept_multiple_files=False,)
 else:
     task = 'Task 2'
     st.write("if you have written your essay in a paper take a photo and upload it 👇")
@@ -162,10 +200,6 @@ else:
     st.markdown("**1- Make sure you upload a high quality photo with clear font for better results**")
     st.markdown("**2- After you upload the photo check the written essay and edit it if there any issues**")
     st.markdown("**3- If one photo wasn't enough to upload all the essay, you can cancel the photo and upload the other photos (it will automatically add the text with first one)**")
-# if task == 'Task 1':
-#     if chart_image is not None:
-#             st.image(chart_image, width=400)
-
 
 opus = "claude-3-opus-20240229"
 sonnet = "claude-3-sonnet-20240229"
@@ -595,32 +629,6 @@ def count_words():
         img = word_cloud.to_image()
         st.image(img)    
 def grammar_spelling():
-#     prompt = f"""As a grammar checker, your task is to carefully review the provided essay {essay} and identify any misspelled words and incorrect grammar. 
-#     When you encounter misspelled words, please provide the correct spelling, taking into account the differences between British and American English. 
-#     For incorrect grammar, you should also provide the correct grammar structure and an explanation of its correctness.
-#     providing accurate corrections for misspelled words and grammar errors. When addressing spelling, please consider both British and American English conventions. 
-#     Additionally, your explanations should help the writer understand why the provided corrections are accurate and how they improve the overall language usage in the essay.
-   
-#     Note: you should only highlight the misuse of grammar and provide the correct structure and do not rewrite the correct essay 
-#    if there are no misspelling mistakes or incorrect grammar you should write your grammar and spelling is correct 
-#     """
-    
-    # prompt = f"""As a grammar checker, your task is to carefully review the provided essay {essay} and identify any misspelled words and incorrect grammar. 
-    # Provide accurate corrections and explanations to help the writer understand and improve their language usage.
-
-    # Instructions:
-
-    # Read through the essay carefully, focusing on identifying misspelled words and incorrect grammar.
-    # For misspelled words:
-    # a. Provide the correct spelling of the word.
-    # b. Consider both British and American English conventions when providing the correct spelling.
-    # For incorrect grammar:
-    # a. Highlight the specific part of the sentence or phrase that contains the grammatical error.
-    # b. Provide the correct grammar structure.
-    # c. Explain why the provided correction is accurate and how it improves the language usage in the essay.
-    # If there are no misspelling mistakes or incorrect grammar, simply state: "Your grammar and spelling are correct."
-    # Remember to focus on providing accurate corrections and explanations without rewriting the entire essay. Your feedback should help the writer understand their mistakes and learn how to improve their language usage.
-    # """
     
     prompt = f"""
     As an advanced grammar checker, your task is to meticulously review the provided essay {essay} and identify any misspelled words and grammatical errors. Provide accurate corrections and clear explanations to help the writer understand and improve their language usage.
@@ -1037,6 +1045,8 @@ Please note that your evaluation should be unbiased and based solely on the IELT
 
 Remember to maintain a supportive and constructive tone throughout your evaluation. Your goal is to provide valuable insights and practical suggestions that can help the candidate refine their IELTS writing skills and achieve their desired band score.
 """
+
+
 # coherence and cohision criteria prompt
 co_task2_analysis = f"""
 
@@ -1845,11 +1855,6 @@ def remove_band_score(result):
 
 
 
-
-
-
-
-
 task_response = f""""""
 if task == 'Task 1' and gen_acad == 'Academic':
     task_response = tas_academic_task1
@@ -1878,35 +1883,139 @@ def evaluate2(prompt):
     retries = 0
     while retries < max_retries:
         try:
-            # delay_seconds = 10  # Adjust the delay as needed
-            # print(f"Waiting for {delay_seconds} seconds before evaluating...")
-            # time.sleep(delay_seconds)
-            # st.markdown('### Gemini')
             task = model.generate_content(prompt, stream=True)
             task.resolve()
             task_ch = task.text
-            # print(task_ch)
-            # print('-----------------------------')
             remove_band_score(task_ch)
-            # claude_model(sonnet, prompt)
             break  # Break out of the while loop if the generation is successful
         except Exception  as e:
             retries += 1
             print("An internal error has occurred: now will use ", e)
             print("Retrying...")
             continue
-        
     else:
         claude_model(haiku, prompt)
 
 
 
+# if button:
+#     if email is not None and email.strip() != "":
+#         with open('registered_emails.csv', 'r') as file:
+#                 reader = csv.reader(file)
+#                 emails = [row[0] for row in reader]
+#                 if email in emails:
+#                     if q_words == 0:
+#                         st.error(f'Please write the question ')
+#                     elif num_words == 0:
+#                         st.error(f'Please write your essay')
+#                     elif task == 'Task 1' and num_words < 150 :
+#                         st.error(f'Your essay is short the written words is {num_words}, please continue writing, it should be at least 150 words')
+#                     elif task == 'Task 2' and num_words < 250:
+#                         st.error(f'Your essay is short the written words is {num_words}, please continue writing, it should be at least 250 words')
+#                     else:
+                        
+#                         st.markdown('---')
+#                         # decripe_image(used_key)
+                        
+#                         st.markdown("## Task Response")
+#                         try:
+#                             grammar_checker = grammar_spelling2()
+#                             grammar_check += grammar_checker
+#                         except Exception  as e:
+#                             print("An internal error has occurred: now will use ", e)
+                            
+                            
+#                         if task == 'Task 1':
+#                             if gen_acad == 'Academic':
+                                
+#                                 if chart_image is not None:
+#                                     described_image = decripe_image(used_key, image_pil)
+#                                     describe_image += described_image
+#                                     # print(describe_image)
+#                                 TR_task1_aca = essay_analysis(tas_academic_task1_analysis)
+#                                 task_resp_1_aca += TR_task1_aca
+#                                 suggest = suggested_score_ana(task_resp_1_aca, task)  
+#                                 suggeted_score += suggest
+#                                 print(suggest)
+                                
+#                             else:
+#                                 TR_task1_gen = essay_analysis(tas_general_task1_analysis)
+#                                 task_resp_1_gen += TR_task1_gen
+#                                 suggest = suggested_score_ana(task_resp_1_gen, task)  
+#                                 suggeted_score += suggest
+                        
+#                         if task == 'Task 2':
+#                             TR_task2 = essay_analysis(tr_task2_analysis)
+#                             TR_task += TR_task2
+#                             suggest = suggested_score_ana(TR_task, task)  
+#                             suggeted_score += suggest
+#                         delay(10)
+#                         evaluate2(task_response)
+                        
+#                         suggeted_score = ''
+#                         print('suggested score 1:', suggeted_score)
+                        
+#                         st.markdown('---')
+#                         st.markdown("## Coherence and Cohesion")
+#                         CO_task2 = essay_analysis(co_task2_analysis)
+#                         coherence += CO_task2
+#                         suggest = suggested_score_ana(CO_task2, task)  
+#                         suggeted_score += suggest
+#                         # delay(10)
+#                         evaluate2(co_prompt)
+#                         suggeted_score = ''
+#                         print('suggested score 2:', suggeted_score)
+#                         st.markdown('---')
+#                         st.markdown("## Lexical Resources")
+#                         LX_task2 = essay_analysis(lex_task2_analysis)
+#                         lexic += LX_task2 
+#                         suggest = suggested_score_ana(LX_task2, task)  
+#                         suggeted_score += suggest  
+#                         # delay(11)
+#                         evaluate2(lex_prompt)
+#                         suggeted_score = ''
+#                         print('suggested score 3:', suggeted_score)
+#                         st.markdown('---')
+#                         st.markdown("## Grammar and Acurracy")
+#                         evaluate2(gr_prompt)
+#                         suggeted_score = ''
+#                         st.markdown('**- Grammar and Spelling mistakes**')
+#                         grammar_spelling()
+                        
+#                         st.markdown('---')
+                        
+#                         if task == 'Task 1':
+#                             overall_score = round(sum(task1_band_score) /4)
+#                         else:
+#                             overall_score = round(sum(task2_band_score) /4)
+#                         st.markdown(f"## {task} Band Score: {float(overall_score)} / 9")
+#                         st.markdown('---')
+#                         st.markdown('## Here is the most repeated words in your essay')
+#                         stop_w = set(STOPWORDS)
+                            
+#                         word_cloud = WordCloud(stopwords=stop_w, width= 800, height=400, background_color='white').generate(essay)
+#                         img = word_cloud.to_image()
+#                         st.image(img)
+#                         st.markdown('---')
+#                         words_charts()
+#                         st.markdown('---')
+#                         st.markdown('### Recommended Synonyms of the repeated words')
+#                         synonym(Gemini_API_Key2)
+#                         st.markdown('---')
+                        
+#                         st.markdown('### a rewritten version of your essay')
+#                         rewrite_essay(Gemini_API_Key3)
+#                 else:
+#                     st.error("Your email is not rigestered, please rigester your email and try again")
+            
+#     #         # print((task1_band_score))
+#     #         # print((task2_band_score))
+#     else:
+#         st.error("PLease rigester your email")   
+
+
 if button:
-    if email is not None and email.strip() != "":
-        with open('registered_emails.csv', 'r') as file:
-                reader = csv.reader(file)
-                emails = [row[0] for row in reader]
-                if email in emails:
+    
                     if q_words == 0:
                         st.error(f'Please write the question ')
                     elif num_words == 0:
@@ -2008,14 +2117,7 @@ if button:
                         
                         st.markdown('### a rewritten version of your essay')
                         rewrite_essay(Gemini_API_Key3)
-                else:
-                    st.error("Your email is not rigestered, please rigester your email and try again")
-            
-    #         # print((task1_band_score))
-    #         # print((task2_band_score))
-    else:
-        st.error("PLease rigester your email")   
-
+               
 
 # if button:
     
