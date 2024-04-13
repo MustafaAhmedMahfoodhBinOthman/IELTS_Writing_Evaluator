@@ -64,28 +64,13 @@ st.markdown("""
     }
     </style>
     """, unsafe_allow_html=True)
-Claude_API_KEY = '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'
 
-Gemini_API_Key = 'AIzaSyAtnlV6rfm_OsSt9M_w9ZaiFn3NjdjSVuw' #mustafabinothman22
-Gemini_API_Key2 = 'AIzaSyDbU_8cAQCAhr59bqtGf40FV-92KCKkLWs' #mustafanotion
-Gemini_API_Key3 = 'AIzaSyBOb6xrGvLxRBvgMEUyWvTSGKZVDGT4j3w' #mustafabinothman2003
-Gemini_API_Key4 = 'AIzaSyB5Cy4KIg4xKwz2poq3sywJEvqI0BL10iQ' #mustafabinothman2023
-Gemini_API_Key5 = 'AIzaSyBUpws7IJIKo9rZI1YKSBPQj_RpPWwTqFo' #www.binothman24
-
-
-# Claude_API_KEY = os.getenv('Claude_API_KEY')
-# Gemini_API_Key = os.getenv('Gemini_API_Key') #mustafabinothman22
-# Gemini_API_Key2 = os.getenv('Gemini_API_Key2') #mustafanotion
-# Gemini_API_Key3 = os.getenv('Gemini_API_Key3') #mustafabinothman2003
-# Gemini_API_Key4 = os.getenv('Gemini_API_Key4') #mustafabinothman2023
-# Gemini_API_Key5 = os.getenv('Gemini_API_Key5') #www.binothman24
-
-# Claude_API_KEY = st.secrets['Claude_API_KEY']
-# Gemini_API_Key = st.secrets['Gemini_API_Key'] #mustafabinothman22
-# Gemini_API_Key2 = st.secrets['Gemini_API_Key2'] #mustafanotion
-# Gemini_API_Key3 = st.secrets['Gemini_API_Key3'] #mustafabinothman2003
-# Gemini_API_Key4 = st.secrets['Gemini_API_Key4'] #mustafabinothman2023
-# Gemini_API_Key5 = st.secrets['Gemini_API_Key5'] #www.binothman24
+Claude_API_KEY = st.secrets['Claude_API_KEY']
+Gemini_API_Key = st.secrets['Gemini_API_Key'] #mustafabinothman22
+Gemini_API_Key2 = st.secrets['Gemini_API_Key2'] #mustafanotion
+Gemini_API_Key3 = st.secrets['Gemini_API_Key3'] #mustafabinothman2003
+Gemini_API_Key4 = st.secrets['Gemini_API_Key4'] #mustafabinothman2023
+Gemini_API_Key5 = st.secrets['Gemini_API_Key5'] #www.binothman24
 
 
 keys = [Gemini_API_Key,Gemini_API_Key2,Gemini_API_Key3,Gemini_API_Key4,Gemini_API_Key5]
@@ -151,7 +136,7 @@ def check_email(email):
         return False
 
 st.title('IELTS Writing Evaluator (Free)')
-st.write('This is a high-quality AI that is competent in evaluating IELTS writing. It uses advanced LLMs to make a high effeciant evaluation .')
+st.write('This is a high-quality AI that is competent in evaluating IELTS writing. It uses advanced LLMs to make a high efficient evaluation .')
 
 # email = st.text_input('please enter your email')
 # if st.button('Rigester'):
