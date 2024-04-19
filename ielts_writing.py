@@ -106,7 +106,7 @@ if side_check_button2:
 # side_take_button = st.sidebar.button("Take a Test (it's coming soon)", type=type_take, use_container_width=True, disabled=True)
 
 
-st.sidebar.write('Now you can evaluate your essay via Telegram: https://t.me/ielts_writing_ai_bot')
+st.sidebar.write('Now you can evaluate your essay via Telegram: https://t.me/ielts_writing2_bot')
 st.sidebar.write("If there is any issue in the performance or any suggetions please contact me")
 
 st.sidebar.write("Email: mustafabinothman2023@gmail.com")
