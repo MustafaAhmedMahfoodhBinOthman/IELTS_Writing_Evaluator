@@ -303,7 +303,7 @@ def essay_image(api_key, image_pil):
     retries = 0
     while retries < max_retries:
         try:
-            image_prompt = 'I want you to write what is written here in this image'
+            image_prompt = 'Please transcribe the text from the provided image without adding any additional information or making changes to the words. Ensure accuracy in detecting and reproducing the text exactly as it appears in the image, including any spelling mistakes. Your task is to strictly adhere to the content visible in the image and refrain from introducing any extraneous details or alterations to the text.'
             genai.configure(api_key=api_key)
             model_vision = genai.GenerativeModel('gemini-pro-vision')
             response2 = model_vision.generate_content([image_prompt, image_pil])
