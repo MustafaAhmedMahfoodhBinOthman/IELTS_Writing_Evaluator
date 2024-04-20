@@ -111,10 +111,10 @@ message = """**Looking to evaluate your IELTS writing essays for free? Check out
 
 # Button in the sidebar to trigger the copy function
 st.sidebar.write("Help others to improve their IELTS writing by sharing the website ")
-if st.sidebar.button('Share the website ', type=type_check):
-    # Use pyperclip to copy the message to the clipboard
-    pyperclip.copy(message)
-    st.sidebar.success('Copied thanks for sharing my website')
+# if st.sidebar.button('Share the website ', type=type_check):
+#     # Use pyperclip to copy the message to the clipboard
+#     pyperclip.copy(message)
+#     st.sidebar.success('Copied thanks for sharing my website')
 st.sidebar.write('Now you can evaluate your essay via Telegram: https://t.me/ielts_writing2_bot')
 st.sidebar.write("If there is any issue in the performance or any suggetions please contact me")
 
