@@ -85,8 +85,8 @@ st.sidebar.write("Help others to improve their IELTS writing by sharing the webs
 #     st.sidebar.success('Copied thanks for sharing my website')
 st.sidebar.write("if there is any issue in the performance or any suggetions please contact me")
 
-st.sidebar.write("Email: mustafabinothman2023@gmail.com")
-st.sidebar.write("Telegram:  https://t.me/mustafa_binothman")
+# st.sidebar.write("Email: mustafabinothman2023@gmail.com")
+st.sidebar.write("Telegram:  https://t.me/ielts_pathway")
 st.sidebar.markdown("Developed by **Mustafa Bin Othman**")
 
 with st.form("score_form"):
