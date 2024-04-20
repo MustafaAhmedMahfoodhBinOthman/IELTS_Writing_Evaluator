@@ -118,8 +118,8 @@ st.sidebar.write("Help others to improve their IELTS writing by sharing the webs
 st.sidebar.write('Now you can evaluate your essay via Telegram: https://t.me/ielts_writing2_bot')
 st.sidebar.write("If there is any issue in the performance or any suggetions please contact me")
 
-st.sidebar.write("Email: mustafabinothman2023@gmail.com")
-st.sidebar.write("Telegram:  https://t.me/mustafa_binothman")
+# st.sidebar.write("Email: mustafabinothman2023@gmail.com")
+st.sidebar.write("Telegram:  https://t.me/ielts_pathway")
 st.sidebar.markdown("Developed by **Mustafa Bin Othman**")
 
 def is_valid_gmail(email):
