@@ -23,6 +23,7 @@ import os
 import csv
 import time
 import streamlit.components.v1 as components
+import pyperclip
 # with open("BayanPlusTracking.html", "r") as f:
 #     html_code = f.read()
 #     components.html(html_code, height=0)
@@ -105,7 +106,15 @@ if side_check_button2:
     # st.page_link("pages/overall.py", label="IELTS Overall Band Score Calculater", icon="🔶")
 # side_take_button = st.sidebar.button("Take a Test (it's coming soon)", type=type_take, use_container_width=True, disabled=True)
 
+message = """**Looking to evaluate your IELTS writing essays for free? Check out this website that uses AI to assess your work:** \n Website link: ielts-writing-ai.streamlit.app
+"""
 
+# Button in the sidebar to trigger the copy function
+st.sidebar.write("Help others to improve their IELTS writing by sharing the website ")
+if st.sidebar.button('Share the website ', type=type_check):
+    # Use pyperclip to copy the message to the clipboard
+    pyperclip.copy(message)
+    st.sidebar.success('Copied thanks for sharing my website')
 st.sidebar.write('Now you can evaluate your essay via Telegram: https://t.me/ielts_writing2_bot')
 st.sidebar.write("If there is any issue in the performance or any suggetions please contact me")
 
