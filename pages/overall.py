@@ -1,4 +1,5 @@
 import streamlit as st
+import pyperclip
 st.set_page_config(
     
     page_title= 'Overall Band score Calculator'
@@ -73,7 +74,15 @@ if side_check_button:
 st.sidebar.write("if you want to calculate the overall band score of Task 1 and Task 2 click the button 👇")
 side_check_button2 = st.sidebar.button('Caculate overall Band Score', type=type_check, use_container_width=True)
 # side_take_button = st.sidebar.button("Take a Test (it's coming soon)", type=type_take, use_container_width=True, disabled=True)
-st.sidebar.write('now you can evaluate your essay via Telegram: https://t.me/ielts_writing_ai_bot')
+message = """**Looking to evaluate your IELTS writing essays for free? Check out this website that uses AI to assess your work:** \n Website link: ielts-writing-ai.streamlit.app
+"""
+
+# Button in the sidebar to trigger the copy function
+st.sidebar.write("Help others to improve their IELTS writing by sharing the website ")
+# if st.sidebar.button('Share the website ', type=type_check):
+#     # Use pyperclip to copy the message to the clipboard
+#     pyperclip.copy(message)
+#     st.sidebar.success('Copied thanks for sharing my website')
 st.sidebar.write("if there is any issue in the performance or any suggetions please contact me")
 
 st.sidebar.write("Email: mustafabinothman2023@gmail.com")
