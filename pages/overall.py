@@ -83,10 +83,11 @@ st.sidebar.write("Help others to improve their IELTS writing by sharing the webs
 #     # Use pyperclip to copy the message to the clipboard
 #     pyperclip.copy(message)
 #     st.sidebar.success('Copied thanks for sharing my website')
+st.sidebar.write('Now you can evaluate your essay via Telegram:\n https://t.me/ielts_writing2_bot')
 st.sidebar.write("if there is any issue in the performance or any suggetions please contact me")
 
 # st.sidebar.write("Email: mustafabinothman2023@gmail.com")
-st.sidebar.write('Now you can evaluate your essay via Telegram:\n https://t.me/ielts_writing2_bot')
+
 st.sidebar.write("Telegram:  https://t.me/ielts_pathway")
 st.sidebar.markdown("Developed by **Mustafa Bin Othman**")
 
