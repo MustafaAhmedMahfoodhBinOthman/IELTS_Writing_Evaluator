@@ -5,3 +5,4 @@ wordcloud
 Pillow
 matplotlib
 pyperclip
+groq
