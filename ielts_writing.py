@@ -4,16 +4,17 @@ st.set_page_config(
     page_title= 'IELTS Writing Evaluator'
     # page_icon=
 )
-hide_st_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_st_style, unsafe_allow_html=True)
+# hide_st_style = """
+#             <style>
+#             #MainMenu {visibility: hidden;}
+#             footer {visibility: hidden;}
+#             header {visibility: hidden;}
+#             </style>
+#             """
+# st.markdown(hide_st_style, unsafe_allow_html=True)
 import anthropic
 import google.generativeai as genai
+from groq import Groq
 from wordcloud import WordCloud, STOPWORDS
 from PIL import Image
 import matplotlib.pyplot as plt
@@ -72,10 +73,20 @@ Gemini_API_Key2 = st.secrets['Gemini_API_Key2'] #mustafanotion
 Gemini_API_Key3 = st.secrets['Gemini_API_Key3'] #mustafabinothman2003
 Gemini_API_Key4 = st.secrets['Gemini_API_Key4'] #mustafabinothman2023
 Gemini_API_Key5 = st.secrets['Gemini_API_Key5'] #www.binothman24
+groq_API1 = st.secrets['groq_API1']
+groq_API2 = st.secrets['groq_API2']
+groq_API3 = st.secrets['groq_API3']
+groq_API4 = st.secrets['groq_API4']
+groq_API5 = st.secrets['groq_API6']
+groq_API6 = st.secrets['groq_API6']
+
 
 
 keys = [Gemini_API_Key,Gemini_API_Key2,Gemini_API_Key3,Gemini_API_Key4,Gemini_API_Key5]
 used_key = random.choice(keys)
+llama = "llama3-70b-8192"
+# mixtral = "mixtral-8x7b-32768"
+
 
 
 model = genai.GenerativeModel('gemini-1.0-pro-latest')
@@ -200,72 +211,39 @@ opus = "claude-3-opus-20240229"
 sonnet = "claude-3-sonnet-20240229"
 haiku = "claude-3-haiku-20240307"
 overall_band_score = []
-def claude_model(model, prompt):
-    max_retries = number_of_tries
-    retries = 0
-    while retries < max_retries:
-        try:
-            client = anthropic.Anthropic(
-        # defaults to os.environ.get("ANTHROPIC_API_KEY")
-            api_key=Claude_API_KEY,
-        )
+# def claude_model(model, prompt):
+#     max_retries = number_of_tries
+#     retries = 0
+#     while retries < max_retries:
+#         try:
+#             client = anthropic.Anthropic(
+#         # defaults to os.environ.get("ANTHROPIC_API_KEY")
+#             api_key=Claude_API_KEY,
+#         )
 
-            message = client.messages.create(
-            model=model,
-            max_tokens=1000,
-            temperature=0.0,
-            # system="Respond only in Yoda-speak.",
-            messages=[
-                {"role": "user", "content": prompt}
-        ]
-        )
-            content_block = message.content[0]
-        except Exception  as e:
-            retries += 1
-            print("An internal error has occurred: now will use ", e)
-            print("Retrying...")
-            continue
-    else:
-        st.error("ERORR!!!, please try again or contact me")
+#             message = client.messages.create(
+#             model=model,
+#             max_tokens=1000,
+#             temperature=0.0,
+#             # system="Respond only in Yoda-speak.",
+#             messages=[
+#                 {"role": "user", "content": prompt}
+#         ]
+#         )
+#             content_block = message.content[0]
+#         except Exception  as e:
+#             retries += 1
+#             print("An internal error has occurred: now will use ", e)
+#             print("Retrying...")
+#             continue
+#     # else:
+#     #     st.error("ERORR!!!, please try again or contact me")
         
-    # st.write(content_block.text)
-    remove_band_score(content_block.text)
-    # task_score = float(extract_digit_from_essay(content_block.text))
-    # overall_band_score.append((task_score))
+#     # st.write(content_block.text)
+#     remove_band_score(content_block.text)
+#     # task_score = float(extract_digit_from_essay(content_block.text))
+#     # overall_band_score.append((task_score))
     
-
-def claude_model2(model, prompt):
-    max_retries = number_of_tries
-    retries = 0
-    while retries < max_retries:
-        try:
-            client = anthropic.Anthropic(
-        # defaults to os.environ.get("ANTHROPIC_API_KEY")
-            api_key=Claude_API_KEY,
-        )
-
-            message = client.messages.create(
-            model=model,
-            max_tokens=1000,
-            temperature=0.0,
-            # system="Respond only in Yoda-speak.",
-            messages=[
-                {"role": "user", "content": prompt}
-        ]
-        )
-            content_block = message.content[0]
-            # st.write(content_block.text)
-            return content_block.text
-        except Exception  as e:
-                retries += 1
-                print("An internal error has occurred: now will use ", e)
-                print("Retrying...")
-                continue
-    else:
-        st.error("ERORR!!!, please try again or contact me")
-        
-    
-
 
 
         
@@ -427,11 +405,11 @@ def words_charts():
     plt.ylabel('Counts')
     plt.title('Top 5 Most Repeated Words')
     st.pyplot(plt)
-def organaize_synonyms(api, synonyms):
+def organaize_synonyms(API, synonyms):
     sy_prompt = f"""
     
     you will be given a list of words with their synonyms and your task is to organaize them and make them in markdown format
-    and i want it like this format  below
+    and i want it like this format  below only write what you have been asked about do not write any other non-needed text
     the synonyms are: {synonyms}
     
     **the word:**
@@ -446,17 +424,40 @@ def organaize_synonyms(api, synonyms):
     """
     
     
-    genai.configure(api_key = api)
+    # genai.configure(api_key = used_key)
     # model = genai.GenerativeModel('gemini-1.0-pro-latest')
-    max_retries = 10
+    max_retries = number_of_tries
     retries = 0
     while retries < max_retries:
         try:
-            # claude_model2(haiku, sy_prompt)
-            response2 = model.generate_content(sy_prompt, stream=True)
-            response2.resolve()
-            synonyms = response2.text
+            print('organaize synonyms')
+            client = Groq(
+                api_key=groq_API3
+            )
+
+            chat_completion = client.chat.completions.create(
+                messages=[
+                    # Set an optional system message. This sets the behavior of the
+                    # assistant and can be used to provide specific instructions for
+                    # how it should behave throughout the conversation.
+                    {
+                        "role": "system",
+                        "content": "you are IELTS Expert ."
+                    },
+                    # Set a user message for the assistant to respond to.
+                    {
+                        "role": "user",
+                        "content": sy_prompt,
+                    }
+                ],
+                model=llama,
+            )
+            synonyms = chat_completion.choices[0].message.content
             st.markdown(synonyms)
+            # response = model.generate_content(sy_prompt, stream=True)
+            # response.resolve()
+            # synonym = response.text
+            # st.markdown(synonym)
             break  # Break out of the while loop if the generation is successful
         except Exception as e:
             print("An error has occurred:", e)
@@ -464,16 +465,8 @@ def organaize_synonyms(api, synonyms):
             continue
     else:
         st.error('Error') 
-def synonym(api):
-#     sy_prompt = f"""Please provide three synonyms for each of the five words I will give you,
-#     closely related to the meaning of the word in the context of this essay {essay}. Your response should include words suitable for IELTS writing 
-#     to enhance the score and should avoid repeating the same word. The words should be 100% related to the intended meaning 
-#     in the context of the word from the provided IELTS writing essay. Please list the words followed by their synonyms in order,
-#     without any additional information unrelated to the task. please if the synonym is not suitable for the context of the word do not write it 
-# The words are {list_of_repeated_words} from the IELTS writing essay {essay}.
-# and you should organize them 
-#     """
-    
+def synonym(API= groq_API1, model2=llama):
+
     sy_prompt = f"""As an English language expert, your task is to provide three context-appropriate synonyms for each of the five words given from an IELTS writing essay from this repeated words {list_of_repeated_words} in this essay {essay}. 
     The synonyms should be carefully chosen to maintain the intended meaning of the words within the essay's context and to enhance the writing score. 
     Avoid repeating the same word or suggesting synonyms that do not fit the context. 
@@ -505,25 +498,50 @@ def synonym(api):
     """
     
     
-    genai.configure(api_key = api)
+    genai.configure(api_key = used_key)
     # model = genai.GenerativeModel('gemini-1.0-pro-latest')
     max_retries = 10
     retries = 0
     while retries < max_retries:
         try:
-            # claude_model2(haiku, sy_prompt)
-            response2 = model.generate_content(sy_prompt, stream=True)
-            response2.resolve()
-            synonyms = response2.text
-            organaize_synonyms(api, synonyms)
+            client = Groq(
+                api_key=API
+            )
+
+            chat_completion = client.chat.completions.create(
+                messages=[
+                    # Set an optional system message. This sets the behavior of the
+                    # assistant and can be used to provide specific instructions for
+                    # how it should behave throughout the conversation.
+                    {
+                        "role": "system",
+                        "content": "you are IELTS Expert ."
+                    },
+                    # Set a user message for the assistant to respond to.
+                    {
+                        "role": "user",
+                        "content": sy_prompt,
+                    }
+                ],
+                model=model2,
+            )
+            synonyms = chat_completion.choices[0].message.content
+            
+            print(synonyms)
+                        # return result
+                        # st.write(result)
+            # response = model.generate_content(sy_prompt, stream=True)
+            # response.resolve()
+            # synonyms = response.text
+            organaize_synonyms(API, synonyms)
             break  # Break out of the while loop if the generation is successful
         except Exception as e:
             print("An error has occurred:", e)
             print("Retrying...")
             continue
     else:
-        st.error('Error') 
-def rewrite_essay(api):
+        st.error('Sorry their is an unexpected issue happened please try again') 
+def rewrite_essay(API=groq_API5, model=llama):
     # re_prompt = f"""
     # pretend you are English teacher and you have experience in IELTS writing essays 
     # your task is to rewrite this IELTS writing essay {essay} based on this question {question}to a better version and match 
@@ -535,8 +553,28 @@ def rewrite_essay(api):
     # and sentence structure to create a more polished and coherent essay that meets the requirements for IELTS academic writing.
     # """
     
+    # re_prompt = f"""
+    # As an experienced IELTS writing teacher, your task is to rewrite the given IELTS writing essay {essay} based on the provided question {question}, ensuring that it meets the IELTS academic writing requirements for the specified task {task}. The revised essay should focus on refining the structure, coherence, and language while effectively addressing the question and presenting well-developed ideas with supporting examples and evidence.
+
+    # Instructions:
+
+    # Carefully review the given IELTS writing essay, question, and the specified task (Task 1 or Task 2).
+    # Analyze the essay's structure, coherence, and language, identifying areas that need improvement to meet IELTS academic writing standards.
+    # Rewrite the essay, focusing on the following aspects:
+    # a. Ensure that the essay effectively addresses the question and demonstrates a clear understanding of the topic.
+    # b. Present well-developed ideas with supporting examples and evidence.
+    # c. Improve the essay's structure and coherence, ensuring a logical flow of ideas and smooth transitions between paragraphs.
+    # d. Refine the language, paying attention to grammar, vocabulary, and sentence structure to create a more polished and coherent essay.
+    # Ensure that the revised essay meets the word count requirements:
+    # For Task 2: The essay must be more than 250 words and less than 330 words.
+    # For Task 1: The essay must be more than 150 words and less than 200 words.
+    # Do not include the headline of the paragraph in the revised essay.
+    # Remember to focus on creating a revised essay that meets the IELTS academic writing standards and effectively addresses the given question while staying within the specified word count range and do not write the count of words in your rewrite essay.
+    
+    # """
+    
     re_prompt = f"""
-    As an experienced IELTS writing teacher, your task is to rewrite the given IELTS writing essay {essay} based on the provided question {question}, ensuring that it meets the IELTS academic writing requirements for the specified task {task}. The revised essay should focus on refining the structure, coherence, and language while effectively addressing the question and presenting well-developed ideas with supporting examples and evidence.
+    As an experienced IELTS writing teacher, your task is to rewrite the  IELTS writing essay that will be provided to you based on the provided question {question}, ensuring that it meets the IELTS academic writing requirements for the specified task {task}. The revised essay should focus on refining the structure, coherence, and language while effectively addressing the question and presenting well-developed ideas with supporting examples and evidence.
 
     Instructions:
 
@@ -552,10 +590,10 @@ def rewrite_essay(api):
     For Task 1: The essay must be more than 150 words and less than 200 words.
     Do not include the headline of the paragraph in the revised essay.
     Remember to focus on creating a revised essay that meets the IELTS academic writing standards and effectively addresses the given question while staying within the specified word count range and do not write the count of words in your rewrite essay.
-    
+    only write what you have been asked about. do not write any other non-needed text
     """
     
-    genai.configure(api_key = api)
+    # genai.configure(api_key = api)
     # model = genai.GenerativeModel('gemini-1.0-pro-latest')
     
     num_word = 0
@@ -568,13 +606,37 @@ def rewrite_essay(api):
     while retries < max_retries:
         try:
             while True:
-                response = model.generate_content(re_prompt, stream=True)
-                response.resolve()
-                rewrtie = response.text
-                word_count = len(rewrtie.split())
-                
+                client = Groq(
+                        api_key=API
+                    )
+
+                chat_completion = client.chat.completions.create(
+                            messages=[
+                                # Set an optional system message. This sets the behavior of the
+                                # assistant and can be used to provide specific instructions for
+                                # how it should behave throughout the conversation.
+                                {
+                                    "role": "system",
+                                    # "content": "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment .",
+                                    "content": re_prompt
+                                },
+                                # Set a user message for the assistant to respond to.
+                                {
+                                    "role": "user",
+                                    # "content": prompt,
+                                    "content": essay,
+                                }
+                            ],
+                            model=model,
+                        )
+
+                rewrite = chat_completion.choices[0].message.content
+                        # return result
+                        # st.write(result)
+                word_count = len(rewrite.split())
+
                 if word_count >= num_word and word_count < (num_word + 40):
-                    st.write(rewrtie)
+                    st.write(rewrite)
                     st.write('Number of Words:', word_count)
                     # print("Essay generated successfully.")
                     print(num_word)
@@ -590,18 +652,9 @@ def rewrite_essay(api):
     else:
         print("Maximum retries reached. Switching to claude_model.")
         while True:
-            client = anthropic.Anthropic(api_key=Claude_API_KEY,)
-            message = client.messages.create(
-            model=haiku,
-            max_tokens=1000,
-            temperature=0.0,
-            # system="Respond only in Yoda-speak.",
-            messages=[
-                {"role": "user", "content": re_prompt}
-        ]
-        )
-            content_block = message.content[0]
-            re_write = content_block.text
+            response = model.generate_content(re_prompt, stream=True)
+            response.resolve()
+            re_write = response.text
             word_count = len(re_write.split())
                 
             if word_count >= num_word and word_count < (num_word + 40):
@@ -623,10 +676,50 @@ def count_words():
         word_cloud = WordCloud(stopwords=stop_w).generate(essay)
         img = word_cloud.to_image()
         st.image(img)    
-def grammar_spelling():
+def grammar_spelling(API= groq_API1, model=llama):
     
+#     prompt = f"""
+#     As an advanced grammar checker, your task is to meticulously review the provided essay {essay} and identify any misspelled words and grammatical errors. Provide accurate corrections and clear explanations to help the writer understand and improve their language usage.
+
+# Instructions:
+
+# Carefully read through the essay, focusing on identifying misspelled words and grammatical errors.
+
+# For misspelled words:
+# a. Provide the correct spelling of the word.
+# b. Consider both British and American English conventions when providing the correct spelling.
+# c. If a word is correctly spelled but used incorrectly in the context, provide an explanation and suggest a more appropriate word if necessary.
+
+# For grammatical errors:
+# a. Highlight the specific part of the sentence or phrase that contains the grammatical error.
+# b. Provide the correct grammar structure.
+# c. Explain why the provided correction is accurate and how it improves the language usage in the essay.
+# d. If the error involves a complex grammar rule, provide a concise explanation to help the writer understand the underlying principle. Consider including links to reputable grammar resources or specific exercises to practice the identified areas of improvement.
+
+# Be cautious not to identify correctly spelled words as misspellings. Focus only on actual misspelled words to avoid confusing the writer.
+
+# If there are no misspelling mistakes or grammatical errors, provide a positive acknowledgment, such as: "Great job! Your grammar and spelling are accurate throughout the essay."
+
+# Maintain a supportive and encouraging tone in your feedback. Provide constructive suggestions and explanations that motivate the writer to continue improving their language skills.
+
+# Focus on providing accurate corrections and explanations without rewriting the entire essay. Your feedback should help the writer understand their mistakes and learn how to improve their language usage.
+
+# If you encounter an error that you are unsure about, it's better to skip it rather than provide an incorrect correction. Prioritize accuracy over identifying every potential error.
+
+# If the essay contains recurring errors or patterns, provide a more detailed explanation of the underlying grammar rule to help the writer avoid making the same mistakes in the future.
+
+# If the essay has a few awkward or unclear sentences that don't necessarily contain grammatical errors, provide suggestions on how to rephrase them for better clarity and coherence.
+
+# After completing your review, provide a brief summary of the most common types of errors found in the essay, if any. This will help the writer identify patterns and areas for improvement.
+
+# if there are no misspelling mistakes or incorrect grammar you should write your grammar and spelling is correct
+
+# Remember, your goal is to provide accurate, helpful, and constructive feedback that enables the writer to enhance their grammar and spelling skills in the context of IELTS essay writing.
+#     """
+    
+     
     prompt = f"""
-    As an advanced grammar checker, your task is to meticulously review the provided essay {essay} and identify any misspelled words and grammatical errors. Provide accurate corrections and clear explanations to help the writer understand and improve their language usage.
+    As an advanced grammar checker, your task is to meticulously review the essay that i will give you and identify any misspelled words and grammatical errors. Provide accurate corrections and clear explanations to help the writer understand and improve their language usage.
 
 Instructions:
 
@@ -663,6 +756,8 @@ if there are no misspelling mistakes or incorrect grammar you should write your 
 
 Remember, your goal is to provide accurate, helpful, and constructive feedback that enables the writer to enhance their grammar and spelling skills in the context of IELTS essay writing.
     """
+    
+    
     # def function_reviwer(gra_spelling):
     #     reviwer_prompt = f"""
     #     You are an AI reviewer. Your task is to monitor the output of another AI called the Grammar and Spelling Checker. The Grammar and Spelling Checker's task is to review an IELTS writing essay and identify any misspellings or incorrect grammar usage.
@@ -690,11 +785,33 @@ Remember, your goal is to provide accurate, helpful, and constructive feedback t
     while retries < max_retries:
         try:
             # gra_spelling = claude_model2(haiku, prompt)
-            genai.configure(api_key = used_key)
-            task = model.generate_content(prompt, stream=True)
-            task.resolve()
-            task_ch = task.text
-            st.write(task_ch)
+            client = Groq(
+                        api_key=API
+                    )
+
+            chat_completion = client.chat.completions.create(
+                            messages=[
+                                # Set an optional system message. This sets the behavior of the
+                                # assistant and can be used to provide specific instructions for
+                                # how it should behave throughout the conversation.
+                                {
+                                    "role": "system",
+                                    # "content": "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment .",
+                                    "content": prompt
+                                },
+                                # Set a user message for the assistant to respond to.
+                                {
+                                    "role": "user",
+                                    # "content": prompt,
+                                    "content": essay,
+                                }
+                            ],
+                            model=model,
+                        )
+
+            result = chat_completion.choices[0].message.content
+            # return result
+            st.write(result)
             # function_reviwer(task_ch)
             
             break  # Break out of the while loop if the generation is successful
@@ -704,7 +821,7 @@ Remember, your goal is to provide accurate, helpful, and constructive feedback t
             print("Retrying...")
             continue
     else:
-        claude_model2(haiku, prompt) 
+        st.error('OPPS, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
 def grammar_spelling2():
 
     prompt = f"""
@@ -747,12 +864,32 @@ def grammar_spelling2():
     while retries < max_retries:
         try:
             # gra_spelling = claude_model2(haiku, prompt)
-            genai.configure(api_key = used_key)
-            task = model.generate_content(prompt, stream=True)
-            task.resolve()
-            task_ch = task.text
-            # st.write(task_ch)
-            return task_ch
+            client = Groq(
+                        api_key=groq_API1
+                    )
+
+            chat_completion = client.chat.completions.create(
+                            messages=[
+                                # Set an optional system message. This sets the behavior of the
+                                # assistant and can be used to provide specific instructions for
+                                # how it should behave throughout the conversation.
+                                {
+                                    "role": "system",
+                                    # "content": "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment .",
+                                    "content": prompt
+                                },
+                                # Set a user message for the assistant to respond to.
+                                {
+                                    "role": "user",
+                                    "content": prompt,
+                                    # "content": task_analysis,
+                                }
+                            ],
+                            model=llama,
+                        )
+
+            result = chat_completion.choices[0].message.content
+            return result
             # function_reviwer(task_ch)
             
             break  # Break out of the while loop if the generation is successful
@@ -761,38 +898,8 @@ def grammar_spelling2():
             print("An internal error has occurred:", e)
             print("Retrying...")
             continue
-    else:
-        claude_model2(haiku, prompt)
-        # max_retries = number_of_tries
-        # retries = 0
-        # while True:
-        #     try:
-        #         client = anthropic.Anthropic(
-        #     # defaults to os.environ.get("ANTHROPIC_API_KEY")
-        #         api_key=Claude_API_KEY,
-        #     )
-
-        #         message = client.messages.create(
-        #         model=model,
-        #         max_tokens=1000,
-        #         temperature=0.0,
-        #         # system="Respond only in Yoda-speak.",
-        #         messages=[
-        #             {"role": "user", "content": prompt}
-        #     ]
-        #     )
-        #         content_block = message.content[0]
-        #         # st.write(content_block.text)
-        #         return content_block.text
-        #         break
-        #     except Exception  as e:
-        #             retries += 1
-        #             print("An internal error has occurred: now will use ", e)
-        #             print("Retrying...")
-        #             continue
-        # else:
-        #     st.error("ERORR!!!, please try again or contact me")
-def essay_analysis(prompt):
+    
+def essay_analysis(prompt, API= groq_API1, model= llama):
 
     genai.configure(api_key = used_key)
     max_retries = number_of_tries
@@ -800,13 +907,32 @@ def essay_analysis(prompt):
     while retries < max_retries:
         try:
             for _ in range(2):
-                task = model.generate_content(prompt, stream=True)
-                task.resolve()
-                task_ch = task.text
-                # print(task_ch)
-                # print('-----------------------------')
-                # print("1")
-                return task_ch
+                client = Groq(
+                        api_key=API
+                    )
+
+                chat_completion = client.chat.completions.create(
+                            messages=[
+                                # Set an optional system message. This sets the behavior of the
+                                # assistant and can be used to provide specific instructions for
+                                # how it should behave throughout the conversation.
+                                {
+                                    "role": "system",
+                                    "content": "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment .",
+                                    # "content": prompt
+                                },
+                                # Set a user message for the assistant to respond to.
+                                {
+                                    "role": "user",
+                                    "content": prompt,
+                                    # "content": task_analysis,
+                                }
+                            ],
+                            model=model,
+                        )
+
+                result = chat_completion.choices[0].message.content
+                return result
                 
         #    --------------------------
 #             
@@ -815,52 +941,61 @@ def essay_analysis(prompt):
             retries += 1
             print("An internal error has occurred: now will use ", e)
             print("Retrying...")
-            continue
-        
-    else:
-        client = anthropic.Anthropic(
-# defaults to os.environ.get("ANTHROPIC_API_KEY")
-        api_key=Claude_API_KEY,
-        )
-
-        message = client.messages.create(
-        model=haiku,
-        max_tokens=1000,
-        temperature=0.0,
-            # system="Respond only in Yoda-speak.",
-        messages=[
-            {"role": "user", "content": prompt}
-        ]
-        )
-        content_block = message.content[0]
-        return content_block.text    
+            continue   
 def suggested_score_ana(task_analysis, task):
     
     
+    # prompt = f"""
+    
+    # i will give you a paragrph for ielts writing essay {task} analysis and i want you to only search about the suggested band score that in the paragrpah
+    # and then write the suggested band score and its justification the is provided also in the paragraph
+    # the paragraph is {task_analysis} you should be extermly accurate 
+
+    
+    # """
+    
+      
     prompt = f"""
     
     i will give you a paragrph for ielts writing essay {task} analysis and i want you to only search about the suggested band score that in the paragrpah
     and then write the suggested band score and its justification the is provided also in the paragraph
-    the paragraph is {task_analysis} you should be extermly accurate 
+    
 
     
     """
     
-    genai.configure(api_key = used_key)
+    
+    
     max_retries = number_of_tries
     retries = 0
     while retries < max_retries:
         try:
-            task = model.generate_content(prompt, stream=True)
-            task.resolve()
-            task_ch = task.text
-            # print('-------------&---------------')
-            # print('-------------&---------------')
-            # print(task_ch)
-            # print('-------------&---------------')
-            # print('-------------&---------------')
-            # print("1")
-            return task_ch
+            client = Groq(
+                        api_key=groq_API1
+                    )
+
+            chat_completion = client.chat.completions.create(
+                        messages=[
+                            # Set an optional system message. This sets the behavior of the
+                            # assistant and can be used to provide specific instructions for
+                            # how it should behave throughout the conversation.
+                            {
+                                "role": "system",
+                                # "content": "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment .",
+                                "content": prompt
+                            },
+                            # Set a user message for the assistant to respond to.
+                            {
+                                "role": "user",
+                                # "content": prompt,
+                                "content": task_analysis,
+                            }
+                        ],
+                        model=llama,
+                    )
+
+            result = chat_completion.choices[0].message.content
+            return result
             
         #    --------------------------
 #             
@@ -1039,9 +1174,8 @@ Evaluation: To guide your evaluation, follow these steps:
 Please note that your evaluation should be unbiased and based solely on the IELTS Task Response criteria. Assess the essay fairly and objectively, regardless of its topic or the candidate's personal background.
 
 Remember to maintain a supportive and constructive tone throughout your evaluation. Your goal is to provide valuable insights and practical suggestions that can help the candidate refine their IELTS writing skills and achieve their desired band score.
+only write what you have been asked about. do not write any other non-needed text
 """
-
-
 # coherence and cohision criteria prompt
 co_task2_analysis = f"""
 
@@ -1822,10 +1956,6 @@ you should be fair when you assess this criteria and give a precise band score a
     Remember to maintain a supportive and constructive tone throughout your evaluation. Your goal is to provide valuable insights and practical suggestions that can help the candidate refine their IELTS General Training Writing Task 1 skills and achieve their desired band score.
 """
 
-
-
-
-
 task1_band_score = []
 task2_band_score = []
 def remove_band_score(result):
@@ -1844,7 +1974,13 @@ def remove_band_score(result):
         task1_band_score.append((round(num - 0.1)))
     else:
         task2_band_score.append((round(num - 0.1)))
-    st.write(cleaned_result)
+    
+    extra_cleaned_result = cleaned_result.find("Evaluation:")
+    if extra_cleaned_result == -1:
+        print("The word 'Evaluation:' was not found in the paragraph.")
+        st.write(cleaned_result)
+    result = cleaned_result[extra_cleaned_result:]
+    st.write(result)
     # print(cleaned_result)
     # print('---------')
 
@@ -1872,16 +2008,39 @@ def delay(num_sec=5):
     time.sleep(delay_seconds)
 
 
-def evaluate2(prompt):
+def evaluate2(prompt, API= groq_API1, model= llama):
     genai.configure(api_key = used_key)
     max_retries = number_of_tries
     retries = 0
     while retries < max_retries:
         try:
-            task = model.generate_content(prompt, stream=True)
-            task.resolve()
-            task_ch = task.text
-            remove_band_score(task_ch)
+            client = Groq(
+                        api_key=API
+                    )
+
+            chat_completion = client.chat.completions.create(
+                        messages=[
+                            # Set an optional system message. This sets the behavior of the
+                            # assistant and can be used to provide specific instructions for
+                            # how it should behave throughout the conversation.
+                            {
+                                "role": "system",
+                                "content": "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment .",
+                                # "content": prompt
+                            },
+                            # Set a user message for the assistant to respond to.
+                            {
+                                "role": "user",
+                                "content": prompt,
+                                # "content": essay,
+                            }
+                        ],
+                        model=model,
+                    )
+
+            result = chat_completion.choices[0].message.content
+            # return result
+            remove_band_score(result)
             break  # Break out of the while loop if the generation is successful
         except Exception  as e:
             retries += 1
@@ -1889,7 +2048,7 @@ def evaluate2(prompt):
             print("Retrying...")
             continue
     else:
-        claude_model(haiku, prompt)
+        st.error('OPPS, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
 
 
 
@@ -2028,6 +2187,7 @@ if button:
                         try:
                             grammar_checker = grammar_spelling2()
                             grammar_check += grammar_checker
+                            # print('grammar and spelling check',grammar_check)
                         except Exception  as e:
                             print("An internal error has occurred: now will use ", e)
                             
@@ -2039,55 +2199,58 @@ if button:
                                     described_image = decripe_image(used_key, image_pil)
                                     describe_image += described_image
                                     # print(describe_image)
-                                TR_task1_aca = essay_analysis(tas_academic_task1_analysis)
+                                TR_task1_aca = essay_analysis(tas_academic_task1_analysis, groq_API1, llama)
                                 task_resp_1_aca += TR_task1_aca
                                 suggest = suggested_score_ana(task_resp_1_aca, task)  
                                 suggeted_score += suggest
                                 print(suggest)
                                 
                             else:
-                                TR_task1_gen = essay_analysis(tas_general_task1_analysis)
+                                TR_task1_gen = essay_analysis(tas_general_task1_analysis, groq_API1, llama)
                                 task_resp_1_gen += TR_task1_gen
                                 suggest = suggested_score_ana(task_resp_1_gen, task)  
                                 suggeted_score += suggest
                         
                         if task == 'Task 2':
-                            TR_task2 = essay_analysis(tr_task2_analysis)
+                            TR_task2 = essay_analysis(tr_task2_analysis, groq_API1, llama)
                             TR_task += TR_task2
                             suggest = suggested_score_ana(TR_task, task)  
                             suggeted_score += suggest
-                        delay(10)
-                        evaluate2(task_response)
+                            print('suggested score 1:', suggeted_score)
+                        # delay(10)
+                        evaluate2(task_response, groq_API1, llama)
                         
                         suggeted_score = ''
-                        print('suggested score 1:', suggeted_score)
+                        
                         
                         st.markdown('---')
                         st.markdown("## Coherence and Cohesion")
-                        CO_task2 = essay_analysis(co_task2_analysis)
+                        CO_task2 = essay_analysis(co_task2_analysis, groq_API2, llama)
                         coherence += CO_task2
                         suggest = suggested_score_ana(CO_task2, task)  
                         suggeted_score += suggest
-                        # delay(10)
-                        evaluate2(co_prompt)
-                        suggeted_score = ''
                         print('suggested score 2:', suggeted_score)
+                        # delay(10)
+                        evaluate2(co_prompt, groq_API2, llama)
+                        suggeted_score = ''
+                        
                         st.markdown('---')
                         st.markdown("## Lexical Resources")
-                        LX_task2 = essay_analysis(lex_task2_analysis)
+                        LX_task2 = essay_analysis(lex_task2_analysis, groq_API3, llama)
                         lexic += LX_task2 
                         suggest = suggested_score_ana(LX_task2, task)  
                         suggeted_score += suggest  
-                        # delay(11)
-                        evaluate2(lex_prompt)
-                        suggeted_score = ''
                         print('suggested score 3:', suggeted_score)
+                        # delay(11)
+                        evaluate2(lex_prompt, groq_API3, llama)
+                        suggeted_score = ''
+                        
                         st.markdown('---')
                         st.markdown("## Grammar and Acurracy")
-                        evaluate2(gr_prompt)
+                        evaluate2(gr_prompt, groq_API3, llama)
                         suggeted_score = ''
                         st.markdown('**- Grammar and Spelling mistakes**')
-                        grammar_spelling()
+                        grammar_spelling( groq_API3, llama)
                         
                         st.markdown('---')
                         
@@ -2107,11 +2270,11 @@ if button:
                         words_charts()
                         st.markdown('---')
                         st.markdown('### Recommended Synonyms of the repeated words')
-                        synonym(Gemini_API_Key2)
+                        synonym(groq_API4, llama)
                         st.markdown('---')
                         
                         st.markdown('### a rewritten version of your essay')
-                        rewrite_essay(Gemini_API_Key3)
+                        rewrite_essay(groq_API5, llama)
                
 
 # if button:
