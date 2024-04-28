@@ -2351,6 +2351,7 @@ if button:
                         st.markdown('---')
                         # decripe_image(used_key)
                         st.write("Please wait a few seconds until the evaluation appears")
+                        st.write("These days, the website sometimes encounters technical issues. We will strive to resolve them as soon as possible. ")
                         st.markdown("## Task Response")
                         try:
                             grammar_checker = grammar_spelling2()
