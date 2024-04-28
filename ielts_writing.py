@@ -956,6 +956,7 @@ def grammar_spelling2():
             
             break  # Break out of the while loop if the generation is successful
         except Exception  as e:
+            st.error("Sorry, an unexpected problem has occurred. Please try again later. If the issue persists, please contact me.")
             retries+=1
             print("An internal error has occurred:", e)
             print("Retrying...")
