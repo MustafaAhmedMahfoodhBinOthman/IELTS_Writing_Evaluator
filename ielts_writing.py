@@ -464,7 +464,29 @@ def organaize_synonyms(API, synonyms):
             print("Retrying...")
             continue
     else:
-        st.error('Error') 
+        client = Groq(
+                api_key=groq_API3
+            )
+
+        chat_completion = client.chat.completions.create(
+                messages=[
+                    # Set an optional system message. This sets the behavior of the
+                    # assistant and can be used to provide specific instructions for
+                    # how it should behave throughout the conversation.
+                    {
+                        "role": "system",
+                        "content": "you are IELTS Expert ."
+                    },
+                    # Set a user message for the assistant to respond to.
+                    {
+                        "role": "user",
+                        "content": sy_prompt,
+                    }
+                ],
+                model="llama3-8b-8192",
+            )
+        synonyms = chat_completion.choices[0].message.content
+        st.markdown(synonyms)
 def synonym(API= groq_API1, model2=llama):
 
     sy_prompt = f"""As an English language expert, your task is to provide three context-appropriate synonyms for each of the five words given from an IELTS writing essay from this repeated words {list_of_repeated_words} in this essay {essay}. 
@@ -498,7 +520,7 @@ def synonym(API= groq_API1, model2=llama):
     """
     
     
-    genai.configure(api_key = used_key)
+    # genai.configure(api_key = used_key)
     # model = genai.GenerativeModel('gemini-1.0-pro-latest')
     max_retries = 10
     retries = 0
@@ -527,7 +549,7 @@ def synonym(API= groq_API1, model2=llama):
             )
             synonyms = chat_completion.choices[0].message.content
             
-            print(synonyms)
+            # print(synonyms)
                         # return result
                         # st.write(result)
             # response = model.generate_content(sy_prompt, stream=True)
@@ -540,7 +562,36 @@ def synonym(API= groq_API1, model2=llama):
             print("Retrying...")
             continue
     else:
-        st.error('Sorry their is an unexpected issue happened please try again') 
+        client = Groq(
+                api_key=API
+            )
+
+        chat_completion = client.chat.completions.create(
+                messages=[
+                    # Set an optional system message. This sets the behavior of the
+                    # assistant and can be used to provide specific instructions for
+                    # how it should behave throughout the conversation.
+                    {
+                        "role": "system",
+                        "content": "you are IELTS Expert ."
+                    },
+                    # Set a user message for the assistant to respond to.
+                    {
+                        "role": "user",
+                        "content": sy_prompt,
+                    }
+                ],
+                model="llama3-8b-8192",
+            )
+        synonyms = chat_completion.choices[0].message.content
+            
+        # print(synonyms)
+                        # return result
+                        # st.write(result)
+            # response = model.generate_content(sy_prompt, stream=True)
+            # response.resolve()
+            # synonyms = response.text
+        organaize_synonyms(API, synonyms)
 def rewrite_essay(API=groq_API5, model=llama):
     # re_prompt = f"""
     # pretend you are English teacher and you have experience in IELTS writing essays 
@@ -652,9 +703,31 @@ def rewrite_essay(API=groq_API5, model=llama):
     else:
         print("Maximum retries reached. Switching to claude_model.")
         while True:
-            response = model.generate_content(re_prompt, stream=True)
-            response.resolve()
-            re_write = response.text
+            client = Groq(
+                        api_key=API
+                    )
+
+            chat_completion = client.chat.completions.create(
+                            messages=[
+                                # Set an optional system message. This sets the behavior of the
+                                # assistant and can be used to provide specific instructions for
+                                # how it should behave throughout the conversation.
+                                {
+                                    "role": "system",
+                                    # "content": "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment .",
+                                    "content": re_prompt
+                                },
+                                # Set a user message for the assistant to respond to.
+                                {
+                                    "role": "user",
+                                    # "content": prompt,
+                                    "content": essay,
+                                }
+                            ],
+                            model="llama3-8b-8192",
+                        )
+
+            re_write = chat_completion.choices[0].message.content
             word_count = len(re_write.split())
                 
             if word_count >= num_word and word_count < (num_word + 40):
@@ -678,48 +751,8 @@ def count_words():
         st.image(img)    
 def grammar_spelling(API= groq_API1, model=llama):
     
-#     prompt = f"""
-#     As an advanced grammar checker, your task is to meticulously review the provided essay {essay} and identify any misspelled words and grammatical errors. Provide accurate corrections and clear explanations to help the writer understand and improve their language usage.
-
-# Instructions:
-
-# Carefully read through the essay, focusing on identifying misspelled words and grammatical errors.
-
-# For misspelled words:
-# a. Provide the correct spelling of the word.
-# b. Consider both British and American English conventions when providing the correct spelling.
-# c. If a word is correctly spelled but used incorrectly in the context, provide an explanation and suggest a more appropriate word if necessary.
-
-# For grammatical errors:
-# a. Highlight the specific part of the sentence or phrase that contains the grammatical error.
-# b. Provide the correct grammar structure.
-# c. Explain why the provided correction is accurate and how it improves the language usage in the essay.
-# d. If the error involves a complex grammar rule, provide a concise explanation to help the writer understand the underlying principle. Consider including links to reputable grammar resources or specific exercises to practice the identified areas of improvement.
-
-# Be cautious not to identify correctly spelled words as misspellings. Focus only on actual misspelled words to avoid confusing the writer.
-
-# If there are no misspelling mistakes or grammatical errors, provide a positive acknowledgment, such as: "Great job! Your grammar and spelling are accurate throughout the essay."
-
-# Maintain a supportive and encouraging tone in your feedback. Provide constructive suggestions and explanations that motivate the writer to continue improving their language skills.
-
-# Focus on providing accurate corrections and explanations without rewriting the entire essay. Your feedback should help the writer understand their mistakes and learn how to improve their language usage.
-
-# If you encounter an error that you are unsure about, it's better to skip it rather than provide an incorrect correction. Prioritize accuracy over identifying every potential error.
-
-# If the essay contains recurring errors or patterns, provide a more detailed explanation of the underlying grammar rule to help the writer avoid making the same mistakes in the future.
-
-# If the essay has a few awkward or unclear sentences that don't necessarily contain grammatical errors, provide suggestions on how to rephrase them for better clarity and coherence.
-
-# After completing your review, provide a brief summary of the most common types of errors found in the essay, if any. This will help the writer identify patterns and areas for improvement.
-
-# if there are no misspelling mistakes or incorrect grammar you should write your grammar and spelling is correct
-
-# Remember, your goal is to provide accurate, helpful, and constructive feedback that enables the writer to enhance their grammar and spelling skills in the context of IELTS essay writing.
-#     """
-    
-     
     prompt = f"""
-    As an advanced grammar checker, your task is to meticulously review the essay that i will give you and identify any misspelled words and grammatical errors. Provide accurate corrections and clear explanations to help the writer understand and improve their language usage.
+    As an advanced grammar checker, your task is to meticulously review the provided essay {essay} and identify any misspelled words and grammatical errors. Provide accurate corrections and clear explanations to help the writer understand and improve their language usage.
 
 Instructions:
 
@@ -757,6 +790,8 @@ if there are no misspelling mistakes or incorrect grammar you should write your 
 Remember, your goal is to provide accurate, helpful, and constructive feedback that enables the writer to enhance their grammar and spelling skills in the context of IELTS essay writing.
     """
     
+     
+
     
     # def function_reviwer(gra_spelling):
     #     reviwer_prompt = f"""
@@ -780,6 +815,7 @@ Remember, your goal is to provide accurate, helpful, and constructive feedback t
     #     task_ch = task.text
     #     st.write(task_ch)
     #     print(task_ch)
+    
     max_retries = number_of_tries
     retries = 0
     while retries < max_retries:
@@ -796,14 +832,14 @@ Remember, your goal is to provide accurate, helpful, and constructive feedback t
                                 # how it should behave throughout the conversation.
                                 {
                                     "role": "system",
-                                    # "content": "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment .",
-                                    "content": prompt
+                                    "content": "you are IELTS Expert specialized in Grammar for IELTS Writing Task 1 and Task 2 academic and General  .",
+                                    # "content": prompt
                                 },
                                 # Set a user message for the assistant to respond to.
                                 {
                                     "role": "user",
                                     # "content": prompt,
-                                    "content": essay,
+                                    "content": prompt,
                                 }
                             ],
                             model=model,
@@ -821,7 +857,33 @@ Remember, your goal is to provide accurate, helpful, and constructive feedback t
             print("Retrying...")
             continue
     else:
-        st.error('OPPS, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
+        client = Groq(
+                        api_key=API
+                    )
+
+        chat_completion = client.chat.completions.create(
+                            messages=[
+                                # Set an optional system message. This sets the behavior of the
+                                # assistant and can be used to provide specific instructions for
+                                # how it should behave throughout the conversation.
+                                {
+                                    "role": "system",
+                                    "content": "you are IELTS Expert specialized in Grammar for IELTS Writing Task 1 and Task 2 academic and General  .",
+                                    # "content": prompt
+                                },
+                                # Set a user message for the assistant to respond to.
+                                {
+                                    "role": "user",
+                                    # "content": prompt,
+                                    "content": prompt,
+                                }
+                            ],
+                            model="llama3-8b-8192",
+                        )
+
+        result = chat_completion.choices[0].message.content
+            # return result
+        st.write(result)
 def grammar_spelling2():
 
     prompt = f"""
@@ -875,8 +937,8 @@ def grammar_spelling2():
                                 # how it should behave throughout the conversation.
                                 {
                                     "role": "system",
-                                    # "content": "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment .",
-                                    "content": prompt
+                                    "content": "you are English grammar Expert  in  writing ",
+                                    # "content": prompt
                                 },
                                 # Set a user message for the assistant to respond to.
                                 {
@@ -898,7 +960,33 @@ def grammar_spelling2():
             print("An internal error has occurred:", e)
             print("Retrying...")
             continue
-    
+    else:
+        client = Groq(
+                        api_key=groq_API1
+                    )
+
+        chat_completion = client.chat.completions.create(
+                            messages=[
+                                # Set an optional system message. This sets the behavior of the
+                                # assistant and can be used to provide specific instructions for
+                                # how it should behave throughout the conversation.
+                                {
+                                    "role": "system",
+                                    "content": "you are English grammar Expert  in  writing ",
+                                    # "content": prompt
+                                },
+                                # Set a user message for the assistant to respond to.
+                                {
+                                    "role": "user",
+                                    "content": prompt,
+                                    # "content": task_analysis,
+                                }
+                            ],
+                            model='llama3-8b-8192',
+                        )
+
+        result = chat_completion.choices[0].message.content
+        return result
 def essay_analysis(prompt, API= groq_API1, model= llama):
 
     genai.configure(api_key = used_key)
@@ -928,7 +1016,7 @@ def essay_analysis(prompt, API= groq_API1, model= llama):
                                     # "content": task_analysis,
                                 }
                             ],
-                            model=model,
+                            model=llama,
                         )
 
                 result = chat_completion.choices[0].message.content
@@ -941,7 +1029,34 @@ def essay_analysis(prompt, API= groq_API1, model= llama):
             retries += 1
             print("An internal error has occurred: now will use ", e)
             print("Retrying...")
-            continue   
+            continue
+    else:
+        client = Groq(
+                        api_key=API
+                    )
+
+        chat_completion = client.chat.completions.create(
+                            messages=[
+                                # Set an optional system message. This sets the behavior of the
+                                # assistant and can be used to provide specific instructions for
+                                # how it should behave throughout the conversation.
+                                {
+                                    "role": "system",
+                                    "content": "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment .",
+                                    # "content": prompt
+                                },
+                                # Set a user message for the assistant to respond to.
+                                {
+                                    "role": "user",
+                                    "content": prompt,
+                                    # "content": task_analysis,
+                                }
+                            ],
+                            model='llama3-8b-8192',
+                        )
+
+        result = chat_completion.choices[0].message.content
+        return result  
 def suggested_score_ana(task_analysis, task):
     
     
@@ -1005,7 +1120,33 @@ def suggested_score_ana(task_analysis, task):
             print("An internal error has occurred: now will use ", e)
             print("Retrying...")
             continue
+    else:
+            client = Groq(
+                        api_key=groq_API1
+                    )
 
+            chat_completion = client.chat.completions.create(
+                        messages=[
+                            # Set an optional system message. This sets the behavior of the
+                            # assistant and can be used to provide specific instructions for
+                            # how it should behave throughout the conversation.
+                            {
+                                "role": "system",
+                                # "content": "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment .",
+                                "content": prompt
+                            },
+                            # Set a user message for the assistant to respond to.
+                            {
+                                "role": "user",
+                                # "content": prompt,
+                                "content": task_analysis,
+                            }
+                        ],
+                        model="llama3-8b-8192",
+                    )
+
+            result = chat_completion.choices[0].message.content
+            return result        
 #prompts
 # task response criteria prompt
 tr_task2_analysis = f"""
@@ -2048,8 +2189,34 @@ def evaluate2(prompt, API= groq_API1, model= llama):
             print("Retrying...")
             continue
     else:
-        st.error('OPPS, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
+        # st.error('OPPS, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
+        client = Groq(
+                        api_key=API
+                    )
 
+        chat_completion = client.chat.completions.create(
+                        messages=[
+                            # Set an optional system message. This sets the behavior of the
+                            # assistant and can be used to provide specific instructions for
+                            # how it should behave throughout the conversation.
+                            {
+                                "role": "system",
+                                "content": "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment .",
+                                # "content": prompt
+                            },
+                            # Set a user message for the assistant to respond to.
+                            {
+                                "role": "user",
+                                "content": prompt,
+                                # "content": essay,
+                            }
+                        ],
+                        model="llama3-8b-8192",
+                    )
+
+        result = chat_completion.choices[0].message.content
+            # return result
+        remove_band_score(result)
 
 
 # if button:
