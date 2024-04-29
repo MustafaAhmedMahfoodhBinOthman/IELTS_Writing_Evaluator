@@ -79,7 +79,7 @@ groq_API3 = st.secrets['groq_API3']
 groq_API4 = st.secrets['groq_API4']
 groq_API5 = st.secrets['groq_API6']
 groq_API6 = st.secrets['groq_API6']
-
+groq2_api1 = st.secrets['groq2_api1']
 
 
 keys = [Gemini_API_Key,Gemini_API_Key2,Gemini_API_Key3,Gemini_API_Key4,Gemini_API_Key5]
@@ -283,10 +283,10 @@ if task == 'Task 1' and gen_acad == 'Academic' :
         
 
 value= ''
-number_of_tries = 5
+number_of_tries_vision = 5
 def essay_image(api_key, image_pil):
     
-    max_retries = number_of_tries
+    max_retries = number_of_tries_vision
     retries = 0
     while retries < max_retries:
         try:
@@ -368,8 +368,10 @@ suggeted_score = ''
 
 
 
+
+
 list_of_repeated_words = []
-number_of_tries = 5
+number_of_tries = 1
 
 # functions
 def words_charts():
@@ -464,6 +466,7 @@ def organaize_synonyms(API, synonyms):
             print("Retrying...")
             continue
     else:
+        print("start the second model")
         client = Groq(
                 api_key=groq_API3
             )
@@ -483,7 +486,7 @@ def organaize_synonyms(API, synonyms):
                         "content": sy_prompt,
                     }
                 ],
-                model="llama3-8b-8192",
+                model="gemma-7b-it",
             )
         synonyms = chat_completion.choices[0].message.content
         st.markdown(synonyms)
@@ -562,6 +565,7 @@ def synonym(API= groq_API1, model2=llama):
             print("Retrying...")
             continue
     else:
+        print("start the second model")
         client = Groq(
                 api_key=API
             )
@@ -581,7 +585,7 @@ def synonym(API= groq_API1, model2=llama):
                         "content": sy_prompt,
                     }
                 ],
-                model="llama3-8b-8192",
+                model="gemma-7b-it",
             )
         synonyms = chat_completion.choices[0].message.content
             
@@ -724,7 +728,7 @@ def rewrite_essay(API=groq_API5, model=llama):
                                     "content": essay,
                                 }
                             ],
-                            model="llama3-8b-8192",
+                            model="gemma-7b-it",
                         )
 
             re_write = chat_completion.choices[0].message.content
@@ -842,7 +846,7 @@ Remember, your goal is to provide accurate, helpful, and constructive feedback t
                                     "content": prompt,
                                 }
                             ],
-                            model=model,
+                            model=llama,
                         )
 
             result = chat_completion.choices[0].message.content
@@ -857,8 +861,9 @@ Remember, your goal is to provide accurate, helpful, and constructive feedback t
             print("Retrying...")
             continue
     else:
+        print("start the second model")
         client = Groq(
-                        api_key=API
+                        api_key=groq2_api1
                     )
 
         chat_completion = client.chat.completions.create(
@@ -878,7 +883,7 @@ Remember, your goal is to provide accurate, helpful, and constructive feedback t
                                     "content": prompt,
                                 }
                             ],
-                            model="llama3-8b-8192",
+                            model=llama,
                         )
 
         result = chat_completion.choices[0].message.content
@@ -956,12 +961,12 @@ def grammar_spelling2():
             
             break  # Break out of the while loop if the generation is successful
         except Exception  as e:
-            st.error("Sorry, an unexpected problem has occurred. Please try again later. If the issue persists, please contact me.")
             retries+=1
             print("An internal error has occurred:", e)
             print("Retrying...")
             continue
     else:
+        print("start the second model grammar2")
         client = Groq(
                         api_key=groq_API1
                     )
@@ -983,7 +988,7 @@ def grammar_spelling2():
                                     # "content": task_analysis,
                                 }
                             ],
-                            model='llama3-8b-8192',
+                            model="gemma-7b-it",
                         )
 
         result = chat_completion.choices[0].message.content
@@ -1017,10 +1022,11 @@ def essay_analysis(prompt, API= groq_API1, model= llama):
                                     # "content": task_analysis,
                                 }
                             ],
-                            model=llama,
+                            model="gemma-7b-it",
                         )
 
                 result = chat_completion.choices[0].message.content
+                print(result)
                 return result
                 
         #    --------------------------
@@ -1028,10 +1034,12 @@ def essay_analysis(prompt, API= groq_API1, model= llama):
             break  # Break out of the while loop if the generation is successful
         except Exception  as e:
             retries += 1
+            st.error('OPPS, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
             print("An internal error has occurred: now will use ", e)
             print("Retrying...")
             continue
     else:
+        print("start the second model essay analysis")
         client = Groq(
                         api_key=API
                     )
@@ -1122,6 +1130,7 @@ def suggested_score_ana(task_analysis, task):
             print("Retrying...")
             continue
     else:
+            print("start the second model suggested score")
             client = Groq(
                         api_key=groq_API1
                     )
@@ -1143,7 +1152,7 @@ def suggested_score_ana(task_analysis, task):
                                 "content": task_analysis,
                             }
                         ],
-                        model="llama3-8b-8192",
+                        model="gemma-7b-it",
                     )
 
             result = chat_completion.choices[0].message.content
@@ -2190,9 +2199,10 @@ def evaluate2(prompt, API= groq_API1, model= llama):
             print("Retrying...")
             continue
     else:
+        print("start the second model evalaution")
         # st.error('OPPS, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
         client = Groq(
-                        api_key=API
+                        api_key=groq2_api1
                     )
 
         chat_completion = client.chat.completions.create(
@@ -2212,11 +2222,13 @@ def evaluate2(prompt, API= groq_API1, model= llama):
                                 # "content": essay,
                             }
                         ],
-                        model="llama3-8b-8192",
+                        # model="llama3-8b-8192",
+                        model=llama
                     )
 
         result = chat_completion.choices[0].message.content
             # return result
+        print('the second model works')
         remove_band_score(result)
 
 
@@ -2351,7 +2363,6 @@ if button:
                         st.markdown('---')
                         # decripe_image(used_key)
                         st.write("Please wait a few seconds until the evaluation appears")
-                        st.write("These days, the website sometimes encounters technical issues. We will strive to resolve them as soon as possible. ")
                         st.markdown("## Task Response")
                         try:
                             grammar_checker = grammar_spelling2()
@@ -2385,7 +2396,7 @@ if button:
                             TR_task += TR_task2
                             suggest = suggested_score_ana(TR_task, task)  
                             suggeted_score += suggest
-                            print('suggested score 1:', suggeted_score)
+                            # print('suggested score 1:', suggeted_score)
                         # delay(10)
                         evaluate2(task_response, groq_API1, llama)
                         
@@ -2398,7 +2409,7 @@ if button:
                         coherence += CO_task2
                         suggest = suggested_score_ana(CO_task2, task)  
                         suggeted_score += suggest
-                        print('suggested score 2:', suggeted_score)
+                        # print('suggested score 2:', suggeted_score)
                         # delay(10)
                         evaluate2(co_prompt, groq_API2, llama)
                         suggeted_score = ''
@@ -2409,7 +2420,7 @@ if button:
                         lexic += LX_task2 
                         suggest = suggested_score_ana(LX_task2, task)  
                         suggeted_score += suggest  
-                        print('suggested score 3:', suggeted_score)
+                        # print('suggested score 3:', suggeted_score)
                         # delay(11)
                         evaluate2(lex_prompt, groq_API3, llama)
                         suggeted_score = ''
