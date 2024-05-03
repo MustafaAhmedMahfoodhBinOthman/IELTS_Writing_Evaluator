@@ -25,6 +25,7 @@ import csv
 import time
 import streamlit.components.v1 as components
 import pyperclip
+import replicate
 # with open("BayanPlusTracking.html", "r") as f:
 #     html_code = f.read()
 #     components.html(html_code, height=0)
