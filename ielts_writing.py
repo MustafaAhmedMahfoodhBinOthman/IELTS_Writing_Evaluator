@@ -427,9 +427,7 @@ def organaize_synonyms(API, synonyms):
     
     """
     
-    
-    # genai.configure(api_key = used_key)
-    # model = genai.GenerativeModel('gemini-1.0-pro-latest')
+
     max_retries = number_of_tries
     retries = 0
     while retries < max_retries:
@@ -458,40 +456,29 @@ def organaize_synonyms(API, synonyms):
             )
             synonyms = chat_completion.choices[0].message.content
             st.markdown(synonyms)
-            # response = model.generate_content(sy_prompt, stream=True)
-            # response.resolve()
-            # synonym = response.text
-            # st.markdown(synonym)
             break  # Break out of the while loop if the generation is successful
         except Exception as e:
             print("An error has occurred:", e)
             print("Retrying...")
             continue
     else:
-        print("start the second model")
-        client = Groq(
-                api_key=groq_API3
-            )
-
-        chat_completion = client.chat.completions.create(
-                messages=[
-                    # Set an optional system message. This sets the behavior of the
-                    # assistant and can be used to provide specific instructions for
-                    # how it should behave throughout the conversation.
-                    {
-                        "role": "system",
-                        "content": "you are IELTS Expert ."
-                    },
-                    # Set a user message for the assistant to respond to.
-                    {
-                        "role": "user",
-                        "content": sy_prompt,
-                    }
-                ],
-                model="gemma-7b-it",
-            )
-        synonyms = chat_completion.choices[0].message.content
-        st.markdown(synonyms)
+        
+            try:
+                print("excute replicate API")
+                output = replicate.run(
+                "meta/meta-llama-3-70b-instruct",
+                input={'prompt':sy_prompt},
+                )
+                result = ("".join(output))
+                st.markdown(result)
+            except Exception as e:
+                print("An error has occurred:", e)
+                print("Retrying...")
+                st.error('Sorry, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
+                print("'Sorry, there is an unexpected problem happened Please try again later, if the problem persists please contact me'")
+                print("stop running replicate (organise synonyms)")
+                st.stop()
+        
 def synonym(API= groq_API1, model2=llama):
 
     sy_prompt = f"""As an English language expert, your task is to provide three context-appropriate synonyms for each of the five words given from an IELTS writing essay from this repeated words {list_of_repeated_words} in this essay {essay}. 
@@ -525,9 +512,8 @@ def synonym(API= groq_API1, model2=llama):
     """
     
     
-    # genai.configure(api_key = used_key)
-    # model = genai.GenerativeModel('gemini-1.0-pro-latest')
-    max_retries = 10
+ 
+    max_retries = number_of_tries
     retries = 0
     while retries < max_retries:
         try:
@@ -554,12 +540,6 @@ def synonym(API= groq_API1, model2=llama):
             )
             synonyms = chat_completion.choices[0].message.content
             
-            # print(synonyms)
-                        # return result
-                        # st.write(result)
-            # response = model.generate_content(sy_prompt, stream=True)
-            # response.resolve()
-            # synonyms = response.text
             organaize_synonyms(API, synonyms)
             break  # Break out of the while loop if the generation is successful
         except Exception as e:
@@ -567,69 +547,25 @@ def synonym(API= groq_API1, model2=llama):
             print("Retrying...")
             continue
     else:
-        print("start the second model")
-        client = Groq(
-                api_key=API
-            )
-
-        chat_completion = client.chat.completions.create(
-                messages=[
-                    # Set an optional system message. This sets the behavior of the
-                    # assistant and can be used to provide specific instructions for
-                    # how it should behave throughout the conversation.
-                    {
-                        "role": "system",
-                        "content": "you are IELTS Expert ."
-                    },
-                    # Set a user message for the assistant to respond to.
-                    {
-                        "role": "user",
-                        "content": sy_prompt,
-                    }
-                ],
-                model="gemma-7b-it",
-            )
-        synonyms = chat_completion.choices[0].message.content
-            
-        # print(synonyms)
-                        # return result
-                        # st.write(result)
-            # response = model.generate_content(sy_prompt, stream=True)
-            # response.resolve()
-            # synonyms = response.text
-        organaize_synonyms(API, synonyms)
+        
+            try:
+                print("start the second model")
+                output = replicate.run(
+                "meta/meta-llama-3-70b-instruct",
+                input={'prompt':sy_prompt},
+                )
+                result = ("".join(output))
+                synonyms = result
+                organaize_synonyms(API, synonyms)
+            except Exception as e:
+                print("An error has occurred:", e)
+                print("Retrying...")
+                st.error('Sorry, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
+                print("'Sorry, there is an unexpected problem happened Please try again later, if the problem persists please contact me'")
+                print("stop running replicate (synonyms)")
+                st.stop()
 def rewrite_essay(API=groq_API5, model=llama):
-    # re_prompt = f"""
-    # pretend you are English teacher and you have experience in IELTS writing essays 
-    # your task is to rewrite this IELTS writing essay {essay} based on this question {question}to a better version and match 
-    # IELTS requirements in IELTS academic writing {task}, please do not write the headline of the paragraph
-    # and it must be more than 250 words and less than 330 words if task 2 and more than 150 and less than 200 if task 1
-    
-    # In your revised essay, focus on refining the structure, coherence, and language to meet the IELTS academic writing standards. Ensure that the essay effectively addresses the question, 
-    # demonstrates a clear understanding of the topic, and presents well-developed ideas with supporting examples and evidence. Additionally, pay attention to grammar, vocabulary, 
-    # and sentence structure to create a more polished and coherent essay that meets the requirements for IELTS academic writing.
-    # """
-    
-    # re_prompt = f"""
-    # As an experienced IELTS writing teacher, your task is to rewrite the given IELTS writing essay {essay} based on the provided question {question}, ensuring that it meets the IELTS academic writing requirements for the specified task {task}. The revised essay should focus on refining the structure, coherence, and language while effectively addressing the question and presenting well-developed ideas with supporting examples and evidence.
 
-    # Instructions:
-
-    # Carefully review the given IELTS writing essay, question, and the specified task (Task 1 or Task 2).
-    # Analyze the essay's structure, coherence, and language, identifying areas that need improvement to meet IELTS academic writing standards.
-    # Rewrite the essay, focusing on the following aspects:
-    # a. Ensure that the essay effectively addresses the question and demonstrates a clear understanding of the topic.
-    # b. Present well-developed ideas with supporting examples and evidence.
-    # c. Improve the essay's structure and coherence, ensuring a logical flow of ideas and smooth transitions between paragraphs.
-    # d. Refine the language, paying attention to grammar, vocabulary, and sentence structure to create a more polished and coherent essay.
-    # Ensure that the revised essay meets the word count requirements:
-    # For Task 2: The essay must be more than 250 words and less than 330 words.
-    # For Task 1: The essay must be more than 150 words and less than 200 words.
-    # Do not include the headline of the paragraph in the revised essay.
-    # Remember to focus on creating a revised essay that meets the IELTS academic writing standards and effectively addresses the given question while staying within the specified word count range and do not write the count of words in your rewrite essay.
-    
-    # """
-    
     re_prompt = f"""
     As an experienced IELTS writing teacher, your task is to rewrite the  IELTS writing essay that will be provided to you based on the provided question {question}, ensuring that it meets the IELTS academic writing requirements for the specified task {task}. The revised essay should focus on refining the structure, coherence, and language while effectively addressing the question and presenting well-developed ideas with supporting examples and evidence.
 
@@ -649,10 +585,6 @@ def rewrite_essay(API=groq_API5, model=llama):
     Remember to focus on creating a revised essay that meets the IELTS academic writing standards and effectively addresses the given question while staying within the specified word count range and do not write the count of words in your rewrite essay.
     only write what you have been asked about. do not write any other non-needed text
     """
-    
-    # genai.configure(api_key = api)
-    # model = genai.GenerativeModel('gemini-1.0-pro-latest')
-    
     num_word = 0
     if task == 'Task 1':
         num_word = 150
@@ -707,44 +639,32 @@ def rewrite_essay(API=groq_API5, model=llama):
             print("Retrying...")
             continue
     else:
-        print("Maximum retries reached. Switching to claude_model.")
-        while True:
-            client = Groq(
-                        api_key=API
-                    )
-
-            chat_completion = client.chat.completions.create(
-                            messages=[
-                                # Set an optional system message. This sets the behavior of the
-                                # assistant and can be used to provide specific instructions for
-                                # how it should behave throughout the conversation.
-                                {
-                                    "role": "system",
-                                    # "content": "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment .",
-                                    "content": re_prompt
-                                },
-                                # Set a user message for the assistant to respond to.
-                                {
-                                    "role": "user",
-                                    # "content": prompt,
-                                    "content": essay,
-                                }
-                            ],
-                            model="gemma-7b-it",
-                        )
-
-            re_write = chat_completion.choices[0].message.content
-            word_count = len(re_write.split())
+            
+        
+            try:
+                print("execute replicatem API")
+                output = replicate.run(
+                "meta/meta-llama-3-70b-instruct",
+                input={'prompt':re_prompt},
+                )
+                result = ("".join(output))
+                re_write = result
+                word_count = len(re_write.split())
+                    
+                if word_count >= num_word and word_count < (num_word + 40):
+                        st.write(re_write)
+                        st.write('Number of Words:', word_count)
+                        # print("Essay generated successfully.")
+                        print(num_word)
+            except Exception as e:
+                print("An error has occurred:", e)
+                print("Retrying...")
+                st.error('Sorry, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
+                print("'Sorry, there is an unexpected problem happened Please try again later, if the problem persists please contact me'")
+                print("stop running replicate (rewrite essay)")
+                st.stop()
                 
-            if word_count >= num_word and word_count < (num_word + 40):
-                    st.write(re_write)
-                    st.write('Number of Words:', word_count)
-                    # print("Essay generated successfully.")
-                    print(num_word)
-                    break  # Break out of the loop if the essay meets the word count requirement
-            else:
-                    # print("The generated essay is under 250 words. Regenerating...")
-                    continue 
+        
           # Break out o
 def count_words():
     more_details = st.button('more details')
@@ -863,34 +783,24 @@ Remember, your goal is to provide accurate, helpful, and constructive feedback t
             print("Retrying...")
             continue
     else:
-        print("start the second model")
-        client = Groq(
-                        api_key=groq2_api1
-                    )
-
-        chat_completion = client.chat.completions.create(
-                            messages=[
-                                # Set an optional system message. This sets the behavior of the
-                                # assistant and can be used to provide specific instructions for
-                                # how it should behave throughout the conversation.
-                                {
-                                    "role": "system",
-                                    "content": "you are IELTS Expert specialized in Grammar for IELTS Writing Task 1 and Task 2 academic and General  .",
-                                    # "content": prompt
-                                },
-                                # Set a user message for the assistant to respond to.
-                                {
-                                    "role": "user",
-                                    # "content": prompt,
-                                    "content": prompt,
-                                }
-                            ],
-                            model=llama,
-                        )
-
-        result = chat_completion.choices[0].message.content
-            # return result
-        st.write(result)
+        
+            try:
+                print("execute replicate API")
+                output = replicate.run(
+                "meta/meta-llama-3-70b-instruct",
+                input={'prompt':prompt},
+                )
+                result = ("".join(output))
+                st.write(result)
+                print("replicate grammar")
+            except Exception  as e:
+                print("An internal error has occurred:", e)
+                print("Retrying...")
+                st.error('Sorry, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
+                print("'Sorry, there is an unexpected problem happened Please try again later, if the problem persists please contact me'")
+                print("stop running replicate (grammar spelling)")
+                st.stop()
+                  
 def grammar_spelling2():
 
     prompt = f"""
@@ -969,32 +879,22 @@ def grammar_spelling2():
             continue
     else:
         print("start the second model grammar2")
-        client = Groq(
-                        api_key=groq_API1
-                    )
-
-        chat_completion = client.chat.completions.create(
-                            messages=[
-                                # Set an optional system message. This sets the behavior of the
-                                # assistant and can be used to provide specific instructions for
-                                # how it should behave throughout the conversation.
-                                {
-                                    "role": "system",
-                                    "content": "you are English grammar Expert  in  writing ",
-                                    # "content": prompt
-                                },
-                                # Set a user message for the assistant to respond to.
-                                {
-                                    "role": "user",
-                                    "content": prompt,
-                                    # "content": task_analysis,
-                                }
-                            ],
-                            model="gemma-7b-it",
-                        )
-
-        result = chat_completion.choices[0].message.content
-        return result
+        
+        try:
+                output = replicate.run(
+            "meta/meta-llama-3-70b-instruct",
+                input={'prompt':prompt},
+                )
+                result = ("".join(output))
+                print("replicate grammar2")
+                return result
+        except Exception as e:
+                print("An internal error has occurred:", e)
+                print("Retrying...")
+                # st.error('Sorry, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
+                
+                
+            
 def essay_analysis(prompt, API= groq_API1, model= llama):
 
     genai.configure(api_key = used_key)
@@ -1028,7 +928,7 @@ def essay_analysis(prompt, API= groq_API1, model= llama):
                         )
 
                 result = chat_completion.choices[0].message.content
-                print(result)
+                # print(result)
                 return result
                 
         #    --------------------------
@@ -1041,46 +941,25 @@ def essay_analysis(prompt, API= groq_API1, model= llama):
             print("Retrying...")
             continue
     else:
-        print("start the second model essay analysis")
-        client = Groq(
-                        api_key=API
-                    )
-
-        chat_completion = client.chat.completions.create(
-                            messages=[
-                                # Set an optional system message. This sets the behavior of the
-                                # assistant and can be used to provide specific instructions for
-                                # how it should behave throughout the conversation.
-                                {
-                                    "role": "system",
-                                    "content": "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment .",
-                                    # "content": prompt
-                                },
-                                # Set a user message for the assistant to respond to.
-                                {
-                                    "role": "user",
-                                    "content": prompt,
-                                    # "content": task_analysis,
-                                }
-                            ],
-                            model='llama3-8b-8192',
-                        )
-
-        result = chat_completion.choices[0].message.content
-        return result  
+        
+            print("execute replicate API")
+            try:
+                output = replicate.run(
+                "meta/meta-llama-3-70b-instruct",
+                input={'prompt':prompt},
+                )
+                result = ("".join(output))
+                print("replicate essay analysis")
+                return result
+            except Exception  as e:
+                print("An internal error has occurred:", e)
+                print("Retrying...")
+                st.error('Sorry, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
+                print("'Sorry, there is an unexpected problem happened Please try again later, if the problem persists please contact me'")
+                print("stop running replicate (essay analysis)")
+                st.stop()
 def suggested_score_ana(task_analysis, task):
-    
-    
-    # prompt = f"""
-    
-    # i will give you a paragrph for ielts writing essay {task} analysis and i want you to only search about the suggested band score that in the paragrpah
-    # and then write the suggested band score and its justification the is provided also in the paragraph
-    # the paragraph is {task_analysis} you should be extermly accurate 
-
-    
-    # """
-    
-      
+  
     prompt = f"""
     
     i will give you a paragrph for ielts writing essay {task} analysis and i want you to only search about the suggested band score that in the paragrpah
@@ -1088,10 +967,7 @@ def suggested_score_ana(task_analysis, task):
     
 
     
-    """
-    
-    
-    
+    """  
     max_retries = number_of_tries
     retries = 0
     while retries < max_retries:
@@ -1132,33 +1008,24 @@ def suggested_score_ana(task_analysis, task):
             print("Retrying...")
             continue
     else:
-            print("start the second model suggested score")
-            client = Groq(
-                        api_key=groq_API1
-                    )
-
-            chat_completion = client.chat.completions.create(
-                        messages=[
-                            # Set an optional system message. This sets the behavior of the
-                            # assistant and can be used to provide specific instructions for
-                            # how it should behave throughout the conversation.
-                            {
-                                "role": "system",
-                                # "content": "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment .",
-                                "content": prompt
-                            },
-                            # Set a user message for the assistant to respond to.
-                            {
-                                "role": "user",
-                                # "content": prompt,
-                                "content": task_analysis,
-                            }
-                        ],
-                        model="gemma-7b-it",
-                    )
-
-            result = chat_completion.choices[0].message.content
-            return result        
+            print("execute replicate API")
+            
+            try:
+                output = replicate.run(
+                "meta/meta-llama-3-70b-instruct",
+                input={'prompt':prompt},
+                )
+                result = ("".join(output))
+                print("replicate suggested score")   
+                return result
+            except Exception  as e:
+                    print("An internal error has occurred: now will use ", e)
+                    print("Retrying...")
+                    st.error('Sorry, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
+                    print("'Sorry, there is an unexpected problem happened Please try again later, if the problem persists please contact me'")
+                    print("stop running replicate (suggested bands core)")
+                    st.stop()   
+            
 #prompts
 # task response criteria prompt
 tr_task2_analysis = f"""
@@ -2161,134 +2028,70 @@ def delay(num_sec=5):
     time.sleep(delay_seconds)
 
 
-# def evaluate2(prompt, API= groq_API1, model= llama):
-#     genai.configure(api_key = used_key)
-#     max_retries = number_of_tries
-#     retries = 0
-#     while retries < max_retries:
-#         try:
-#             client = Groq(
-#                         api_key=API
-#                     )
-
-#             chat_completion = client.chat.completions.create(
-#                         messages=[
-#                             # Set an optional system message. This sets the behavior of the
-#                             # assistant and can be used to provide specific instructions for
-#                             # how it should behave throughout the conversation.
-#                             {
-#                                 "role": "system",
-#                                 "content": "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment .",
-#                                 # "content": prompt
-#                             },
-#                             # Set a user message for the assistant to respond to.
-#                             {
-#                                 "role": "user",
-#                                 "content": prompt,
-#                                 # "content": essay,
-#                             }
-#                         ],
-#                         model=model,
-#                     )
-
-#             result = chat_completion.choices[0].message.content
-#             # return result
-#             remove_band_score(result)
-#             break  # Break out of the while loop if the generation is successful
-#         except Exception  as e:
-#             retries += 1
-#             print("An internal error has occurred: now will use ", e)
-#             print("Retrying...")
-#             continue
-#     else:
-#         print("start the second model evalaution")
-#         # st.error('OPPS, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
-#         client = Groq(
-#                         api_key=groq2_api1
-#                     )
-
-#         chat_completion = client.chat.completions.create(
-#                         messages=[
-#                             # Set an optional system message. This sets the behavior of the
-#                             # assistant and can be used to provide specific instructions for
-#                             # how it should behave throughout the conversation.
-#                             {
-#                                 "role": "system",
-#                                 "content": "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment .",
-#                                 # "content": prompt
-#                             },
-#                             # Set a user message for the assistant to respond to.
-#                             {
-#                                 "role": "user",
-#                                 "content": prompt,
-#                                 # "content": essay,
-#                             }
-#                         ],
-#                         # model="llama3-8b-8192",
-#                         model=llama
-#                     )
-
-#         result = chat_completion.choices[0].message.content
-#             # return result
-#         print('the second model works')
-#         remove_band_score(result)
 def evaluate2(prompt, API= groq_API1, model= llama):
     genai.configure(api_key = used_key)
     max_retries = number_of_tries
     retries = 0
     while retries < max_retries:
         try:
-            # client = Groq(
-            #             api_key=API
-            #         )
+            client = Groq(
+                        api_key=API
+                    )
 
-            # chat_completion = client.chat.completions.create(
-            #             messages=[
-            #                 # Set an optional system message. This sets the behavior of the
-            #                 # assistant and can be used to provide specific instructions for
-            #                 # how it should behave throughout the conversation.
-            #                 {
-            #                     "role": "system",
-            #                     "content": "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment .",
-            #                     # "content": prompt
-            #                 },
-            #                 # Set a user message for the assistant to respond to.
-            #                 {
-            #                     "role": "user",
-            #                     "content": prompt,
-            #                     # "content": essay,
-            #                 }
-            #             ],
-            #             model=model,
-            #         )
+            chat_completion = client.chat.completions.create(
+                        messages=[
+                            # Set an optional system message. This sets the behavior of the
+                            # assistant and can be used to provide specific instructions for
+                            # how it should behave throughout the conversation.
+                            {
+                                "role": "system",
+                                "content": "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment .",
+                                # "content": prompt
+                            },
+                            # Set a user message for the assistant to respond to.
+                            {
+                                "role": "user",
+                                "content": prompt,
+                                # "content": essay,
+                            }
+                        ],
+                        model=model,
+                    )
 
-            # result = chat_completion.choices[0].message.content
-            # remove_band_score(result)
-            output = replicate.run(
-            "meta/meta-llama-3-70b-instruct",
-            input={'prompt':prompt},
-            )
-            result = ("".join(output))
+            result = chat_completion.choices[0].message.content
             remove_band_score(result)
+            # output = replicate.run(
+            # "meta/meta-llama-3-70b-instruct",
+            # input={'prompt':prompt},
+            # )
+            # result = ("".join(output))
+            # remove_band_score(result)
             break  # Break out of the while loop if the generation is successful
         except Exception  as e:
             retries += 1
-            st.error("erorr")
             print("An internal error has occurred: now will use ", e)
             print("Retrying...")
             continue
     else:
-        print("start the second model evalaution")
-        # st.error('OPPS, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
+        try:
+            print("execute replicate API")
+            # st.error('OPPS, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
+            
         
-       
-        output = replicate.run(
-            "meta/meta-llama-3-70b-instruct",
-            input={'prompt':prompt},
-            )
-        result = ("".join(output))
-        remove_band_score(result)
-        print("replicate evaluate")
+            output = replicate.run(
+                "meta/meta-llama-3-70b-instruct",
+                input={'prompt':prompt},
+                )
+            result = ("".join(output))
+            remove_band_score(result)
+            # print("replicate evaluate")
+        except Exception as e:
+            print("An error has occurred:", e)
+            print("Retrying...")
+            st.error("'Sorry, there is an unexpected problem happened Please try again later, if the problem persists please contact me'")
+            print("'Sorry, there is an unexpected problem happened Please try again later, if the problem persists please contact me'")
+            print("stop running replicate (evaluation)")
+            st.stop()
 
 
 
