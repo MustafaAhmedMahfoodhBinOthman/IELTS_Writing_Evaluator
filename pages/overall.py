@@ -1,13 +1,13 @@
 import streamlit as st
 
-# hide_st_style = """
-#             <style>
-#             #MainMenu {visibility: hidden;}
-#             footer {visibility: hidden;}
-#             header {visibility: hidden;}
-#             </style>
-#             """
-# st.markdown(hide_st_style, unsafe_allow_html=True)
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_st_style, unsafe_allow_html=True)
 # Function to calculate the overall band score
 import gspread
 from google.oauth2.service_account import Credentials
@@ -49,8 +49,8 @@ free_trial_id = '18Cc9ITOYVEvmkhjQbNXgA6NxARPtFB_bHgN4ERozfXI'
 subscription_id = '12Z_BTDGHPgITYV7XOMObLv17Ckt1pzUPYt4Uu_De2us'
 progression_file_id = '1yCimM9WMtDdXEjJPMm9SX9blvQx541tFDKRiL0upovA'
 essay_file_id = '1TD000SU1S2RqJp99e9fMeR-M8UsyCOdTXInqFgQpnR0'
-# user_email = st.session_state.registered_email
-user_email = "www.binothman24@gmail.com"
+user_email = st.session_state.registered_email
+# user_email = "www.binothman24@gmail.com"
 def find_user_sheet(progression_file, email):
     # Get a list of all sheets in the progression file
     sheets = progression_file.worksheets()
@@ -165,7 +165,7 @@ st.sidebar.write("if there is any issue in the performance or any suggetions ple
 # st.sidebar.write("Email: mustafabinothman2023@gmail.com")
 st.sidebar.write("Telegram:  https://t.me/mustafa_binothman")
 st.sidebar.markdown("Developed by **Mustafa Bin Othman**")
-
+st.sidebar.markdown("You can support my effort by buying me a coffee. ☕️ :heart: " + "[Please click here](https://ko-fi.com/mustafa_binothman)")
 
 with st.form("score_form"):
     st.write("Please enter the scores for each criterion for both tasks:")
