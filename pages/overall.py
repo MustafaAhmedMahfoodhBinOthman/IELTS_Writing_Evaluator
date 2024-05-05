@@ -22,7 +22,11 @@ scopes = [
    'https://www.googleapis.com/auth/spreadsheets'
 ]
 # creds = Credentials.from_service_account_file('credentials.json', scopes=scopes)
-service_account_info = json.loads(st.secrets["credentials_json"])
+if isinstance(st.secrets["credentials_json"], dict):
+    service_account_info = st.secrets["credentials_json"]
+else:
+    # If it's a string, parse it as JSON
+    service_account_info = json.loads(st.secrets["credentials_json"])
 creds = Credentials.from_service_account_file(service_account_info, scopes=scopes)
 client = gspread.authorize(creds)
 
