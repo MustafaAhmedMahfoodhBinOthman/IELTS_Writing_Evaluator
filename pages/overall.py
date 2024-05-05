@@ -1,5 +1,9 @@
 import streamlit as st
-
+st.set_page_config(
+    
+    page_title= 'Overall Band score Calculator'
+    # page_icon=
+)
 hide_st_style = """
             <style>
             #MainMenu {visibility: hidden;}
@@ -8,17 +12,14 @@ hide_st_style = """
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
+
 # Function to calculate the overall band score
 import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime
 import json
 from google.oauth2 import service_account
-st.set_page_config(
-    
-    page_title= 'Overall Band score Calculator'
-    # page_icon=
-)
+
 scopes = [
    'https://www.googleapis.com/auth/spreadsheets'
 ]
