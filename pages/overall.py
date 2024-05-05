@@ -50,7 +50,11 @@ free_trial_id = '18Cc9ITOYVEvmkhjQbNXgA6NxARPtFB_bHgN4ERozfXI'
 subscription_id = '12Z_BTDGHPgITYV7XOMObLv17Ckt1pzUPYt4Uu_De2us'
 progression_file_id = '1yCimM9WMtDdXEjJPMm9SX9blvQx541tFDKRiL0upovA'
 essay_file_id = '1TD000SU1S2RqJp99e9fMeR-M8UsyCOdTXInqFgQpnR0'
-user_email = st.session_state.registered_email
+if 'registered_email' not in st.session_state:
+    st.session_state['registered_email'] = None # or any default value you want
+
+# Now you can safely access 'registered_email'
+user_email = st.session_state['registered_email']
 # user_email = "www.binothman24@gmail.com"
 def find_user_sheet(progression_file, email):
     # Get a list of all sheets in the progression file
