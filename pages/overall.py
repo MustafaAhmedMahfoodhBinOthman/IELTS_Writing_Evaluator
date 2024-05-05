@@ -1,5 +1,5 @@
 import streamlit as st
-
+import json
 # hide_st_style = """
 #             <style>
 #             #MainMenu {visibility: hidden;}
@@ -22,7 +22,8 @@ scopes = [
    'https://www.googleapis.com/auth/spreadsheets'
 ]
 # creds = Credentials.from_service_account_file('credentials.json', scopes=scopes)
-creds = Credentials.from_service_account_file(st.secrets["credentials_json"], scopes=scopes)
+credentials = json.loads(st.secrets["GOOGLE_CREDENTIALS"])
+creds = Credentials.from_service_account_file(credentials, scopes=scopes)
 client = gspread.authorize(creds)
 
 # Sheet IDs
