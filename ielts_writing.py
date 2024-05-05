@@ -2492,7 +2492,7 @@ if button:
                             append_evaluation_result_to_all_essays(all_essays_file, email, current_date, task_type, question, essay, task_response_result, coherence_cohesion_result, lexical_resources_result, grammar_spelling_result, grammar_spelling2_result, synonyms_result, rewritten_essay_result, overall_score)
                         except Exception as e:
                             print("an error happened when appending evaluation result", e)
-                        st.markdown("\n\n\n##### If you find this service helpful, you can support my effort by buying me a coffee. ☕️ :heart: " + "[Please click here](https://ko-fi.com/mustafa_binothman)")
+                        st.markdown("\n\n\n##### If you find this service helpful, you can support my efforts by buying me a coffee. ☕️ :heart: " + "[Please click here](https://ko-fi.com/mustafa_binothman)")
                         print("-----------------------------------------------------------------------------------------------------")
                 else:
                     st.error('Please register your Gmail')
