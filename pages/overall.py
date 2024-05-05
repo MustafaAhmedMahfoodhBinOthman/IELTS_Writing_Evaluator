@@ -38,7 +38,7 @@ ssss = {
   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/user-registration%40ielts-writing-evaluator.iam.gserviceaccount.com",
   "universe_domain": "googleapis.com"
 }
-credentials_info = json.loads(credentials_json_str)
+#credentials_info = json.loads(credentials_json_str)
 creds = Credentials.from_service_account_file(ssss, scopes=scopes)
 client = gspread.authorize(creds)
 
