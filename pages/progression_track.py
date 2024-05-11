@@ -141,7 +141,7 @@ def get_user_scores(user_email):
 if 'registered_email' in st.session_state and st.session_state['registered_email']:
     df_scores = get_user_scores(st.session_state['registered_email'])
 else:
-    st.warning("Please register to view your progression.")
+    st.warning("Please register to view your progress.")
     st.stop()
 
 st.markdown("## Progression Tracker")
