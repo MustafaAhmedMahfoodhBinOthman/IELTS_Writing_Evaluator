@@ -12,7 +12,6 @@ hide_st_style = """
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
-
 # Function to calculate the overall band score
 import gspread
 from google.oauth2.service_account import Credentials
@@ -50,6 +49,7 @@ free_trial_id = '18Cc9ITOYVEvmkhjQbNXgA6NxARPtFB_bHgN4ERozfXI'
 subscription_id = '12Z_BTDGHPgITYV7XOMObLv17Ckt1pzUPYt4Uu_De2us'
 progression_file_id = '1yCimM9WMtDdXEjJPMm9SX9blvQx541tFDKRiL0upovA'
 essay_file_id = '1TD000SU1S2RqJp99e9fMeR-M8UsyCOdTXInqFgQpnR0'
+
 if 'registered_email' not in st.session_state:
     st.session_state['registered_email'] = None # or any default value you want
 
@@ -151,6 +151,9 @@ if side_check_button:
     st.switch_page("ielts_writing.py")
 # st.sidebar.write("if you want to calculate the overall band score of Task 1 and Task 2 click the button 👇")
 side_check_button2 = st.sidebar.button('Overall Band Score Calculator', type=type_check, use_container_width=True)
+side_check_button3 = st.sidebar.button('Progress Tracker', type=type_take, use_container_width=True)
+if side_check_button3:
+    st.switch_page("pages/progression_track.py")
 # side_take_button = st.sidebar.button("Take a Test (it's coming soon)", type=type_take, use_container_width=True, disabled=True)
 import pyperclip
 
@@ -200,16 +203,16 @@ with st.form("score_form"):
         st.markdown(f'## Overall writing Band Score {(overall_score)}')
         current_date = datetime.now().strftime('%d/%m/%Y %H:%M')
         
-        if user_email is None:
-            pass
-        else:
-            try:
-                progression_file = client.open_by_key(progression_file_id)
-                # Append the overall score and date to the user's sheet
-                print("Append the overall score and date to the user's sheet")
-                append_overall_score_and_date(progression_file, user_email, float(overall_score), current_date)
-            except Exception as e:
-                print(f"erorr adding the overall score to the sheet, user's email: {user_email}:\n\n {e}")
+        # if user_email is None:
+        #     pass
+        # else:
+        #     try:
+        #         progression_file = client.open_by_key(progression_file_id)
+        #         # Append the overall score and date to the user's sheet
+        #         print("Append the overall score and date to the user's sheet")
+        #         append_overall_score_and_date(progression_file, user_email, float(overall_score), current_date)
+        #     except Exception as e:
+        #         print(f"erorr adding the overall score to the sheet, user's email: {user_email}:\n\n {e}")
             # st.success(f"Overall Band Score for Task 1: {overall_score_task1}")
             # st.success(f"Overall Band Score for Task 2: {overall_score_task2}")
             # st.success(f"Combined IELTS Writing Overall Band Score: {overall_score}")
