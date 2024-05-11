@@ -30,6 +30,8 @@ import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime
 from google.oauth2 import service_account
+from openai import OpenAI
+import time
 # with open("BayanPlusTracking.html", "r") as f:
 #     html_code = f.read()
 #     components.html(html_code, height=0)
@@ -86,12 +88,12 @@ groq_API5 = st.secrets['groq_API6']
 groq_API6 = st.secrets['groq_API6']
 groq2_api1 = st.secrets['groq2_api1']
 REPLICATE_API_TOKEN= st.secrets['REPLICATE_API_TOKEN']
+YOUR_API_KEY = st.secrets['YOUR_API_KEY']
 
 keys = [Gemini_API_Key,Gemini_API_Key2,Gemini_API_Key3,Gemini_API_Key4,Gemini_API_Key5]
 used_key = random.choice(keys)
 llama = "llama3-70b-8192"
 # mixtral = "mixtral-8x7b-32768"
-
 
 
 model = genai.GenerativeModel('gemini-1.0-pro-latest')
@@ -100,27 +102,26 @@ model_vision = genai.GenerativeModel('gemini-pro-vision')
 type_check = 'primary'
 type_take = 'secondary'
 
-
 # "-------------------------------------------------------------------"
 #google spreadsheet system
 scopes = [
    'https://www.googleapis.com/auth/spreadsheets'
 ]
-credentials_json = {
-  "type": "service_account",
-  "project_id": "ielts-writing-evaluator",
-  "private_key_id": "a503f35fe20c737d9373cef7a6d450e26855faf0",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCrdr0FxPMPxx10\nBQcmsFciybuoUKO2nUlp5iRheaDOA//LB+wZBbNP1fj3+hj+ztL1zh992e91ny35\nruxiutMTh2iL1a/YLyUh7xBcH6japLZPoAUjjQHm7qS5RQtdftgKN2jJJ3R8STDd\nk1pbRwkrIWOhYwqeWHGzn/RO9IgwoSuHLRyuTLOKAg66q0un0GIt3xzA30d9Y5Lx\nfDH4QidW/VuU+ICfM/d/Op274yjtnDRt9g3DTT+i+vIf5IJDXej/Pew8KhSEXw9e\nFZjpueoZsDcBs2sABBr7xAyQH/xkn8z7mpM+99RMTUZX4HHVQLcrH+R6hpnYA7BO\n2tA0e/1rAgMBAAECggEAG3qZCn6o0YOApeJUZg/mtw2LhIr/4blNVaprdC+w5LNh\nYCFx5gSy2v2Yu+0Z6mQtDPWuuFWf+cK79ILjIWN9hmiyCY8CcmwD0G9muMzeG8Q/\n73zetfbYMjFWttZo3uAAMYr1wR8QnQaBzVDbLzuwLXhZZjjgL8ZO2pGs7qZj2R8H\ngn1qMof5x91hqyjyk30MS35tX3lCyex0Zi0WDC7h+dcMkt5kyX3s0vbizrC3Q+2L\njZrplSAUTW+wH1TOmdM39lx47ajOx+izsDFOfNpKL2OOfttG32/A7fW91lPWUQ0f\nWQa6QkrLw4SIok56l1CbHQysBDk0j8bu0I9Oal9oYQKBgQDvSJFNfX9+45Qhsoqa\nX4vI4uGbpwxGuzpPaKPYweZvsaitIb8zCd1yNJyy2HrhmWy3H+AdHQ+vpTvuY/oi\noNb0+v2fcP6gyjzKES6gaosQcuOq4IM69nVoK5l+d1q2GWuJyaA0hftA1Z8+qSUE\niVfLU0FaA6+XX2XskE8IXJMGkQKBgQC3cUJ2QFLXNEH3c1u1V5WAWFqdviNhyWsw\nBR3CmVGAM6Zfevm+fIhCoZ1czFx1VMyqZKtGXyyWdkzVTRa2Jani5FXEMta3o9Hl\nJcg38DwoUHLBpRTYvJftZA0dwV+YUKD8MK8xlNzv7kzSpg1f8dGb+mNaZrkoISA/\noBNZb+LaOwKBgQDaaeXf0rcG7tqu65bilGY25wnCF3f4NDxkcYJlf5BE0ejCp/Qr\ntUyCS43hHgMEXBRFD351dKp1zKBo2K9g3ml30oag+/YgdJmKZKan3Li1OfmgZzDC\nKGdAv9NrAa02XPuxGO74IngWVSf3fVOB0Y/m00bq0ER+KqERjyPk4QN/UQKBgQCH\nVyiR1iNIY2XIC3Q99sB2ULmKaB3yp4hNhXjPeg6HZ5P4HeLkhzyA7HwNWzlb15So\nol07LjzXRbCqLpXzDRaqL4yXlGqWUmcpiRaPLs8zbyc7d3BJ99qfapHCwkilN9eO\nON0I16up2UcUoy56+w6K5dEngWJaGRaR2qhr9ACKwQKBgQCnaD+295ZQR3D+zS1h\nqnUVdxDvCIuAEiC6UTiZIxHMW4p6CkyW7Oxv+rZENEexh4BCClIA2wvP9OvQbxUe\nWR8iUS0lKQ8yZ3S+1dLLhzhSJn+Y6gdskfAu69y3/a98nM9GvI3J/NgG71HrbPCK\nidCVD+IWMS5EqnaYMVrJSRUgbw==\n-----END PRIVATE KEY-----\n",
-  "client_email": "user-registration@ielts-writing-evaluator.iam.gserviceaccount.com",
-  "client_id": "104756563010734258293",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/user-registration%40ielts-writing-evaluator.iam.gserviceaccount.com",
-  "universe_domain": "googleapis.com"
-}
-creds = service_account.Credentials.from_service_account_info(credentials_json, scopes=scopes)
-# creds = Credentials.from_service_account_file('credentials.json', scopes=scopes)
+# credentials_json = {
+#   "type": "service_account",
+#   "project_id": "ielts-writing-evaluator",
+#   "private_key_id": "a503f35fe20c737d9373cef7a6d450e26855faf0",
+#   "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCrdr0FxPMPxx10\nBQcmsFciybuoUKO2nUlp5iRheaDOA//LB+wZBbNP1fj3+hj+ztL1zh992e91ny35\nruxiutMTh2iL1a/YLyUh7xBcH6japLZPoAUjjQHm7qS5RQtdftgKN2jJJ3R8STDd\nk1pbRwkrIWOhYwqeWHGzn/RO9IgwoSuHLRyuTLOKAg66q0un0GIt3xzA30d9Y5Lx\nfDH4QidW/VuU+ICfM/d/Op274yjtnDRt9g3DTT+i+vIf5IJDXej/Pew8KhSEXw9e\nFZjpueoZsDcBs2sABBr7xAyQH/xkn8z7mpM+99RMTUZX4HHVQLcrH+R6hpnYA7BO\n2tA0e/1rAgMBAAECggEAG3qZCn6o0YOApeJUZg/mtw2LhIr/4blNVaprdC+w5LNh\nYCFx5gSy2v2Yu+0Z6mQtDPWuuFWf+cK79ILjIWN9hmiyCY8CcmwD0G9muMzeG8Q/\n73zetfbYMjFWttZo3uAAMYr1wR8QnQaBzVDbLzuwLXhZZjjgL8ZO2pGs7qZj2R8H\ngn1qMof5x91hqyjyk30MS35tX3lCyex0Zi0WDC7h+dcMkt5kyX3s0vbizrC3Q+2L\njZrplSAUTW+wH1TOmdM39lx47ajOx+izsDFOfNpKL2OOfttG32/A7fW91lPWUQ0f\nWQa6QkrLw4SIok56l1CbHQysBDk0j8bu0I9Oal9oYQKBgQDvSJFNfX9+45Qhsoqa\nX4vI4uGbpwxGuzpPaKPYweZvsaitIb8zCd1yNJyy2HrhmWy3H+AdHQ+vpTvuY/oi\noNb0+v2fcP6gyjzKES6gaosQcuOq4IM69nVoK5l+d1q2GWuJyaA0hftA1Z8+qSUE\niVfLU0FaA6+XX2XskE8IXJMGkQKBgQC3cUJ2QFLXNEH3c1u1V5WAWFqdviNhyWsw\nBR3CmVGAM6Zfevm+fIhCoZ1czFx1VMyqZKtGXyyWdkzVTRa2Jani5FXEMta3o9Hl\nJcg38DwoUHLBpRTYvJftZA0dwV+YUKD8MK8xlNzv7kzSpg1f8dGb+mNaZrkoISA/\noBNZb+LaOwKBgQDaaeXf0rcG7tqu65bilGY25wnCF3f4NDxkcYJlf5BE0ejCp/Qr\ntUyCS43hHgMEXBRFD351dKp1zKBo2K9g3ml30oag+/YgdJmKZKan3Li1OfmgZzDC\nKGdAv9NrAa02XPuxGO74IngWVSf3fVOB0Y/m00bq0ER+KqERjyPk4QN/UQKBgQCH\nVyiR1iNIY2XIC3Q99sB2ULmKaB3yp4hNhXjPeg6HZ5P4HeLkhzyA7HwNWzlb15So\nol07LjzXRbCqLpXzDRaqL4yXlGqWUmcpiRaPLs8zbyc7d3BJ99qfapHCwkilN9eO\nON0I16up2UcUoy56+w6K5dEngWJaGRaR2qhr9ACKwQKBgQCnaD+295ZQR3D+zS1h\nqnUVdxDvCIuAEiC6UTiZIxHMW4p6CkyW7Oxv+rZENEexh4BCClIA2wvP9OvQbxUe\nWR8iUS0lKQ8yZ3S+1dLLhzhSJn+Y6gdskfAu69y3/a98nM9GvI3J/NgG71HrbPCK\nidCVD+IWMS5EqnaYMVrJSRUgbw==\n-----END PRIVATE KEY-----\n",
+#   "client_email": "user-registration@ielts-writing-evaluator.iam.gserviceaccount.com",
+#   "client_id": "104756563010734258293",
+#   "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+#   "token_uri": "https://oauth2.googleapis.com/token",
+#   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+#   "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/user-registration%40ielts-writing-evaluator.iam.gserviceaccount.com",
+#   "universe_domain": "googleapis.com"
+# }
+# creds = service_account.Credentials.from_service_account_info(credentials_json, scopes=scopes)
+creds = Credentials.from_service_account_file('credentials.json', scopes=scopes)
 # creds = Credentials.from_service_account_file(st.secrets["credentials_json"], scopes=scopes)
 client = gspread.authorize(creds)
 
@@ -162,7 +163,43 @@ def is_valid_gmail(email):
     # also detecting ip adress
     gmail_regex = re.compile(r'^[a-zA-Z0-9._%+-]+@gmail\.com$')
     return gmail_regex.match(email) is not None
+def is_real_gmail(email):
+    import re
+    import requests
+    import json
+    import random
+        # Check if the email format is valid for Gmail
+    # gmail_regex = re.compile(r'^[a-zA-Z0-9._%+-]+@gmail.com$')
+    # if not gmail_regex.match(email):
+    #     return False
 
+    # Verify if the email address is real and can receive emails
+    api_keys = [
+        "8d5ed32003ea4796a89b2c17cb9dd787",
+        "0dced7e2a5704d629c0662d175ff442d",
+        "ecdc73a6d6fe4924bf391cc7346f34df"
+    ]
+    retries = 3
+    while retries > 0:
+        api_key = random.choice(api_keys)
+        try:
+            url = "https://emailvalidation.abstractapi.com/v1"
+            querystring = {"api_key": api_key, "email": email}
+        
+            response = requests.get(url, params=querystring)
+            data = response.json()
+            deliverability = data.get("deliverability")
+        
+            if deliverability == "DELIVERABLE":
+                return True
+            elif deliverability == "UNDELIVERABLE":
+                return False
+        except Exception as e:
+            print(f"Error verifying email with API key {api_key}: {e}")
+            # remember to send an email if the erorr happened
+            retries -= 1
+    
+    return True
 # Function to create a new sheet for a user within the Progression file
 def create_user_sheet(progression_file, email):
     # Create a new sheet within the Progression file
@@ -197,34 +234,15 @@ def registration_process(email):
     subscription_sheet = client.open_by_key(subscription_id).sheet1
     progression_file = client.open_by_key(progression_file_id)
     essay_file = client.open_by_key(essay_file_id)
-
-    if email_exists(subscription_sheet, email):
-        print('You are subscribed')
-        # user_exist =  True
-        try:
-            user_sheet = progression_file.worksheet(email)
-        except Exception as e:
-            user_sheet = False
-        # user_sheet = progression_file.worksheet(email)
-        if not user_sheet:
-            user_sheet = create_user_sheet(progression_file, email)
-            print(f"Created new sheet '{email}' for the user.")
-        try:
-            essay_sheet = essay_file.worksheet(email)
-        except Exception as e:
-            essay_sheet = False
-        if not essay_sheet:
-            essay_sheet = essay_user_sheet(essay_file, email)
-            print(f"Created new sheet '{email}' for the user.")
-    else:
-        free_trial_sheet = client.open_by_key(free_trial_id).sheet1
-        if email_exists(free_trial_sheet, email):
-            print(f'{email} is already exists in the Free Trial.')
-            user_exist = True
+    try:
+        if email_exists(subscription_sheet, email):
+            print('You are subscribed')
+            # user_exist =  True
             try:
-                 user_sheet = progression_file.worksheet(email)
+                user_sheet = progression_file.worksheet(email)
             except Exception as e:
                 user_sheet = False
+            # user_sheet = progression_file.worksheet(email)
             if not user_sheet:
                 user_sheet = create_user_sheet(progression_file, email)
                 print(f"Created new sheet '{email}' for the user.")
@@ -236,15 +254,45 @@ def registration_process(email):
                 essay_sheet = essay_user_sheet(essay_file, email)
                 print(f"Created new sheet '{email}' for the user.")
         else:
-            add_user(free_trial_sheet, email, 5)
-            st.success('Registered successfully!')
-            print(f"{email}Registered successfully")
-            # user_exist =True
-            user_sheet = create_user_sheet(progression_file, email)
-            print(f"Created new sheet '{email}' for the user.")
-            essay_sheet = essay_user_sheet(essay_file, email)
-            print(f"Created new sheet '{email}' for the user.")
-            
+            free_trial_sheet = client.open_by_key(free_trial_id).sheet1
+            if email_exists(free_trial_sheet, email):
+                print(f'{email} is already exists in the Free Trial.')
+                user_exist = True
+                try:
+                    user_sheet = progression_file.worksheet(email)
+                except Exception as e:
+                    user_sheet = False
+                if not user_sheet:
+                    user_sheet = create_user_sheet(progression_file, email)
+                    print(f"Created new sheet '{email}' for the user.")
+                try:
+                    essay_sheet = essay_file.worksheet(email)
+                except Exception as e:
+                    essay_sheet = False
+                if not essay_sheet:
+                    essay_sheet = essay_user_sheet(essay_file, email)
+                    print(f"Created new sheet '{email}' for the user.")
+            else:
+                if is_real_gmail(email):
+                    print("email is real")
+                    add_user(free_trial_sheet, email, 5)
+                    st.success('Registered successfully!')
+                    print(f"{email} Registered successfully")
+                    # user_exist =True
+                    user_sheet = create_user_sheet(progression_file, email)
+                    print(f"Created new sheet '{email}' for the user.")
+                    essay_sheet = essay_user_sheet(essay_file, email)
+                    print(f"Created new sheet '{email}' for the user.")
+                else:
+                    print("email is not real")
+                    st.error('Invalid Gmail address. please use a real Gmail account')
+                    st.stop()
+        if remove_duplicate_emails(free_trial_sheet, email):
+            print('Duplicate entries found and removed.')
+    except Exception as e:
+        print(f"erorr while checing the registration email: {email}")
+        st.error("Registration faild, try again")
+        st.stop()
 def find_user_sheet(progression_file, email):
     # Get a list of all sheets in the progression file
     sheets = progression_file.worksheets()
@@ -289,6 +337,60 @@ def append_score_and_date(progression_file, email, task_type, score, date):
     user_sheet.update_cell(row_to_append, date_col_index, date)
 
     return True
+if 'task1_band_score' not in st.session_state:
+    st.session_state['task1_band_score'] = []
+if 'task2_band_score' not in st.session_state:
+    st.session_state['task2_band_score'] = []
+def add_overall_score_to_progression_sheet(progression_file, email, date):
+    if 'task1_band_score' in st.session_state and 'task2_band_score' in st.session_state:
+        task1_scores = st.session_state['task1_band_score']
+        task2_scores = st.session_state['task2_band_score']
+        print(task1_scores)
+        print(task2_scores)
+        if len(task1_scores) == 4 and len(task2_scores) == 4:  # Check if both tasks have exactly 4 values
+            # overall_score_task1 = calculate_overall_score(task1_scores)
+            # overall_score_task2 = calculate_overall_score(task2_scores)
+            # overall_score = calculate_overall_score([overall_score_task1, overall_score_task2])
+            average_score = sum(task1_scores) / len(task2_scores)
+            # Append the overall score and date to the user's sheet
+            overall_score = round(average_score * 2) / 2
+            append_overall_score_and_date(progression_file, email, float(overall_score), date)
+            st.markdown(f'\n\n#### After evaluating Task 1 and Task2 essays \n')
+            st.markdown(f"#### your overall band score is {(overall_score)}")
+            return True
+        else:
+            print("Each task must have exactly 4 values.")
+            return False
+    else:
+        print("Task scores are not available.")
+        return False
+def append_overall_score_and_date(progression_file, email, overall_score, date):
+    # Find the user's sheet
+    user_sheet = find_user_sheet(progression_file, email)
+    if user_sheet is None:
+        return False # Failed to find the sheet
+
+    # The overall score and date will be appended to the 5th and 6th columns
+    score_col_index = 5
+    date_col_index = 6
+
+    # Get all values from the sheet
+    all_values = user_sheet.get_all_values()
+    last_row_with_data = len(all_values) - 1 # Subtract 1 to exclude the header row
+
+    # Check if the columns for the overall score and date are already filled
+    if all_values[last_row_with_data][score_col_index - 1] and all_values[last_row_with_data][date_col_index - 1]:
+        # If both columns are filled, append to the next row
+        row_to_append = last_row_with_data + 2
+    else:
+        # If either column is empty, append to the current row
+        row_to_append = last_row_with_data + 1
+
+    # Append the overall score and date to the appropriate columns
+    user_sheet.update_cell(row_to_append, score_col_index, overall_score)
+    user_sheet.update_cell(row_to_append, date_col_index, date)
+
+    return True
 def append_evaluation_result(essay_file, email, date, task_type, question, essay, task_response, coherence_cohesion, lexical_resources, grammar_accuracy, grammar_spelling2, synonyms, rewritten_essay, score):
     # Find the user's essay sheet
     essay_sheet = find_user_sheet(essay_file, email)
@@ -305,6 +407,19 @@ def append_evaluation_result_to_all_essays(all_essays_file, email, date, task_ty
     # Append the evaluation results and other details to the sheet
     all_essays_sheet.append_row([email, date, task_type, question, essay, task_response, coherence_cohesion, lexical_resources, grammar_accuracy, grammar_spelling2, synonyms, rewritten_essay, score])
     return True
+def remove_duplicate_emails(sheet, email):
+    # Get all rows from the sheet
+    rows = sheet.get_all_values()
+    # Find rows where the email matches the given email (assuming email is in the first column)
+    matching_rows = [index for index, row in enumerate(rows) if row[0].strip().lower() == email.strip().lower()]
+    
+    # If more than one matching row is found, remove duplicates
+    if len(matching_rows) > 1:
+        # Remove all but the first occurrence
+        for row_index in sorted(matching_rows[1:], reverse=True):  # Reverse to avoid shifting indices
+            sheet.delete_rows(row_index + 1)  # +1 because sheet rows are 1-indexed
+        return True
+    return False
 # def check_evaluation_attempts(email):
 #     # Check if the user is in the subscription sheet
 #     subscription_sheet = client.open_by_key(subscription_id).sheet1
@@ -366,12 +481,9 @@ def append_evaluation_result_to_all_essays(all_essays_file, email, date, task_ty
 # # st.title('Registration System')
 
 # "-------------------------------------------------------------------------------------------"
-
 st.sidebar.title("""
                  
                  
-                 
-              
                  
                  """)
 
@@ -387,6 +499,9 @@ side_check_button2 = st.sidebar.button('Overall Band Score Calculator', type=typ
 if side_check_button2:
     st.switch_page("pages/overall.py")
     # st.page_link("pages/overall.py", label="IELTS Overall Band Score Calculater", icon="🔶")
+side_check_button3 = st.sidebar.button('Progress Tracker', type=type_take, use_container_width=True)
+if side_check_button3:
+    st.switch_page("pages/progression_track.py")
 # side_take_button = st.sidebar.button("Take a Test (it's coming soon)", type=type_take, use_container_width=True, disabled=True)
 
 message = """**Looking to evaluate your IELTS writing essays for free? Check out this website that uses AI to assess your work:** \n Website link: ielts-writing-ai.streamlit.app
@@ -407,7 +522,7 @@ st.sidebar.markdown("Developed by **Mustafa Bin Othman**")
 st.sidebar.markdown("You can support my effort by buying me a coffee. ☕️ :heart: " + "[Please click here](https://ko-fi.com/mustafa_binothman)")
 
 
-st.title('IELTS Writing Evaluator (Free)')
+st.title('IELTS Writing Evaluator  (Free)')
 st.write('This is a high-quality AI that is competent in evaluating IELTS writing. It uses advanced LLMs to make a high efficient evaluation .')
 email = st.text_input('Please enter your Gmail')
 # st.warning('Please click the "Register" button to proceed.')
@@ -420,14 +535,16 @@ if st.button('Register'):
     if email is not None and email.strip() != "":
         # Proceed with the registration process
         if is_valid_gmail(email):
-            print("email is valied")
+            print(f"email is valied")
+            
             registration_process(email)
             st.session_state.user_exist = True
             st.session_state.registered_email = email
+            
             # print(user_exist)
             # st.success('Registration successful!')
         else:
-            st.error('Invalid Gmail address.')
+            st.error('Incorrect Gmail address.')
             st.stop()
     else:
         st.error('Please enter your Gmail.')
@@ -449,37 +566,40 @@ if st.button('Register'):
 
 task = ''
 gen_acad = ''
-select_task = st.selectbox('**Please Select the type of task**', ['Task 1', 'Task 2'])
+select_task = st.selectbox('**Select the task**', ['Task 1', 'Task 2'])
 
 if select_task == 'Task 1':
     task = 'Task 1'
     gen_aca = st.selectbox('**Academic or General essay**', ['Academic', 'General'])
     gen_acad = gen_aca
     if gen_acad == 'Academic':
-        chart_image = st.file_uploader('Please upload Task 1 chart/map etc.. (optional)', type=['png', 'jpg'] )
+        chart_image = st.file_uploader('Upload Task 1 chart/map etc.. (optional)', type=['png', 'jpg'] )
         st.write("if you have written your essay in a paper, take a photo and upload it 👇")
+        important_notes = st.expander("How it works", expanded=False)
+        with important_notes:
+            st.markdown("**1- Make sure you upload a high quality photo with clear font for better results**")
+            st.markdown("**2- After you upload the photo check the written essay and edit it if there any issues**")
+            st.markdown("**3- If one photo wasn't enough to upload all the essay you can cancel the photo and upload the other photos (it will automatically add the text with first one)**")
         task_image= st.file_uploader('Please upload a photo of the essay', type=['png', 'jpg'] )
-        st.markdown("> ✅ **Important Notes** ")
-        st.markdown("**1- Make sure you upload a high quality photo with clear font for better results**")
-        st.markdown("**2- After you upload the photo check the written essay and edit it if there any issues**")
-        st.markdown("**3- If one photo wasn't enough to upload all the essay you can cancel the photo and upload the other photos (it will automatically add the text with first one)**")
+        
     else:
-        task_image= st.file_uploader('Please upload a photo of the essay', type=['png', 'jpg'] )
-        st.markdown("> ✅ **Important Notes** ")
-        st.markdown("**1- Make sure you upload a high quality photo with clear font for better results**")
-        st.markdown("**2- After you upload the photo check the written essay and edit it if there any issues**")
-        st.markdown("**3- If one photo wasn't enough to upload all the essay you can cancel the photo and upload the other photos (it will automatically add the text with first one)**")
-    
-    
+        st.write("if you have written your essay in a paper take a photo and upload it 👇")
+        important_notes = st.expander("How it works", expanded=False)
+        with important_notes:
+            st.markdown("**1- Make sure you upload a high quality photo with clear font for better results**")
+            st.markdown("**2- After you upload the photo check the written essay and edit it if there any issues**")
+            st.markdown("**3- If one photo wasn't enough to upload all the essay you can cancel the photo and upload the other photos (it will automatically add the text with first one)**")
+        task_image= st.file_uploader('Upload a photo of the essay', type=['png', 'jpg'] )
 else:
     task = 'Task 2'
     st.write("if you have written your essay in a paper take a photo and upload it 👇")
+    important_notes = st.expander("How it works", expanded=False)
+    with important_notes:
+        st.markdown("**1- Make sure you upload a high quality photo with clear font for better results**")
+        st.markdown("**2- After you upload the photo check the written essay and edit it if there any issues**")
+        st.markdown("**3- If one photo wasn't enough to upload all the essay you can cancel the photo and upload the other photos (it will automatically add the text with first one)**")
+    task_image= st.file_uploader('Upload a photo of the essay', type=['png', 'jpg'] )
     
-    task_image= st.file_uploader('Please upload a photo of the essay', type=['png', 'jpg'] )
-    st.markdown("> ✅ **Important Notes** ")
-    st.markdown("**1- Make sure you upload a high quality photo with clear font for better results**")
-    st.markdown("**2- After you upload the photo check the written essay and edit it if there any issues**")
-    st.markdown("**3- If one photo wasn't enough to upload all the essay, you can cancel the photo and upload the other photos (it will automatically add the text with first one)**")
 
 opus = "claude-3-opus-20240229"
 sonnet = "claude-3-sonnet-20240229"
@@ -487,16 +607,20 @@ haiku = "claude-3-haiku-20240307"
 overall_band_score = []
 
 url = "https://ko-fi.com/mustafa_binothman"
-
+number_of_tries_vision = 5
 
 # st.components.v1.iframe(url, width=800, height=600)
         
 def decripe_image(api, image):
     image_prompt = 'only describe the image and do not add any additional information that the image do not present'
-    genai.configure(api_key=api)
-    model_vision = genai.GenerativeModel('gemini-pro-vision')
-    while True:
+    
+    max_retries = number_of_tries_vision
+    retries = 0
+    while retries < max_retries:
         try:
+            used_key = random.choice(keys)
+            genai.configure(api_key=used_key)
+            model_vision = genai.GenerativeModel('gemini-pro-vision')
             response2 = model_vision.generate_content([image_prompt, image])
             response2.resolve()
             describe = response2.text
@@ -505,6 +629,7 @@ def decripe_image(api, image):
             # print(len(described_image))
             break
         except Exception as e:
+            retries+=1
             print("An error has occurred:", e)
             print("Retrying...")
             continue
@@ -527,15 +652,16 @@ if task == 'Task 1' and gen_acad == 'Academic' :
         
 
 value= ''
-number_of_tries_vision = 5
+
 def essay_image(api_key, image_pil):
     
     max_retries = number_of_tries_vision
     retries = 0
     while retries < max_retries:
         try:
-            image_prompt = 'Please transcribe the text from the provided image without adding any additional information or making changes to the words. Ensure accuracy in detecting and reproducing the text exactly as it appears in the image, including any spelling mistakes. Your task is to strictly adhere to the content visible in the image and refrain from introducing any extraneous details or alterations to the text.'
-            genai.configure(api_key=api_key)
+            used_key = random.choice(keys)
+            image_prompt = 'Please transcribe the text from the provided image without adding any additional information or making changes to the words. Ensure accuracy in detecting and reproducing the text exactly as it appears in the image, including any spelling mistakes. Your task is to strictly adhere to the content visible in the image and refrain from introducing any extraneous details or alterations to the text. if the text was not in english only write that the text is not in English language '
+            genai.configure(api_key=used_key)
             model_vision = genai.GenerativeModel('gemini-pro-vision')
             response2 = model_vision.generate_content([image_prompt, image_pil])
             response2.resolve()
@@ -610,8 +736,34 @@ coherence = ''
 lexic = ''
 suggeted_score = ''
 
+def is_valid_word(word):
+    # Check if the word is made up of English letters, numbers, or allowable punctuation
+    if re.fullmatch(r'[a-zA-Z0-9.,?!;:\'"\(\)\[\]{}\-_%]+', word):
+        return True
+    return False
 
-
+def contains_no_urls(text):
+    # Check if the text contains URL patterns
+    if re.search(r'\bhttps?://|www\.\b', text):
+        return False
+    return True
+def check_essay(essay):
+    # Normalize the text by replacing newlines with spaces
+    normalized_essay = essay.replace('\n', ' ')
+    
+    # Check for URLs in the entire text first
+    if not contains_no_urls(normalized_essay):
+        return False
+    
+    # Split the essay into words considering punctuation
+    words = re.findall(r'\b[\w.,?!;:\'"\(\)\[\]{}\-_%]+\b', normalized_essay)
+    
+    # Check each word
+    for word in words:
+        if not is_valid_word(word):
+            print("the essay contains non-english words or links")
+            return False
+    return True
 
 
 list_of_repeated_words = []
@@ -887,12 +1039,30 @@ def rewrite_essay(API=groq_API5, model=llama):
             
         
             try:
-                print("execute replicatem API")
-                output = replicate.run(
-                "meta/meta-llama-3-70b-instruct",
-                input={'prompt':re_prompt},
+                messages = [
+                {
+                    "role": "system",
+                    "content": (
+                        "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment . "
+                       
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": (
+                        re_prompt
+                    ),
+                },
+            ]
+                client = OpenAI(api_key=YOUR_API_KEY, base_url="https://api.perplexity.ai")
+                response = client.chat.completions.create(
+                    model="llama-3-70b-instruct",
+                    messages=messages
                 )
-                result = ("".join(output))
+                
+                # print(response.choices[0].message.content)
+                result = (response.choices[0].message.content)
+    
                 re_write = result
                 word_count = len(re_write.split())
                     
@@ -921,6 +1091,7 @@ def count_words():
         word_cloud = WordCloud(stopwords=stop_w).generate(essay)
         img = word_cloud.to_image()
         st.image(img)    
+
 def grammar_spelling(API= groq_API1, model=llama):
     
     prompt = f"""
@@ -962,32 +1133,6 @@ def grammar_spelling(API= groq_API1, model=llama):
     Remember, your goal is to provide accurate, helpful, and constructive feedback that enables the writer to enhance their grammar and spelling skills in the context of IELTS essay writing.
     """
     
-     
-
-    
-    # def function_reviwer(gra_spelling):
-    #     reviwer_prompt = f"""
-    #     You are an AI reviewer. Your task is to monitor the output of another AI called the Grammar and Spelling Checker. The Grammar and Spelling Checker's task is to review an IELTS writing essay and identify any misspellings or incorrect grammar usage.
-
-    #     Sometimes the Grammar and Spelling Checker makes mistakes, such as:
-    #     - Providing incorrect corrections
-    #     - Giving wrong information
-    #     - Rewriting the essay instead of focusing on corrections and explanations
-
-    #     Here is the output from the Grammar and Spelling Checker:
-    #     {gra_spelling}
-
-    #     Please review the output and provide the following:
-    #     1. Correct any mistakes made by the Grammar and Spelling Checker in identifying misspellings or grammar errors.
-    #     2. Remove any unnecessary rewriting of the essay and focus only on providing accurate corrections and explanations.
-    #     3. Improve the explanations and corrections provided by the Grammar and Spelling Checker, if needed, to make them clearer and more helpful for the writer.
-    #     """
-    #     task = model.generate_content(reviwer_prompt, stream=True)
-    #     task.resolve()
-    #     task_ch = task.text
-    #     st.write(task_ch)
-    #     print(task_ch)
-    
     max_retries = number_of_tries
     retries = 0
     while retries < max_retries:
@@ -1020,6 +1165,7 @@ def grammar_spelling(API= groq_API1, model=llama):
             result = chat_completion.choices[0].message.content
             # return result
             st.write(result)
+            
             return result
             # function_reviwer(task_ch)
             
@@ -1032,15 +1178,32 @@ def grammar_spelling(API= groq_API1, model=llama):
     else:
         
             try:
-                print("execute replicate API")
-                output = replicate.run(
-                "meta/meta-llama-3-70b-instruct",
-                input={'prompt':prompt},
+                print("using perplexity api grammar")
+                messages = [
+                {
+                    "role": "system",
+                    "content": (
+                        "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment . "
+                       
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": (
+                        prompt
+                    ),
+                },
+            ]
+                client = OpenAI(api_key=YOUR_API_KEY, base_url="https://api.perplexity.ai")
+                response = client.chat.completions.create(
+                    model="llama-3-70b-instruct",
+                    messages=messages
                 )
-                result = ("".join(output))
-                st.write(result)
                 
-                print("replicate grammar")
+                # print(response.choices[0].message.content)
+                result = (response.choices[0].message.content)
+        
+                st.write(result)
                 return result
             except Exception  as e:
                 print("An internal error has occurred:", e)
@@ -1113,7 +1276,7 @@ def grammar_spelling2():
                                     # "content": task_analysis,
                                 }
                             ],
-                            model=llama,
+                            model="llama3-8b-8192",
                         )
 
             result = chat_completion.choices[0].message.content
@@ -1172,7 +1335,7 @@ def essay_analysis(prompt, API= groq_API1, model= llama):
                                     # "content": task_analysis,
                                 }
                             ],
-                            model="gemma-7b-it",
+                            model="llama3-8b-8192",
                         )
 
                 result = chat_completion.choices[0].message.content
@@ -1241,7 +1404,7 @@ def suggested_score_ana(task_analysis, task):
                                 "content": task_analysis,
                             }
                         ],
-                        model=llama,
+                        model="llama3-8b-8192",
                     )
 
             result = chat_completion.choices[0].message.content
@@ -1302,6 +1465,9 @@ tr_task2_analysis = f"""
     the candidate must address both parts adequately. If they only discuss one view or fail to provide their opinion, their Task Response score will suffer. Additionally, 
     if the candidate misinterprets the question or provides irrelevant information, it will negatively affect their score.
     
+    important note: If the provided essay {essay} is not relevant to the question {question} or the type of the task {task}, this will result in a lower score, as it does not fulfill the criteria requirements. Additionally, if the essay does not appear to be a 70% IELTS essay and may contain links or non-English words, a lower score should be given accordingly.
+
+    Please note these considerations when evaluating the essay and assigning a score.
     
     Coherence and Cohesion Errors:
 
@@ -1373,6 +1539,13 @@ You are an IELTS examiner and your role is to assess IELTS Writing Essays. In th
         and to make it is to you to decide the deserved score which i am confident you will do that here is the suggested band score that the tool estimated for you because it wants helping you {suggeted_score}
         
         i hope you will not let me down and use what i told you above 
+        
+    important note: If the provided essay {essay} is not relevant to the question {question} or the type of the task {task}, this will result in a lower score, as it does not fulfill the criteria requirements. Additionally, if the essay does not appear to be a 70% IELTS essay and may contain links or non-English words, a lower score should be given accordingly.
+    
+    another important note : if the question has two parts and the candidate  should address both parts in the essay, 
+    the candidate must address both parts adequately. If they only discuss one view or fail to provide their opinion, their Task Response score will suffer. Additionally, 
+    if the candidate misinterprets the question or provides irrelevant information, it will negatively affect their score.
+    Please note these considerations when evaluating the essay and assigning a score.
 
 Instructions for assessing Task Response:
 For {task} of both AC Writing tests, candidates are required to formulate and 
@@ -1384,7 +1557,7 @@ For {task} of both AC Writing tests, candidates are required to formulate and
     TASK RESPONSE (TR) 
     The TR criterion assesses:
     
-    - how fully the candidate responds to the task.
+    - how fully the candidate responds to the task. If the candidate did not answer the question correctly or answered one part of the quetion, it should alert the candidate about it and give them a lower score because of it.
     - how adequately the main ideas are extended and supported. 
     - how relevant the candidate’s ideas are to the task. 
     - how clearly the candidate opens the discourse, establishes their position and formulates conclusions. 
@@ -1537,6 +1710,10 @@ co_prompt = f"""
         and to make it is to you to decide the deserved score which i am confident you will do that here is the suggested band score that the tool estimated for you because it wants helping you {suggeted_score}
         
         i hope you will not let me down and use what i told you above 
+        
+        important note: If the provided essay {essay} is not relevant to the question {question} or the type of the task {task}, this will result in a lower score, as it does not fulfill the criteria requirements. Additionally, if the essay does not appear to be a 70% IELTS essay and may contain links or non-English words, a lower score should be given accordingly.
+
+        Please note these considerations when evaluating the essay and assigning a score.
     Instructions for assessing COHERENCE AND COHESION:
     COHERENCE AND COHESION (CC) 
     This criterion is concerned with the overall organisation and logical development of 
@@ -2226,6 +2403,7 @@ you should be fair when you assess this criteria and give a precise band score a
 
 task1_band_score = []
 task2_band_score = []
+
 def remove_band_score(result):
     num = float(extract_digit_from_essay(result))
     if '**Band Score**:' in result:
@@ -2236,22 +2414,28 @@ def remove_band_score(result):
         pattern = re.compile(r'(\*{2})?Band Score:?(\*{2})?\s*\d+(\.\d+)?(\*{2})?\n+', re.IGNORECASE)
     cleaned_result = pattern.sub('', result)
     print(num)
-    score = f"**Score: {round(num - 0.1)}**"
-    st.markdown(score)
-    if task == 'Task 1':
-        
-        task1_band_score.append((round(num - 0.1)))
+    if num > 3:
+        score = f"**Score: {round(num - 0.1)}**"
+        st.markdown(score)
+        if task == 'Task 1':
+            
+            task1_band_score.append((round(num - 0.1)))
+            st.session_state['task1_band_score'].append(num - 0.1)
+        else:
+            task2_band_score.append((round(num - 0.1)))
+            st.session_state['task2_band_score'].append(num)
+        extra_cleaned_result = cleaned_result.find("Evaluation:")
+        if extra_cleaned_result == -1:
+            print("The word 'Evaluation:' was not found in the paragraph.")
+            st.write(cleaned_result)
+        result = cleaned_result[extra_cleaned_result:]
+        st.write(result)
+        result_text = f"{score}\n\n {result}"
+        return result_text
     else:
-        task2_band_score.append((round(num - 0.1)))
-    
-    extra_cleaned_result = cleaned_result.find("Evaluation:")
-    if extra_cleaned_result == -1:
-        print("The word 'Evaluation:' was not found in the paragraph.")
-        st.write(cleaned_result)
-    result = cleaned_result[extra_cleaned_result:]
-    st.write(result)
-    result_text = f"{score}\n\n {result}"
-    return result_text
+        print("the band score is ", num)
+        st.error("Sorry, there seems to be an issue. Please try again. If it continues, please contact me at https://t.me/ielts_pathway.")
+        st.stop()
     # print(cleaned_result)
     # print('---------')
 
@@ -2286,6 +2470,92 @@ def evaluate2(prompt, API= groq_API1, model= llama):
     retries = 0
     while retries < max_retries:
         try:
+            # client = Groq(
+            #             api_key=API
+            #         )
+
+            # chat_completion = client.chat.completions.create(
+            #             messages=[
+            #                 # Set an optional system message. This sets the behavior of the
+            #                 # assistant and can be used to provide specific instructions for
+            #                 # how it should behave throughout the conversation.
+            #                 {
+            #                     "role": "system",
+            #                     "content": "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment .",
+            #                     # "content": prompt
+            #                 },
+            #                 # Set a user message for the assistant to respond to.
+            #                 {
+            #                     "role": "user",
+            #                     "content": prompt,
+            #                     # "content": essay,
+            #                 }
+            #             ],
+            #             model=model,
+            #         )
+            
+            # result = chat_completion.choices[0].message.content
+            messages = [
+                {
+                    "role": "system",
+                    "content": (
+                        "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment . "
+                       
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": (
+                        prompt
+                    ),
+                },
+            ]
+            client = OpenAI(api_key=YOUR_API_KEY, base_url="https://api.perplexity.ai")
+            response = client.chat.completions.create(
+                model="llama-3-70b-instruct",
+                messages=messages
+            )
+            
+            # print(response.choices[0].message.content)
+            result = (response.choices[0].message.content)
+    
+            return remove_band_score(result)
+            
+            break  # Break out of the while loop if the generation is successful
+        except Exception  as e:
+            retries += 1
+            print("An internal error has occurred: now will use ", e)
+            print("Retrying...")
+            continue
+    else:
+        try:
+            print("execute Qroq API")
+            # st.error('OPPS, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
+            
+        
+            # messages = [
+            #     {
+            #         "role": "system",
+            #         "content": (
+            #             "you are IELTS Expert specialized in IELTS Writing Task 1 and Task 2 academic and General assessment . "
+                       
+            #         ),
+            #     },
+            #     {
+            #         "role": "user",
+            #         "content": (
+            #             prompt
+            #         ),
+            #     },
+            # ]
+            # client = OpenAI(api_key=YOUR_API_KEY, base_url="https://api.perplexity.ai")
+            # response = client.chat.completions.create(
+            #     model="llama-3-70b-instruct",
+            #     messages=messages
+            # )
+            
+            # # print(response.choices[0].message.content)
+            # result = (response.choices[0].message.content)
             client = Groq(
                         api_key=API
                     )
@@ -2309,33 +2579,9 @@ def evaluate2(prompt, API= groq_API1, model= llama):
                         ],
                         model=model,
                     )
-
-            result = chat_completion.choices[0].message.content
-            return remove_band_score(result)
-            # output = replicate.run(
-            # "meta/meta-llama-3-70b-instruct",
-            # input={'prompt':prompt},
-            # )
-            # result = ("".join(output))
-            # remove_band_score(result)
-            break  # Break out of the while loop if the generation is successful
-        except Exception  as e:
-            retries += 1
-            print("An internal error has occurred: now will use ", e)
-            print("Retrying...")
-            continue
-    else:
-        try:
-            print("execute replicate API")
-            # st.error('OPPS, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
             
-        
-            output = replicate.run(
-                "meta/meta-llama-3-70b-instruct",
-                input={'prompt':prompt},
-                )
-            result = ("".join(output))
-            return remove_band_score(result)
+            result2 = chat_completion.choices[0].message.content
+            return remove_band_score(result2)
             # print("replicate evaluate")
         except Exception as e:
             print("An error has occurred:", e)
@@ -2353,152 +2599,193 @@ if button:
             if st.session_state.user_exist and email == st.session_state.registered_email:
                 # print(user_exist)
                 if email is not None and email.strip() != "":
-                    if q_words == 0:
-                        st.error(f'Please write the question ')
-                    elif num_words == 0:
-                        st.error(f'Please write your essay')
-                    elif task == 'Task 1' and num_words < 150 :
-                        st.error(f'Your essay is short the written words is {num_words}, please continue writing, it should be at least 150 words')
-                    elif task == 'Task 2' and num_words < 250:
-                        st.error(f'Your essay is short the written words is {num_words}, please continue writing, it should be at least 250 words')
-                    else:
-                        
-                        print("-----------------------------------------------------------------------------------------------------") 
-                        print(f"user email: {email}")
-                        st.markdown('---')
-                        # print(f"user email: {email}")
-                        # decripe_image(used_key)
-                        st.write("Please wait a few seconds until the evaluation appears")
-                        st.markdown("## Task Response")
-                        try:
-                            grammar_checker = grammar_spelling2()
-                            grammar_check += grammar_checker
-                            # print('grammar and spelling check',grammar_check)
-                        except Exception  as e:
-                            print("An internal error has occurred: now will use ", e)
+                    if check_essay(essay):
+                        if q_words == 0:
+                            st.error(f'Please write the question ')
+                            st.stop()
+                        elif num_words == 0:
+                            st.error(f'Please write your essay')
+                            st.stop()
+                        elif task == 'Task 1' and num_words < 150 :
+                            st.error(f'Your essay is short the written words is {num_words}, please continue writing, it should be at least 150 words')
+                            st.stop()
+                        elif task == 'Task 2' and num_words < 250:
+                            st.error(f'Your essay is short the written words is {num_words}, please continue writing, it should be at least 250 words')
+                            st.stop()
+                        else:
                             
-                            
-                        if task == 'Task 1':
-                            if gen_acad == 'Academic':
-                                
-                                if chart_image is not None:
-                                    described_image = decripe_image(used_key, image_pil)
-                                    describe_image += described_image
-                                    # print(describe_image)
-                                TR_task1_aca = essay_analysis(tas_academic_task1_analysis, groq_API1, llama)
-                                task_resp_1_aca += TR_task1_aca
-                                suggest = suggested_score_ana(task_resp_1_aca, task)  
-                                suggeted_score += suggest
-                                print(suggest)
-                                
+                            print("-----------------------------------------------------------------------------------------------------") 
+                            print(f"user email: {email}")
+                            st.markdown('---')
+                            # print(f"user email: {email}")
+                            # decripe_image(used_key)
+                            st.write("Please wait a few seconds until the evaluation appears, sometimes it takes a few minutes")
+                            progress_bar = st.progress(0)
+                            if task == 'Task 1':
+                                st.session_state['task1_band_score'] = []
                             else:
-                                TR_task1_gen = essay_analysis(tas_general_task1_analysis, groq_API1, llama)
-                                task_resp_1_gen += TR_task1_gen
-                                suggest = suggested_score_ana(task_resp_1_gen, task)  
-                                suggeted_score += suggest
-                        
-                        if task == 'Task 2':
-                            TR_task2 = essay_analysis(tr_task2_analysis, groq_API1, llama)
-                            TR_task += TR_task2
-                            suggest = suggested_score_ana(TR_task, task)  
-                            suggeted_score += suggest
-                            # print('suggested score 1:', suggeted_score)
-                        # delay(10)
-                        # evaluate2(task_response, groq_API1, llama)
-                        print("Task response")
-                        task_response_result = evaluate2(task_response, groq_API1, llama)
-                        # print("Task Response Result:", task_response_result)
-                        suggeted_score = ''
-                        
-                         
-                        st.markdown('---')
-                        st.markdown("## Coherence and Cohesion")
-                        CO_task2 = essay_analysis(co_task2_analysis, groq_API2, llama)
-                        coherence += CO_task2
-                        suggest = suggested_score_ana(CO_task2, task)  
-                        suggeted_score += suggest
-                        # print('suggested score 2:', suggeted_score)
-                        # delay(10)
-                        # evaluate2(co_prompt, groq_API2, llama)
-                        print("Coherence and Cohesion")
-                        coherence_cohesion_result = evaluate2(co_prompt, groq_API2, llama)
-                        suggeted_score = ''
-                        
-                        st.markdown('---')
-                        st.markdown("## Lexical Resources")
-                        LX_task2 = essay_analysis(lex_task2_analysis, groq_API3, llama)
-                        lexic += LX_task2 
-                        suggest = suggested_score_ana(LX_task2, task)  
-                        suggeted_score += suggest  
-                        # print('suggested score 3:', suggeted_score)
-                        # delay(11)
-                        # evaluate2(lex_prompt, groq_API3, llama)
-                        print("Lexical resourse")
-                        lexical_resources_result = evaluate2(lex_prompt, groq_API3, llama)
-                        suggeted_score = ''
-                        
-                        st.markdown('---')
-                        st.markdown("## Grammar and Acurracy")
-                        # evaluate2(gr_prompt, groq_API3, llama)
-                        print("Grammar and accuracy")
-                        grammar_spelling_result = evaluate2(gr_prompt, groq_API3, llama)
-                        suggeted_score = ''
-                        st.markdown('**- Grammar and Spelling mistakes**')
-                        # grammar_spelling( groq_API3, llama)
-                        print("grammar and spelling")
-                        grammar_spelling2_result = grammar_spelling( groq_API3, llama)
-                        
-                        st.markdown('---')
-                        
-                        if task == 'Task 1':
-                            overall_score = round(sum(task1_band_score) / 4)
-                            task_type = 'Task 1'
-                        elif task == 'Task 2':
-                            overall_score = round(sum(task2_band_score) / 4)
-                            task_type = 'Task 2'
-                        current_date = datetime.now().strftime('%d/%m/%Y %H:%M')
-                        try:
-                            progression_file = client.open_by_key(progression_file_id)
-                            append_score_and_date(progression_file, email, task_type, overall_score, current_date)
-                        except Exception as e:
-                            print("an error happened when appending scores", e)
-                        st.markdown(f"## {task} Band Score: {float(overall_score)} / 9")
-                        overall_score_result = f'Band Score: {float(overall_score)} / 9'
-                        st.markdown('---')
-                        st.markdown('## Here is the most repeated words in your essay')
-                        stop_w = set(STOPWORDS)
+                                st.session_state['task2_band_score'] = []
+                            start_time = time.time()
+                            print("start time", start_time)
+                            st.markdown("## Task Response")
+                            try:
+                                grammar_checker = grammar_spelling2()
+                                grammar_check += grammar_checker
+                                # print('grammar and spelling check',grammar_check)
+                            except Exception  as e:
+                                print("An internal error has occurred: now will use ", e)
+                                
+                                
+                            if task == 'Task 1':
+                                if gen_acad == 'Academic':
+                                    
+                                    if chart_image is not None:
+                                        described_image = decripe_image(used_key, image_pil)
+                                        describe_image += described_image
+                                        # print(describe_image)
+                                    TR_task1_aca = essay_analysis(tas_academic_task1_analysis, groq_API1, llama)
+                                    task_resp_1_aca += TR_task1_aca
+                                    suggest = suggested_score_ana(task_resp_1_aca, task)  
+                                    suggeted_score += suggest
+                                    # print(suggest)
+                                    
+                                else:
+                                    TR_task1_gen = essay_analysis(tas_general_task1_analysis, groq_API1, llama)
+                                    task_resp_1_gen += TR_task1_gen
+                                    suggest = suggested_score_ana(task_resp_1_gen, task)  
+                                    suggeted_score += suggest
                             
-                        word_cloud = WordCloud(stopwords=stop_w, width= 800, height=400, background_color='white').generate(essay)
-                        img = word_cloud.to_image()
-                        st.image(img)
-                        st.markdown('---')
-                        words_charts()
-                        st.markdown('---')
-                        st.markdown('### Recommended Synonyms of the repeated words')
-                        # synonym(groq_API4, llama)
-                        print("Synonyms")
-                        synonyms_result = synonym(groq_API4, llama)
-                        st.markdown('---')
-                        
-                        st.markdown('### Rewriting your essay')
-                        # rewrite_essay(groq_API5, llama)
-                        print("Rewrite essay")
-                        rewritten_essay_result = rewrite_essay(groq_API5, llama)
-                        try:
-                            essay_file = client.open_by_key(essay_file_id)
-                            all_essays_file = client.open_by_key(all_essays_file_id)
-                            print("adding evaluation result to Google Spreadsheet ")
-                            append_evaluation_result(essay_file, email, current_date, task_type, question, essay, task_response_result, coherence_cohesion_result, lexical_resources_result, grammar_spelling_result, grammar_spelling2_result, synonyms_result, rewritten_essay_result, overall_score_result)
-                            append_evaluation_result_to_all_essays(all_essays_file, email, current_date, task_type, question, essay, task_response_result, coherence_cohesion_result, lexical_resources_result, grammar_spelling_result, grammar_spelling2_result, synonyms_result, rewritten_essay_result, overall_score)
-                        except Exception as e:
-                            print("an error happened when appending evaluation result", e)
-                        st.markdown("\n\n\n##### If you find this service helpful, you can support my efforts by buying me a coffee. ☕️ :heart: " + "[Please click here](https://ko-fi.com/mustafa_binothman)")
-                        print("-----------------------------------------------------------------------------------------------------")
+                            if task == 'Task 2':
+                                TR_task2 = essay_analysis(tr_task2_analysis, groq_API1, llama)
+                                TR_task += TR_task2
+                                suggest = suggested_score_ana(TR_task, task)  
+                                suggeted_score += suggest
+                                # print('suggested score 1:', suggeted_score)
+                            # delay(10)
+                            # evaluate2(task_response, groq_API1, llama)
+                            progress_bar.progress(5)
+                            print("Task response")
+                            task_response_result = evaluate2(task_response, groq_API1, llama)
+                            # print("Task Response Result:", task_response_result)
+                            suggeted_score = ''
+                            
+                            
+                            st.markdown('---')
+                            st.markdown("## Coherence and Cohesion")
+                            CO_task2 = essay_analysis(co_task2_analysis, groq_API2, llama)
+                            coherence += CO_task2
+                            suggest = suggested_score_ana(CO_task2, task)  
+                            suggeted_score += suggest
+                            # print('suggested score 2:', suggeted_score)
+                            # delay(10)
+                            # evaluate2(co_prompt, groq_API2, llama)
+                            print("Coherence and Cohesion")
+                            progress_bar.progress(15)
+                            coherence_cohesion_result = evaluate2(co_prompt, groq_API2, llama)
+                            suggeted_score = ''
+                            
+                            st.markdown('---')
+                            st.markdown("## Lexical Resources")
+                            LX_task2 = essay_analysis(lex_task2_analysis, groq_API3, llama)
+                            lexic += LX_task2 
+                            suggest = suggested_score_ana(LX_task2, task)  
+                            suggeted_score += suggest  
+                            # print('suggested score 3:', suggeted_score)
+                            # delay(11)
+                            # evaluate2(lex_prompt, groq_API3, llama)
+                            print("Lexical resourse")
+                            progress_bar.progress(25)
+                            lexical_resources_result = evaluate2(lex_prompt, groq_API3, llama)
+                            suggeted_score = ''
+                            
+                            st.markdown('---')
+                            st.markdown("## Grammar and Acurracy")
+                            # evaluate2(gr_prompt, groq_API3, llama)
+                            print("Grammar and accuracy")
+                            progress_bar.progress(35)
+                            grammar_spelling_result = evaluate2(gr_prompt, groq_API3, llama)
+                            suggeted_score = ''
+                            st.markdown('**- Grammar and Spelling mistakes**')
+                            # grammar_spelling( groq_API3, llama)
+                            print("grammar and spelling")
+                            progress_bar.progress(60)
+                            grammar_spelling2_result = grammar_spelling( groq_API3, llama)
+                            
+                            st.markdown('---')
+                            
+                            if task == 'Task 1':
+                                
+                                overall_score = round(sum(task1_band_score) / 4)
+                                session_overall = round(sum(st.session_state['task1_band_score'])/4)
+                                if 'task1_band_score' in st.session_state:
+                                    print(f"## {task} Band Score: {float(session_overall)} / 9")
+                                task_type = 'Task 1'
+                            elif task == 'Task 2':
+                                overall_score = round(sum(task2_band_score) / 4)
+                                session_overall = round(sum(st.session_state['task2_band_score'])/4)
+                                if 'task2_band_score' in st.session_state:
+                                    print(f"## {task} Band Score: {float(session_overall)} / 9")
+                                task_type = 'Task 2'
+                            current_date = datetime.now().strftime('%d/%m/%Y %H:%M')
+                            try:
+                                progression_file = client.open_by_key(progression_file_id)
+                                append_score_and_date(progression_file, email, task_type, overall_score, current_date)
+                            except Exception as e:
+                                print("an error happened when appending scores", e)
+                            st.markdown(f"## {task} Band Score: {float(overall_score)} / 9")
+                            overall_score_result = f'Band Score: {float(overall_score)} / 9'
+                            st.markdown('---')
+                            st.markdown('## Here is the most repeated words in your essay')
+                            stop_w = set(STOPWORDS)
+                                
+                            word_cloud = WordCloud(stopwords=stop_w, width= 800, height=400, background_color='white').generate(essay)
+                            img = word_cloud.to_image()
+                            st.image(img)
+                            st.markdown('---')
+                            words_charts()
+                            st.markdown('---')
+                            st.markdown('### Recommended Synonyms of the repeated words')
+                            # synonym(groq_API4, llama)
+                            print("Synonyms")
+                            progress_bar.progress(70)
+                            synonyms_result = synonym(groq_API4, "llama3-8b-8192")
+                            st.markdown('---')
+                            
+                            st.markdown('### Rewriting your essay')
+                            # rewrite_essay(groq_API5, llama)
+                            print("Rewrite essay")
+                            progress_bar.progress(90)
+                            rewritten_essay_result = rewrite_essay(groq_API5, "llama3-8b-8192")
+                            progress_bar.progress(100)
+                            try:
+                                essay_file = client.open_by_key(essay_file_id)
+                                all_essays_file = client.open_by_key(all_essays_file_id)
+                                print("adding evaluation result to Google Spreadsheet ")
+                                # print(task_response_result)
+                                append_evaluation_result(essay_file, email, current_date, task_type, question, essay, task_response_result, coherence_cohesion_result, lexical_resources_result, grammar_spelling_result, grammar_spelling2_result, synonyms_result, rewritten_essay_result, overall_score_result)
+                                append_evaluation_result_to_all_essays(all_essays_file, email, current_date, task_type, question, essay, task_response_result, coherence_cohesion_result, lexical_resources_result, grammar_spelling_result, grammar_spelling2_result, synonyms_result, rewritten_essay_result, overall_score)
+                            except Exception as e:
+                                print("an error happened when appending evaluation result", e)
+                            # st.markdown("\n\n\n##### If you find this service helpful, you can support my effort by buying me a coffee. ☕️ :heart: " + "[Please click here](https://ko-fi.com/mustafa_binothman)")
+                            try:
+                                progression_file = client.open_by_key(progression_file_id)
+                                add_overall_score_to_progression_sheet(progression_file, email, current_date)
+                            except Exception as e:
+                                print("an error happened when adding overall score to the sheet", e)
+                            end_time = time.time()
+                            execution_time = (end_time - start_time) / 60
+                            print("time taken to evaluate", round(execution_time), "minutes")
+                            print("-----------------------------------------------------------------------------------------------------")
+                    else:
+                        st.error("Your essay doesn't seem like an IELTS essay. Please check if it does not contain non-English words and links.")
+                        st.stop()        
                 else:
                     st.error('Please register your Gmail')
                     st.stop()
             else:
                 st.error('Please register your Gmail')
                 st.stop()  
+
+ 
 
 
