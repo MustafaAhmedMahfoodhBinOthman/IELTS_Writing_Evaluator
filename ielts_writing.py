@@ -1545,7 +1545,7 @@ You are an IELTS examiner and your role is to assess IELTS Writing Essays. In th
         
         i hope you will not let me down and use what i told you above 
         
-    important note: If the provided essay {essay} is not relevant to the question {question} or the type of the task {task}, this will result in a lower score, as it does not fulfill the criteria requirements. Additionally, if the essay does not appear to be a 70% IELTS essay and may contain links or non-English words, a lower score should be given accordingly.
+    important note: If the provided essay {essay} is not relevant to the question {question} or the type of the task {task}, this will result in a lower score maybe 4 or lower is derived score in this case, as it does not fulfill the criteria requirements. Additionally, if the essay does not appear to be a 70% IELTS essay and may contain links or non-English words, a lower score should be given accordingly.
     
     another important note : if the question has two parts and the candidate  should address both parts in the essay, 
     the candidate must address both parts adequately. If they only discuss one view or fail to provide their opinion, their Task Response score will suffer. Additionally, 
@@ -1716,7 +1716,7 @@ co_prompt = f"""
         
         i hope you will not let me down and use what i told you above 
         
-        important note: If the provided essay {essay} is not relevant to the question {question} or the type of the task {task}, this will result in a lower score, as it does not fulfill the criteria requirements. Additionally, if the essay does not appear to be a 70% IELTS essay and may contain links or non-English words, a lower score should be given accordingly.
+        important note: If the provided essay {essay} is not relevant to the question {question} or the type of the task {task}, this will result in a lower score maybe 4 or lower is derived score in this case, as it does not fulfill the criteria requirements. Additionally, if the essay does not appear to be a 70% IELTS essay and may contain links or non-English words, a lower score should be given accordingly.
 
         Please note these considerations when evaluating the essay and assigning a score.
     Instructions for assessing COHERENCE AND COHESION:
