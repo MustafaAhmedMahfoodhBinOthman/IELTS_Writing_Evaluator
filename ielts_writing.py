@@ -486,11 +486,11 @@ def remove_duplicate_emails(sheet, email):
 # # st.title('Registration System')
 
 # "-------------------------------------------------------------------------------------------"
-st.sidebar.title("""
+# st.sidebar.title("""
                  
                  
                  
-                 """)
+#                  """)
 
 st.sidebar.title('IELTS Writing Evaluator (Free)')
 # st.sidebar.write('This is currently in Beta version, and everyday it will be updated to reach better evalaution GOOD LUCK 😊⚡')
