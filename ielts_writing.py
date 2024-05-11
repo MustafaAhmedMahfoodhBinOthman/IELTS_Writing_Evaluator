@@ -812,7 +812,7 @@ def organaize_synonyms(API, synonyms):
     sy_prompt = f"""
     
     you will be given a list of words with their synonyms and your task is to organaize them and make them in markdown format
-    and i want it like this format  below only write what you have been asked about do not write any other non-needed text
+    and i want it like this format  below only write what you have been asked about do not write any other non-needed text i repeat only write what you have been asked about
     the synonyms are: {synonyms}
     
     **the word:**
