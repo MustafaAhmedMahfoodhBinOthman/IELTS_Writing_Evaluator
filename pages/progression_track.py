@@ -1,7 +1,7 @@
 import streamlit as st
 st.set_page_config(
     
-    page_title= 'Overall Band score Calculator'
+    page_title= 'Progress Tracker'
     # page_icon=
 )
 hide_st_style = """
