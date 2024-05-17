@@ -8,7 +8,14 @@ st.set_page_config(
     # page_icon=...
 )
 # Google Spreadsheet setup 
-
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_st_style, unsafe_allow_html=True)
 scopes = [
    'https://www.googleapis.com/auth/spreadsheets'
 ]
