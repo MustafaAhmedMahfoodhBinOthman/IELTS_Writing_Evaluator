@@ -96,6 +96,7 @@ llama = "llama3-70b-8192"
 # mixtral = "mixtral-8x7b-32768"
 
 
+
 model = genai.GenerativeModel('gemini-1.0-pro-latest')
 model_vision = genai.GenerativeModel('gemini-pro-vision')
 
@@ -129,7 +130,7 @@ credentials_json = {
 creds = service_account.Credentials.from_service_account_info(credentials_json, scopes=scopes)
 # creds = Credentials.from_service_account_file(st.secrets["credentials_json"], scopes=scopes)
 client = gspread.authorize(creds)
-
+# gsheets = GSheetsConnection(credentials_json)
 # Sheet IDs 
 free_trial_id = '18Cc9ITOYVEvmkhjQbNXgA6NxARPtFB_bHgN4ERozfXI'
 subscription_id = '12Z_BTDGHPgITYV7XOMObLv17Ckt1pzUPYt4Uu_De2us'
@@ -236,10 +237,14 @@ def essay_user_sheet(essay_file, email):
         return None
 # user_exist = False
 def registration_process(email):
-    subscription_sheet = client.open_by_key(subscription_id).sheet1
-    progression_file = client.open_by_key(progression_file_id)
-    essay_file = client.open_by_key(essay_file_id)
+    # subscription_sheet = client.open_by_key(subscription_id).sheet1
+    # progression_file = client.open_by_key(progression_file_id)
+    # essay_file = client.open_by_key(essay_file_id)
+    
     try:
+        progression_file = client.open_by_key(progression_file_id)
+        essay_file = client.open_by_key(essay_file_id)
+        subscription_sheet = client.open_by_key(subscription_id).sheet1
         if email_exists(subscription_sheet, email):
             print('You are subscribed')
             # user_exist =  True
@@ -249,6 +254,7 @@ def registration_process(email):
                 user_sheet = False
             # user_sheet = progression_file.worksheet(email)
             if not user_sheet:
+                # progression_file = client.open_by_key(progression_file_id)
                 user_sheet = create_user_sheet(progression_file, email)
                 print(f"Created new sheet '{email}' for the user.")
             try:
@@ -280,6 +286,8 @@ def registration_process(email):
             else:
                 if is_real_gmail(email):
                     print("email is real")
+                    # progression_file = client.open_by_key(progression_file_id)
+                    # essay_file = client.open_by_key(essay_file_id)
                     add_user(free_trial_sheet, email, 5)
                     st.success('Registered successfully!')
                     print(f"{email} Registered successfully")
@@ -289,13 +297,15 @@ def registration_process(email):
                     essay_sheet = essay_user_sheet(essay_file, email)
                     print(f"Created new sheet '{email}' for the user.")
                 else:
+                    # st.empty()
                     print("email is not real")
                     st.error('Invalid Gmail address. please use a real Gmail account')
                     st.stop()
         if remove_duplicate_emails(free_trial_sheet, email):
             print('Duplicate entries found and removed.')
     except Exception as e:
-        print(f"erorr while checing the registration email: {email}")
+        print(f"erorr while checking the registration email: {email}")
+        print(e)
         st.error("Registration faild, try again")
         st.stop()
 def find_user_sheet(progression_file, email):
@@ -425,6 +435,17 @@ def remove_duplicate_emails(sheet, email):
             sheet.delete_rows(row_index + 1)  # +1 because sheet rows are 1-indexed
         return True
     return False
+def update_evaluation_date(free_trial_sheet, email):
+    current_date = datetime.now().strftime('%d/%m/%Y %H:%M')
+
+    all_values = free_trial_sheet.get_all_values()
+    for i, row in enumerate(all_values[1:], start=2):  # Start from the second row (index 1)
+        if row[0] == email:  # Check if the email matches
+            free_trial_sheet.update_cell(i, 4, current_date)  # Update the date in the fourth column
+            print("user last used date updated", current_date)
+            return True
+    
+    return False  # Return False if the email is not found
 # def check_evaluation_attempts(email):
 #     # Check if the user is in the subscription sheet
 #     subscription_sheet = client.open_by_key(subscription_id).sheet1
@@ -493,6 +514,9 @@ def remove_duplicate_emails(sheet, email):
 #                  """)
 
 st.sidebar.title('IELTS Writing Evaluator (Free)')
+side_check_button3 = st.sidebar.button('Profile', type=type_take, use_container_width=True)
+if side_check_button3:
+    st.switch_page("pages/profile.py")
 # st.sidebar.write('This is currently in Beta version, and everyday it will be updated to reach better evalaution GOOD LUCK 😊⚡')
 # st.sidebar.write('There will be many special features and big improvments coming soon😊')
 
@@ -527,6 +551,13 @@ st.sidebar.markdown("Developed by **Mustafa Bin Othman**")
 st.sidebar.markdown("You can support my effort by buying me a coffee. ☕️ :heart: " + "[Please click here](https://ko-fi.com/mustafa_binothman)")
 
 
+# cookies = EncryptedCookieManager(
+#     prefix="ielts",  # Prefix for the cookies
+#     password="mustafa774206578"  # Password to encrypt the cookies
+# )
+
+# if not cookies.ready():
+#     st.stop()        
 st.title('IELTS Writing Evaluator  (Free)')
 st.write('This is a high-quality AI that is competent in evaluating IELTS writing. It uses advanced LLMs to make a high efficient evaluation .')
 email = st.text_input('Please enter your Gmail')
@@ -539,7 +570,7 @@ if st.button('Register'):
     if email is not None and email.strip() != "":
         # Display an animated spinner while processing
         start_time = time.time()
-        with st.spinner('wait a few seconds...'):
+        with st.spinner('wait few seconds...'):
             # time.sleep(13)  # Simulating a long process, replace with actual registration process
 
             if is_valid_gmail(email):
@@ -548,7 +579,9 @@ if st.button('Register'):
                 registration_process(email)
                 st.session_state.user_exist = True
                 st.session_state.registered_email = email 
-                
+                # cookies["email"] = email
+                # cookies.save()
+                # st.write("Email registered and saved in cookies!")
                 # Clear the spinner message once the registration is complete
                 st.empty()
                 end_time = time.time()
@@ -558,6 +591,7 @@ if st.button('Register'):
                 # print(user_exist)
                 # st.success('Registration successful!')
             else:
+                st.empty()
                 st.error('Incorrect Gmail address.')
                 st.stop()
     else:
@@ -1105,6 +1139,75 @@ def count_words():
         word_cloud = WordCloud(stopwords=stop_w).generate(essay)
         img = word_cloud.to_image()
         st.image(img)    
+# def translate_results(results, target_language):
+#     # Construct the prompt for translation
+#     prompt = f"""
+#     You are a professional translator specializing in translating IELTS evaluation results. 
+#     Please translate the following evaluation text into {target_language}:
+
+#     ```
+#     {results}
+#     ```
+#     """
+
+#     # Use Groq API for translation
+#     max_retries = number_of_tries
+#     retries = 0
+#     while retries < max_retries:
+#         try:
+#             # gra_spelling = claude_model2(haiku, prompt)
+#             client = Groq(
+#                         api_key=groq_API1
+#                     )
+
+#             chat_completion = client.chat.completions.create(
+#                             messages=[
+#                                 # Set an optional system message. This sets the behavior of the
+#                                 # assistant and can be used to provide specific instructions for
+#                                 # how it should behave throughout the conversation.
+#                                 {
+#                                     "role": "system",
+#                                     "content": "you are English grammar Expert  in  writing ",
+#                                     # "content": prompt
+#                                 },
+#                                 # Set a user message for the assistant to respond to.
+#                                 {
+#                                     "role": "user",
+#                                     "content": prompt,
+#                                     # "content": task_analysis,
+#                                 }
+#                             ],
+#                             model="llama3-8b-8192",
+#                         )
+
+#             translated_text = chat_completion.choices[0].message.content
+#             st.markdown(translated_text)
+#             return translated_text
+#             # function_reviwer(task_ch)
+            
+#             break  # Break out of the while loop if the generation is successful
+#         except Exception  as e:
+#             retries+=1
+#             print("An internal error has occurred:", e)
+#             print("Retrying...")
+#             continue
+#     else:
+#         print("start the second model grammar2")
+        
+#         try:
+#                 output = replicate.run(
+#             "meta/meta-llama-3-70b-instruct",
+#                 input={'prompt':prompt},
+#                 )
+#                 translated_text = ("".join(output))
+#                 print("replicate grammar2")
+#                 st.markdown(translated_text)
+#                 return translated_text
+#         except Exception as e:
+#                 print("An internal error has occurred:", e)
+#                 print("Retrying...")
+                
+#     # return translated_text
 
 def grammar_spelling(API= groq_API1, model=llama):
     
@@ -1450,7 +1553,8 @@ def suggested_score_ana(task_analysis, task):
                     print("Sorry, there is an unexpected problem happened Please try again later, if the problem persists please contact me")
                     print("stop running replicate (suggested bands core)")
                     st.stop()   
-            
+
+  
 #prompts
 # task response criteria prompt
 tr_task2_analysis = f"""
@@ -1609,7 +1713,28 @@ Band descriptors for the TR criterion:
     Band 1: Responses of 20 words or fewer are rated at Band 1. The content is wholly unrelated to the prompt. An co ied rubric must be discounted.
 
     Band 0: The candidate did not attempt the task, so no assessment of task response can be made.
-     
+    
+    Please note these considerations when evaluating the essay and assigning a score.
+    
+    Coherence and Cohesion Errors:
+
+    - Identify any errors related to coherence and cohesion, such as lack of logical flow, inadequate use of cohesive devices, or poor paragraph organization.
+    - Include specific examples of coherence and cohesion errors from the essay.
+    
+    Lexical Errors:
+
+    - Identify any errors related to vocabulary usage, such as inaccurate word choice, spelling mistakes, or inappropriate word formation.
+    - Include specific examples of lexical errors from the essay.
+    
+    Grammatical Errors:
+
+    - Identify any errors related to grammar, such as subject-verb agreement, verb tense, article usage, or sentence structure issues.
+    - Include specific examples of grammatical errors from the essay.
+    
+    Other Errors:
+
+    - Identify any other errors or mistakes that do not fit into the above categories, such as punctuation or formatting issues.
+    - Include specific examples of other errors from the essay.
 
 Structure your response as follows:
 
@@ -1728,14 +1853,34 @@ co_prompt = f"""
         important note: If the provided essay {essay} is not relevant to the question {question} or the type of the task {task}, this will result in a lower score maybe 4 or lower is derived score in this case, as it does not fulfill the criteria requirements. Additionally, if the essay does not appear to be a 70% IELTS essay and may contain links or non-English words, a lower score should be given accordingly.
 
         Please note these considerations when evaluating the essay and assigning a score.
-    Instructions for assessing COHERENCE AND COHESION:
-    COHERENCE AND COHESION (CC) 
-    This criterion is concerned with the overall organisation and logical development of 
-    the message: how the response organises and links information, ideas and language. 
-    Coherence refers to the linking of ideas through logical sequencing, while cohesion 
-    refers to the varied and appropriate use of cohesive devices (e.g. logical connectors, 
-    conjunctions and pronouns) to assist in making clear the relationships between and 
-    within sentences.
+        Overall Essay Structure:
+
+        - Assess the overall structure and organization of the essay.
+        - Identify any issues related to the introduction, body paragraphs, and conclusion.
+        - Include specific examples of essay structure issues from the essay.
+        
+        Paragraph Organization:
+
+        - Evaluate the organization and structure of individual paragraphs in the essay.
+        - Identify any issues related to topic sentences, supporting details, or concluding sentences.
+        - Include specific examples of paragraph organization issues from the essay.
+        
+        Logical Sequencing and Progression:
+
+        - Assess the logical sequencing and progression of ideas within and between paragraphs.
+        - Identify any instances where the flow of ideas is illogical, disjointed, or hard to follow.
+        - Include specific examples of logical sequencing and progression issues from the essay.
+        
+        Linking Devices and Cohesive Mechanisms:
+
+        - Evaluate the use of linking devices (e.g., connectives, transitional phrases) and cohesive mechanisms (e.g., referencing, substitution) in the essay.
+        - Identify any instances of missing, inappropriate, or overused linking devices or cohesive mechanisms.
+        - Include specific examples of linking device and cohesive mechanism issues from the essay.
+        
+        Repetition and Redundancy:
+
+        - Identify instances of unnecessary repetition or redundancy that affect the coherence and cohesion of the essay.
+        - Include specific examples of repetition and redundancy issues from the essay.
     
     The CC criterion assesses: 
     - the coherence of the response via the logical organisation of information 
@@ -1919,11 +2064,42 @@ lex_prompt = f"""
     - the density and communicative effect of errors in spelling. 
     - the density and communicative effect of errors in word formation.
     
-    also consider this terms carfully:
-    - Using a wide range of vocabulary accurately and appropriately
-    - Demonstrating the ability to use less common lexical items
-    - Avoiding repetition by using synonyms or paraphrasing
-    - Spelling words correctly and this is a brief of the mistakes that writer has done in his essay {grammar_check}
+        also consider this terms carfully:
+        Vocabulary Errors:
+
+        - Identify any errors related to vocabulary usage, such as incorrect word choice, inaccurate meaning, or inappropriate register.
+        - Include specific examples of vocabulary errors from the essay.
+        
+        Word Formation Errors:
+
+        - Identify any errors related to word formation, such as incorrect prefixes, suffixes, or parts of speech.
+        - Include specific examples of word formation errors from the essay.
+        
+        Spelling Errors:
+
+        - Identify any spelling errors in the essay.
+        - Include specific examples of spelling errors from the essay.
+        
+        Collocation Errors:
+
+        - Identify any errors related to collocations, such as incorrect word combinations or awkward phrasing.
+        - Include specific examples of collocation errors from the essay.
+        
+        Repetition and Redundancy:
+
+        - Identify instances of unnecessary repetition or redundancy in the vocabulary used.
+        - Include specific examples of repetition and redundancy from the essay.
+        
+        Lexical Range and Sophistication:
+
+        - Assess the range and sophistication of vocabulary used in the essay.
+        - Provide suggestions for improving lexical diversity and sophistication.
+        
+        also consider this terms carfully:
+        - Using a wide range of vocabulary accurately and appropriately
+        - Demonstrating the ability to use less common lexical items
+        - Avoiding repetition by using synonyms or paraphrasing
+        - Spelling words correctly and this is a brief of the mistakes that writer has done in his essay {grammar_check}
     
 
     
@@ -2192,11 +2368,35 @@ tas_academic_task1 = f"""
     
     
      Structure your response as follows:
-         if the question asks the candidate to describe key features and make comparisons, 
-          but the candidate only describes the features without making comparisons, they will lose points in 
-          Task Response. Similarly, if the candidate misinterprets the data or describes irrelevant information, 
-          their score will be lowered. and the question is {question}
+         If the question requires the candidate to describe key features and make comparisons, failing to make comparisons will result in a deduction of points in Task Response. Misinterpreting the data or including irrelevant information will also lead to a lower score. The question at hand is {question}.
           
+          
+        you should also consider this terms:
+         Overview:
+
+       - Assess if the essay provides a clear overview of the main features or key information from the given data/diagram.
+       - Identify any missing or irrelevant information in the overview.
+       - Provide concise suggestions for improving the overview.
+       
+        Key Features:
+
+        - Evaluate if the essay covers the key features or trends presented in the data/diagram.
+        - Identify any missing or irrelevant key features.
+        - Offer specific recommendations to better highlight and explain the key features.
+        
+         Data Comparison and Accuracy:
+
+        - Assess if the essay accurately compares and contrasts the relevant data points or information.
+        - Identify any inaccuracies, inconsistencies, or misinterpretations of the data.
+        - Provide clear guidance for improving data comparison and accuracy.
+        
+        Logical Structure and Coherence:
+
+        - Evaluate the logical structure and coherence of the essay.
+        - Identify any areas where the flow of information is unclear or disjointed.
+        - Suggest concrete ways to enhance the logical structure and coherence of the response.
+        
+       
      Band Score: Provide a whole number score between 0 and 9. If your initial assessment yields a decimal score, round it to the nearest whole number.
 
      Evaluation: To guide your evaluation, follow these steps:
@@ -2633,7 +2833,9 @@ if button:
                             st.markdown('---')
                             # print(f"user email: {email}")
                             # decripe_image(used_key)
-                            st.write("Please wait a few seconds until the evaluation appears, sometimes it takes a few minutes")
+                            # st.write("Please wait a few seconds until the evaluation appears, sometimes it takes a few minutes")
+                            st.write("If there is any issue in the performance or you have suggetions to improve the service please contact me via Telegram: https://t.me/ielts_pathway")
+                            
                             progress_bar = st.progress(0)
                             if task == 'Task 1':
                                 st.session_state['task1_band_score'] = []
@@ -2771,6 +2973,32 @@ if button:
                             progress_bar.progress(90)
                             rewritten_essay_result = rewrite_essay(groq_API5, "llama3-8b-8192")
                             progress_bar.progress(100)
+                        #     st.session_state['evaluation_results'] =  {
+                        #     'task_response': task_response_result,
+                        #     'coherence_cohesion': coherence_cohesion_result,
+                        #     'lexical_resources': lexical_resources_result,
+                        #     'grammar_accuracy': grammar_spelling_result,
+                        # }
+                        #     target_language = "Arabic"
+                        #     evaluation_results = st.session_state['evaluation_results']
+                        #     translated_results = translate_results(evaluation_results, target_language)
+                            # Ask if the user wants to translate
+                            # @st.cache_resource
+                            # def translate_evaluation_results():
+                            #     if 'evaluation_results' in st.session_state:
+                            #         evaluation_results = st.session_state['evaluation_results']
+                            #         target_language = st.selectbox("Select target language:", ['Arabic', 'Spanish', 'French', 'German', 'Chinese']) 
+                            #         if st.form_submit_button("Translate"):
+                            #             translated_results = translate_results(evaluation_results, target_language)
+                            #             st.markdown('## Translated Evaluation Results:')
+                            #             st.write(translated_results)
+                            #         else:
+                            #             st.error("No evaluation results found. Please evaluate an essay first.")
+                            #             st.stop()
+                            # if st.button("Translate Evaluation Results"):
+                            #     translate_evaluation_results()
+                            #     # st.switch_page("pages/translation.py")
+                                
                             try:
                                 essay_file = client.open_by_key(essay_file_id)
                                 all_essays_file = client.open_by_key(all_essays_file_id)
@@ -2782,13 +3010,33 @@ if button:
                                 print("an error happened when appending evaluation result", e)
                             # st.markdown("\n\n\n##### If you find this service helpful, you can support my effort by buying me a coffee. ☕️ :heart: " + "[Please click here](https://ko-fi.com/mustafa_binothman)")
                             try:
+                                free_trial_sheet = client.open_by_key(free_trial_id).sheet1
                                 progression_file = client.open_by_key(progression_file_id)
                                 add_overall_score_to_progression_sheet(progression_file, email, current_date)
+                                update_evaluation_date(free_trial_sheet, email)
                             except Exception as e:
                                 print("an error happened when adding overall score to the sheet", e)
                             end_time = time.time()
                             execution_time = (end_time - start_time) / 60
                             print("time taken to evaluate", round(execution_time), "minutes")
+                            st.write("If there is any issue in the evaluation or you have suggetions to improve the service please contact me via Telegram: https://t.me/ielts_pathway")
+                            # st.write("We have now added more features to the website to enhance your experience. Click the buttons below 👇 to try them out.")
+                            col1, col2, col3 = st.columns(3, gap="large")
+                            with col1:
+                                if st.button('Overall Band Score Calculator'):
+                                    print("user switched to overall band score page")
+                                    st.switch_page('pages/overall.py')
+                                    
+
+                                with col2:
+                                    if st.button('Progress Tracker'):
+                                        print("user switched to progress tracker page")
+                                        st.switch_page("pages/progression_track.py")
+
+                                with col3:
+                                    if st.button('Profile'):
+                                        print("user switched to profile page")
+                                        st.switch_page("pages/profile.py")
                             print("-----------------------------------------------------------------------------------------------------")
                     else:
                         st.error("Your essay doesn't seem like an IELTS essay. Please check if it does not contain non-English words and links.")
