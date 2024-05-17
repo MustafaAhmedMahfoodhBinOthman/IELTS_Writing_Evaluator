@@ -539,7 +539,7 @@ if st.button('Register'):
     if email is not None and email.strip() != "":
         # Display an animated spinner while processing
         start_time = time.time()
-        with st.spinner('Processing your registration...'):
+        with st.spinner('wait a few seconds...'):
             # time.sleep(13)  # Simulating a long process, replace with actual registration process
 
             if is_valid_gmail(email):
