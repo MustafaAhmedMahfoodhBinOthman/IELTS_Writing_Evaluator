@@ -3021,22 +3021,22 @@ if button:
                             print("time taken to evaluate", round(execution_time), "minutes")
                             st.write("If there is any issue in the evaluation or you have suggetions to improve the service please contact me via Telegram: https://t.me/ielts_pathway")
                             # st.write("We have now added more features to the website to enhance your experience. Click the buttons below 👇 to try them out.")
-                            col1, col2, col3 = st.columns(3, gap="large")
-                            with col1:
-                                if st.button('Overall Band Score Calculator'):
-                                    print("user switched to overall band score page")
-                                    st.switch_page('pages/overall.py')
+                            # col1, col2, col3 = st.columns(3, gap="large")
+                            # with col1:
+                            #     if st.button('Overall Band Score Calculator'):
+                            #         print("user switched to overall band score page")
+                            #         st.switch_page('pages/overall.py')
                                     
 
-                                with col2:
-                                    if st.button('Progress Tracker'):
-                                        print("user switched to progress tracker page")
-                                        st.switch_page("pages/progression_track.py")
+                            #     with col2:
+                            #         if st.button('Progress Tracker'):
+                            #             print("user switched to progress tracker page")
+                            #             st.switch_page("pages/progression_track.py")
 
-                                with col3:
-                                    if st.button('Profile'):
-                                        print("user switched to profile page")
-                                        st.switch_page("pages/profile.py")
+                            #     with col3:
+                            #         if st.button('Profile'):
+                            #             print("user switched to profile page")
+                            #             st.switch_page("pages/profile.py")
                             print("-----------------------------------------------------------------------------------------------------")
                     else:
                         st.error("Your essay doesn't seem like an IELTS essay. Please check if it does not contain non-English words and links.")
