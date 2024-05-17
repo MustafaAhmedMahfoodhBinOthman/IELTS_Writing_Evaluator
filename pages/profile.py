@@ -83,7 +83,7 @@ side_check_button3 = st.sidebar.button('Profile', type="primary", use_container_
 
 side_check_button = st.sidebar.button('Check Your Essay', type="secondary", use_container_width=True)
 if side_check_button:
-    st.switch_page("pages/ielts_writing.py")
+    st.switch_page("ielts_writing.py")
 # st.sidebar.write("If you want to calculate the overall band score of Task 1 and Task 2 press the button 👇")
 
 
