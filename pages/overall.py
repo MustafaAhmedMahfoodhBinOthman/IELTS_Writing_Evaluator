@@ -145,7 +145,9 @@ st.sidebar.title('IELTS Writing Evaluator (Free)')
 type_check = 'primary'
 type_take = 'secondary'
 
-
+side_check_button3 = st.sidebar.button('Profile', type=type_take, use_container_width=True)
+if side_check_button3:
+    st.switch_page("pages/profile.py")
 side_check_button = st.sidebar.button('Check Your Essay', type=type_take, use_container_width=True)
 if side_check_button:
     st.switch_page("ielts_writing.py")

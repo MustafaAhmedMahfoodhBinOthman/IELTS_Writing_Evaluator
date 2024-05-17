@@ -1,7 +1,7 @@
 import streamlit as st
 st.set_page_config(
     
-    page_title= 'Progress Tracker'
+    page_title= 'Overall Band score Calculator'
     # page_icon=
 )
 hide_st_style = """
@@ -52,7 +52,9 @@ st.sidebar.title("""
 st.sidebar.title('IELTS Writing Evaluator (Free)')
 # st.sidebar.write('This is currently in Beta version, and everyday it will be updated to reach better evalaution GOOD LUCK 😊⚡')
 # st.sidebar.write('There will be many special features and big improvments coming soon😊')
-
+side_check_button3 = st.sidebar.button('Profile', type="secondary", use_container_width=True)
+if side_check_button3:
+    st.switch_page("pages/profile.py")
 side_check_button = st.sidebar.button('Check Your Essay', type='secondary', use_container_width=True)
 if side_check_button:
     st.switch_page("ielts_writing.py")
@@ -141,7 +143,7 @@ def get_user_scores(user_email):
 if 'registered_email' in st.session_state and st.session_state['registered_email']:
     df_scores = get_user_scores(st.session_state['registered_email'])
 else:
-    st.warning("Please register to view your progress.")
+    st.warning("Please register to view your progression.")
     st.stop()
 
 st.markdown("## Progression Tracker")
