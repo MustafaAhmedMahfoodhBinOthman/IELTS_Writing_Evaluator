@@ -536,21 +536,30 @@ if 'user_exist' not in st.session_state:
 if 'registered_email' not in st.session_state:
     st.session_state.registered_email = None
 if st.button('Register'):
-    # Check if the email is not None and not an empty string after stripping whitespace
     if email is not None and email.strip() != "":
-        # Proceed with the registration process
-        if is_valid_gmail(email):
-            print(f"email is valied")
-            
-            registration_process(email)
-            st.session_state.user_exist = True
-            st.session_state.registered_email = email
-            
-            # print(user_exist)
-            # st.success('Registration successful!')
-        else:
-            st.error('Incorrect Gmail address.')
-            st.stop()
+        # Display an animated spinner while processing
+        start_time = time.time()
+        with st.spinner('Processing your registration...'):
+            # time.sleep(13)  # Simulating a long process, replace with actual registration process
+
+            if is_valid_gmail(email):
+                print(f"email is valid")
+                
+                registration_process(email)
+                st.session_state.user_exist = True
+                st.session_state.registered_email = email 
+                
+                # Clear the spinner message once the registration is complete
+                st.empty()
+                end_time = time.time()
+                execution_time = (end_time - start_time) 
+                print("time taken to register", round(execution_time), "seconds")
+                           
+                # print(user_exist)
+                # st.success('Registration successful!')
+            else:
+                st.error('Incorrect Gmail address.')
+                st.stop()
     else:
         st.error('Please enter your Gmail.')
         st.stop()
