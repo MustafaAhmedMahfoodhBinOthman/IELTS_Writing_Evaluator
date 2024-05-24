@@ -1038,7 +1038,7 @@ def translate_results(results, target_language):
             response2 = model.generate_content(prompt)
             response2.resolve()
             describe = response2.text
-            print(describe)
+            #print(describe)
             st.markdown(
             f"""
             <div dir="rtl" style="text-align: right; font-size: 40px;">
