@@ -1008,6 +1008,53 @@ def synonym(API= groq_API1, model2=llama):
                 print("Sorry, there is an unexpected problem happened Please try again later, if the problem persists please contact me")
                 print("stop running replicate (synonyms)")
                 st.stop()
+def translate_results(results, target_language):
+    # Construct the prompt for translation
+    prompt = f"""
+    Translate the provided IELTS evaluation text into {target_language}. Ensure that the translation is accurate, contextually appropriate, and adheres to the linguistic standards of {target_language}.
+    Instructions:
+
+    1- Content Focus: Only include the evaluation text. Exclude any non-evaluative content to maintain the focus on the assessment aspects of the text.
+    2- Rearrange the text to align with the typical format and flow of {target_language}, while preserving the original order and organization of content.
+    3- Language Specifics:
+    - You should translate based on the required context. If the context requires any word or sentence to remain in English, leave it in English for grammar or spelling purposes or any place in the text it always be between two (""). Be cautious when you encounter this.
+    - Adjust the sentence structure and phrasing to fit the grammatical and stylistic norms of {target_language}, ensuring that the translation reads naturally to native speakers.
+    4- Accuracy and Contextual Integrity:
+    -Carefully maintain the original context and meaning of the evaluation text during translation.
+    - Ensure that all translated terms and phrases are appropriate for the context and do not alter the evaluative tone or content. 
+    
+    the evaluation text that neededto translates is:
+    {results}
+    """
+
+    # Use Groq API for translation
+    max_retries = 5
+    retries = 0
+    while retries < max_retries:
+        try:
+            used_key = random.choice(keys)
+            genai.configure(api_key=used_key)
+            model = genai.GenerativeModel('gemini-1.5-pro-latest')
+            response2 = model.generate_content(prompt)
+            response2.resolve()
+            describe = response2.text
+            print(describe)
+            st.markdown(
+            f"""
+            <div dir="rtl" style="text-align: right; font-size: 40px;">
+                <p>{describe}</p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+            break
+        except Exception as e:
+            retries +=1
+            st.error("Failed to translate")
+            print(e)
+    # return translated_text
+
+
 def rewrite_essay(API=groq_API5, model=llama):
 
     re_prompt = f"""
@@ -2950,55 +2997,133 @@ if button:
                                 print("an error happened when appending scores", e)
                             st.markdown(f"## {task} Band Score: {float(overall_score)} / 9")
                             overall_score_result = f'Band Score: {float(overall_score)} / 9'
-                            st.markdown('---')
-                            st.markdown('## Here is the most repeated words in your essay')
-                            stop_w = set(STOPWORDS)
+                        #     translate = st.markdown(
+                        #     f"""
+                        #     <div dir="rtl" style="text-align: right;">
+                        #         <h3>ترجمة التقييم إلى اللغة العربية</h3>
+                        #     </div>
+                        #     """,
+                        #     unsafe_allow_html=True
+                        # )
+                            with st.spinner('wait few seconds to complete the process...'):
+                                with st.expander("ترجمة التقييم إلى اللغة العربية"):
+                                    # st.markdown("### ترجمة التقييم إلى اللغة العربية")
                                 
-                            word_cloud = WordCloud(stopwords=stop_w, width= 800, height=400, background_color='white').generate(essay)
-                            img = word_cloud.to_image()
-                            st.image(img)
-                            st.markdown('---')
-                            words_charts()
-                            st.markdown('---')
-                            st.markdown('### Recommended Synonyms of the repeated words')
-                            # synonym(groq_API4, llama)
-                            print("Synonyms")
-                            progress_bar.progress(70)
-                            synonyms_result = synonym(groq_API4, "llama3-8b-8192")
-                            st.markdown('---')
-                            
-                            st.markdown('### Rewriting your essay')
-                            # rewrite_essay(groq_API5, llama)
-                            print("Rewrite essay")
-                            progress_bar.progress(90)
-                            rewritten_essay_result = rewrite_essay(groq_API5, "llama3-8b-8192")
-                            progress_bar.progress(100)
-                        #     st.session_state['evaluation_results'] =  {
-                        #     'task_response': task_response_result,
-                        #     'coherence_cohesion': coherence_cohesion_result,
-                        #     'lexical_resources': lexical_resources_result,
-                        #     'grammar_accuracy': grammar_spelling_result,
-                        # }
-                        #     target_language = "Arabic"
-                        #     evaluation_results = st.session_state['evaluation_results']
-                        #     translated_results = translate_results(evaluation_results, target_language)
-                            # Ask if the user wants to translate
-                            # @st.cache_resource
-                            # def translate_evaluation_results():
-                            #     if 'evaluation_results' in st.session_state:
-                            #         evaluation_results = st.session_state['evaluation_results']
-                            #         target_language = st.selectbox("Select target language:", ['Arabic', 'Spanish', 'French', 'German', 'Chinese']) 
-                            #         if st.form_submit_button("Translate"):
-                            #             translated_results = translate_results(evaluation_results, target_language)
-                            #             st.markdown('## Translated Evaluation Results:')
-                            #             st.write(translated_results)
-                            #         else:
-                            #             st.error("No evaluation results found. Please evaluate an essay first.")
-                            #             st.stop()
-                            # if st.button("Translate Evaluation Results"):
-                            #     translate_evaluation_results()
-                            #     # st.switch_page("pages/translation.py")
+                                    # st.markdown("## الاستجابة للمهمة(Task Response)")
+                                    st.markdown(
+                                    f"""
+                                    <div dir="rtl" style="text-align: right;">
+                                        <h3> الاستجابة للمهمة</h3>
+                                    </div>
+                                    """,
+                                    unsafe_allow_html=True
+                                )
+                                    translate_results(task_response_result, "Arabic")
+                                    st.markdown('---')
+                                    # st.markdown("## الترابط و التماسك (Coherence and Cohesion)")
+                                    st.markdown(
+                                    f"""
+                                    <div dir="rtl" style="text-align: right;">
+                                        <h3>الترابط و التماسك </h3>
+                                    </div>
+                                    """,
+                                    unsafe_allow_html=True
+                                )
+                                    translate_results(coherence_cohesion_result, "Arabic")
+                                    st.markdown('---')
+                                    # st.markdown("## الموارد اللغوية واللفظية (Lexical Resources)")
+                                    st.markdown(
+                                    f"""
+                                    <div dir="rtl" style="text-align: right;">
+                                        <h3>الموارد اللغوية واللفظية </h3>
+                                    </div>
+                                    """,
+                                    unsafe_allow_html=True          
+                                )
+                                    translate_results(lexical_resources_result, "Arabic")
+                                    st.markdown('---')
+                                    # st.markdown("## قواعداللغةوالدقة(Grammar and Acurracy)")
+                                    st.markdown(
+                                    f"""
+                                    <div dir="rtl" style="text-align: right;">
+                                        <h3>قواعد اللغة والدقة </h3>
+                                    </div>
+                                    """,
+                                    unsafe_allow_html=True
+                                )
+                                    translate_results(grammar_spelling_result, "Arabic")
+                                    st.markdown('---')
+                                    st.markdown(
+                                    f"""
+                                    <div dir="rtl" style="text-align: right;">
+                                        <h5>أبرز ملاحظات القواعد والإملاء</h5>
+                                    </div>
+                                    """,
+                                    unsafe_allow_html=True
+                                )
+                                    translate_results(grammar_spelling2_result, "Arabic")
+                                    st.markdown('---')
+                                    st.markdown(
+                                    f"""
+                                    <div dir="rtl" style="text-align: right;">
+                                        <p>إذا كانت هناك أي مشكلة في التقييم أو لديك اقتراحات لتحسين الخدمة، فيرجى التواصل معي عبر تيليجرام: </p>
+                                    </div>
+                                    """,
+                                    unsafe_allow_html=True
+                                )
+                                    st.write("https://t.me/ielts_pathway")
+                                st.markdown('---')
+                                st.markdown('## Here is the most repeated words in your essay')
+                                stop_w = set(STOPWORDS)
+                                    
+                                word_cloud = WordCloud(stopwords=stop_w, width= 800, height=400, background_color='white').generate(essay)
+                                img = word_cloud.to_image()
+                                st.image(img)
+                                st.markdown('---')
+                                words_charts()
+                                st.markdown('---')
+                                st.markdown('### Recommended Synonyms of the repeated words')
+                                # synonym(groq_API4, llama)
+                                print("Synonyms")
+                                progress_bar.progress(70)
+                                synonyms_result = synonym(groq_API4, "llama3-8b-8192")
+                                st.markdown('---')
                                 
+                                st.markdown('### Rewriting your essay')
+                                # rewrite_essay(groq_API5, llama)
+                                print("Rewrite essay")
+                                progress_bar.progress(90)
+                                rewritten_essay_result = rewrite_essay(groq_API5, "llama3-8b-8192")
+                                progress_bar.progress(100)
+                                st.markdown('---')
+                                # support_arabic_text(all=True)
+                                
+                            #     st.session_state['evaluation_results'] =  {
+                            #     'task_response': task_response_result,
+                            #     'coherence_cohesion': coherence_cohesion_result,
+                            #     'lexical_resources': lexical_resources_result,
+                            #     'grammar_accuracy': grammar_spelling_result,
+                            # }
+                            #     target_language = "Arabic"
+                            #     evaluation_results = st.session_state['evaluation_results']
+                            #     translated_results = translate_results(evaluation_results, target_language)
+                                # Ask if the user wants to translate
+                                # @st.cache_resource
+                                # def translate_evaluation_results():
+                                #     if 'evaluation_results' in st.session_state:
+                                #         evaluation_results = st.session_state['evaluation_results']
+                                #         target_language = st.selectbox("Select target language:", ['Arabic', 'Spanish', 'French', 'German', 'Chinese']) 
+                                #         if st.form_submit_button("Translate"):
+                                #             translated_results = translate_results(evaluation_results, target_language)
+                                #             st.markdown('## Translated Evaluation Results:')
+                                #             st.write(translated_results)
+                                #         else:
+                                #             st.error("No evaluation results found. Please evaluate an essay first.")
+                                #             st.stop()
+                                # if st.button("Translate Evaluation Results"):
+                                #     translate_evaluation_results()
+                                #     # st.switch_page("pages/translation.py")
+                                    
                             try:
                                 essay_file = client.open_by_key(essay_file_id)
                                 all_essays_file = client.open_by_key(all_essays_file_id)
@@ -3019,7 +3144,8 @@ if button:
                             end_time = time.time()
                             execution_time = (end_time - start_time) / 60
                             print("time taken to evaluate", round(execution_time), "minutes")
-                            st.write("If there is any issue in the evaluation or you have suggetions to improve the service please contact me via Telegram: https://t.me/ielts_pathway")
+                            # st.write("If there is any issue in the evaluation or you have suggetions to improve the service please contact me via Telegram: https://t.me/ielts_pathway")
+                        
                             # st.write("We have now added more features to the website to enhance your experience. Click the buttons below 👇 to try them out.")
                             # col1, col2, col3 = st.columns(3, gap="large")
                             # with col1:
@@ -3027,16 +3153,14 @@ if button:
                             #         print("user switched to overall band score page")
                             #         st.switch_page('pages/overall.py')
                                     
-
                             #     with col2:
-                            #         if st.button('Progress Tracker'):
-                            #             print("user switched to progress tracker page")
-                            #             st.switch_page("pages/progression_track.py")
-
+                                #         if st.button('Progress Tracker'):
+                                #             print("user switched to progress tracker page")
+                                #             st.switch_page("pages/progression_track.py")
                             #     with col3:
-                            #         if st.button('Profile'):
-                            #             print("user switched to profile page")
-                            #             st.switch_page("pages/profile.py")
+                                        # if st.button('Profile'):
+                                        #     print("user switched to profile page")
+                                        #     st.switch_page("pages/profile.py")
                             print("-----------------------------------------------------------------------------------------------------")
                     else:
                         st.error("Your essay doesn't seem like an IELTS essay. Please check if it does not contain non-English words and links.")
@@ -3047,7 +3171,3 @@ if button:
             else:
                 st.error('Please register your Gmail')
                 st.stop()  
-
- 
-
-
