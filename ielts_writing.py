@@ -138,6 +138,43 @@ progression_file_id = '1yCimM9WMtDdXEjJPMm9SX9blvQx541tFDKRiL0upovA'
 essay_file_id = '1TD000SU1S2RqJp99e9fMeR-M8UsyCOdTXInqFgQpnR0'
 all_essays_file_id = "1-_fGuj3WVyR2rhDsRaKOzKVAJW7Vxuy5D6Oacm1pHjA"
 
+
+def get_location():
+    import requests
+    # Geoapify endpoint for IP Geolocation
+    try:
+        api_key2 = 'f26824af9014439a984af8b3a32538d2'
+        url = f"https://api.geoapify.com/v1/ipinfo?apiKey={api_key2}"
+        
+        # Make the request
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            # Extract IP address, city, and country from the response
+            # ip_address = data.get('ip', 'Unknown')
+            city = data['city']['name'] if 'city' in data and 'name' in data['city'] else "Unknown"
+            country = data['country']['name'] if 'country' in data and 'name' in data['country'] else "Unknown"
+            return city, country
+        else:
+            return "Unknown", "Unknown"
+    except Exception as e:
+        print(e)
+# from browser_detection import browser_detection_engine
+
+# def get_device_type():
+#     try:
+#         browser_stats = browser_detection_engine()
+#         print(browser_stats)
+#         if 'isDesktop' in browser_stats and browser_stats['isDesktop']:
+#             return 'Desktop'
+#         elif 'isMobile' in browser_stats and browser_stats['isMobile']:
+#             return 'Mobile'
+#         else:
+#             return 'Unknown'
+#     except Exception as e: 
+#         print(e)
+#         return 'Unknown'
+
 # Function to check if an email exists in a given sheet
 def email_exists(sheet, email):
     data = sheet.get_all_values()
@@ -162,7 +199,25 @@ def add_user(sheet, email, number):
     # If no empty row is found, add a new row at the end
     # Include the current date in the new row
     sheet.append_row([email, number, current_date])
-
+def add_location_and_device(sheet, email, country, city):
+    data = sheet.get_all_values()
+    for i, row in enumerate(data[1:], start=2): # Start from the second row (index 1)
+        if row[0] == email: # Find the row with the matching email
+            # Update the country column
+            sheet.update_cell(i, 5, country)
+            # Update the city column
+            sheet.update_cell(i, 6, city)
+            # Update the desktop device type column
+            # if device_type == 'Desktop':
+            #     sheet.update_cell(i, 7, 'True')
+            # else:
+            #     sheet.update_cell(i, 7, '')
+            # # Update the mobile device type column
+            # if device_type == 'Mobile':
+            #     sheet.update_cell(i, 8, 'True')
+            # else:
+            #     sheet.update_cell(i, 8, '')
+            return
 # Function to validate Gmail email
 def is_valid_gmail(email):
     # first it should validate the email there are many websites can do that
@@ -242,6 +297,8 @@ def registration_process(email):
     # essay_file = client.open_by_key(essay_file_id)
     
     try:
+        city, country = get_location()
+        # device_type = get_device_type()
         progression_file = client.open_by_key(progression_file_id)
         essay_file = client.open_by_key(essay_file_id)
         subscription_sheet = client.open_by_key(subscription_id).sheet1
@@ -268,6 +325,7 @@ def registration_process(email):
             free_trial_sheet = client.open_by_key(free_trial_id).sheet1
             if email_exists(free_trial_sheet, email):
                 print(f'{email} is already exists in the Free Trial.')
+                add_location_and_device(free_trial_sheet, email, country, city)
                 user_exist = True
                 try:
                     user_sheet = progression_file.worksheet(email)
@@ -289,6 +347,7 @@ def registration_process(email):
                     # progression_file = client.open_by_key(progression_file_id)
                     # essay_file = client.open_by_key(essay_file_id)
                     add_user(free_trial_sheet, email, 5)
+                    add_location_and_device(free_trial_sheet, email, country, city)
                     st.success('Registered successfully!')
                     print(f"{email} Registered successfully")
                     # user_exist =True
@@ -308,6 +367,7 @@ def registration_process(email):
         print(e)
         st.error("Registration faild, try again")
         st.stop()
+
 def find_user_sheet(progression_file, email):
     # Get a list of all sheets in the progression file
     sheets = progression_file.worksheets()
