@@ -33,7 +33,7 @@ from google.oauth2 import service_account
 from openai import OpenAI
 import time
 from supabase import create_client, Client
-from browser_detection import browser_detection_engine
+# from browser_detection import browser_detection_engine
 # with open("BayanPlusTracking.html", "r") as f:
 #     html_code = f.read()
 #     components.html(html_code, height=0)
@@ -182,19 +182,20 @@ def get_location2():
         return ip_address, city, country
     else:
         return "Unknown", "Unknown", "Unknown"
-def get_device_type():
-    try:
-        browser_stats = browser_detection_engine()
-        if 'isDesktop' in browser_stats and browser_stats['isDesktop']:
-            return 'Desktop'
-        elif 'isMobile' in browser_stats and browser_stats['isMobile']:
-            return 'Mobile'
-        else:
-            return 'Unknown'
-    except Exception as e: 
-        print(e)
-        return 'Unknown'
-device_type = get_device_type()
+# def get_device_type():
+#     try:
+#         browser_stats = browser_detection_engine()
+#         if 'isDesktop' in browser_stats and browser_stats['isDesktop']:
+#             return 'Desktop'
+#         elif 'isMobile' in browser_stats and browser_stats['isMobile']:
+#             return 'Mobile'
+#         else:
+#             return 'Unknown'
+#     except Exception as e: 
+#         print(e)
+#         return 'Unknown'
+# device_type = get_device_type()
+device_type = 'Unknown'
 def store_page_view(device_type):
     try:
         ip_address, city, country = get_location2()
