@@ -15,4 +15,4 @@ openai
 plotly
 pandas
 supabase
-browser_detection
+
