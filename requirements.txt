@@ -15,4 +15,4 @@ openai
 plotly
 pandas
 supabase
-
+streamlit-browser-engine
