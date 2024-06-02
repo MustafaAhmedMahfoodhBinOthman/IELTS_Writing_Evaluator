@@ -28,10 +28,12 @@ import pyperclip
 import replicate
 import gspread
 from google.oauth2.service_account import Credentials
-from datetime import datetime
+from datetime import datetime, timedelta
 from google.oauth2 import service_account
 from openai import OpenAI
 import time
+from supabase import create_client, Client
+from browser_detection import browser_detection_engine
 # with open("BayanPlusTracking.html", "r") as f:
 #     html_code = f.read()
 #     components.html(html_code, height=0)
@@ -103,6 +105,10 @@ model_vision = genai.GenerativeModel('gemini-pro-vision')
 type_check = 'primary'
 type_take = 'secondary'
 
+# -----------------------------  supabase info  ----------------------------------------
+url = "https://twrfzriopjdkicchfqzs.supabase.co"
+key = st.secrets['supabase']
+supabase: Client = create_client(url, key)
 # "-------------------------------------------------------------------"
 #google spreadsheet system
 
@@ -159,22 +165,66 @@ def get_location():
             return "Unknown", "Unknown"
     except Exception as e:
         print(e)
-# from browser_detection import browser_detection_engine
-
-# def get_device_type():
-#     try:
-#         browser_stats = browser_detection_engine()
-#         print(browser_stats)
-#         if 'isDesktop' in browser_stats and browser_stats['isDesktop']:
-#             return 'Desktop'
-#         elif 'isMobile' in browser_stats and browser_stats['isMobile']:
-#             return 'Mobile'
-#         else:
-#             return 'Unknown'
-#     except Exception as e: 
-#         print(e)
-#         return 'Unknown'
-
+def get_location2():
+    import requests
+    # Geoapify endpoint for IP Geolocation
+    api_key2 = 'f26824af9014439a984af8b3a32538d2'
+    url = f"https://api.geoapify.com/v1/ipinfo?apiKey={api_key2}"
+    
+    # Make the request
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        # Extract IP address, city, and country from the response
+        ip_address = data.get('ip', 'Unknown')
+        city = data['city']['name'] if 'city' in data and 'name' in data['city'] else "Unknown"
+        country = data['country']['name'] if 'country' in data and 'name' in data['country'] else "Unknown"
+        return ip_address, city, country
+    else:
+        return "Unknown", "Unknown", "Unknown"
+def get_device_type():
+    try:
+        browser_stats = browser_detection_engine()
+        if 'isDesktop' in browser_stats and browser_stats['isDesktop']:
+            return 'Desktop'
+        elif 'isMobile' in browser_stats and browser_stats['isMobile']:
+            return 'Mobile'
+        else:
+            return 'Unknown'
+    except Exception as e: 
+        print(e)
+        return 'Unknown'
+device_type = get_device_type()
+def store_page_view(device_type):
+    try:
+        ip_address, city, country = get_location2()
+        
+        # Get the current timestamp
+        current_timestamp = datetime.now()
+        
+        # Format the timestamp to include only date, hours, and minutes
+        formatted_timestamp = current_timestamp.strftime("%Y-%m-%d %H:%M")
+        
+        # Calculate the timestamp for the last 30 minutes
+        last_30_minutes = current_timestamp - timedelta(minutes=30)
+        
+        # Check if a view from the same IP address exists within the last 30 minutes
+        query = supabase.table("page_views").select("*").filter("ip_address", "eq", ip_address).filter("timestamp", "gt", last_30_minutes).limit(1)
+        result = query.execute()
+        
+        if len(result.data) == 0:
+            data = {
+                "ip_address": ip_address,
+                "city": city,
+                "country": country,
+                "device_type": device_type,
+                "timestamp": formatted_timestamp
+            }
+            supabase.table("page_views").insert(data).execute()
+            print(data)
+    except Exception as e:
+        print(f"Error storing page view data: {str(e)}")
+store_page_view(device_type)
 # Function to check if an email exists in a given sheet
 def email_exists(sheet, email):
     data = sheet.get_all_values()
