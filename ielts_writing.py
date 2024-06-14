@@ -227,49 +227,80 @@ def store_page_view(device_type):
         print(f"Error storing page view data: {str(e)}")
 store_page_view(device_type)
 # Function to check if an email exists in a given sheet
-def email_exists(sheet, email):
-    data = sheet.get_all_values()
-    emails = [row[0] for row in data[1:]] # Skip the header row
-    return email in emails
-
+# def email_exists(sheet, email):
+#     data = sheet.get_all_values()
+#     emails = [row[0] for row in data[1:]] # Skip the header row
+#     return email in emails
+def email_exists(table_name, email): #supabase   
+    response = supabase.table(table_name).select('email').eq('email', email).execute()
+    data = response.data
+    return len(data) > 0
 # Function to find the next empty row and add data
-def add_user(sheet, email, number):
-    # Get the current date in the format you specified
-    current_date = datetime.now().strftime('%d/%m/%Y')
+# def add_user(sheet, email, number):
+#     # Get the current date in the format you specified
+#     current_date = datetime.now().strftime('%d/%m/%Y')
     
-    data = sheet.get_all_values()
-    for i, row in enumerate(data[1:], start=2): # Start from the second row (index 1)
-        if not row[0]: # If the email column is empty
-            # Update the email column
-            sheet.update_cell(i, 1, email)
-            # Update the next column with the number
-            sheet.update_cell(i, 2, number)
-            # Update the next column with the current date
-            sheet.update_cell(i, 3, current_date)
-            return
-    # If no empty row is found, add a new row at the end
-    # Include the current date in the new row
-    sheet.append_row([email, number, current_date])
-def add_location_and_device(sheet, email, country, city):
-    data = sheet.get_all_values()
-    for i, row in enumerate(data[1:], start=2): # Start from the second row (index 1)
-        if row[0] == email: # Find the row with the matching email
-            # Update the country column
-            sheet.update_cell(i, 5, country)
-            # Update the city column
-            sheet.update_cell(i, 6, city)
-            # Update the desktop device type column
-            # if device_type == 'Desktop':
-            #     sheet.update_cell(i, 7, 'True')
-            # else:
-            #     sheet.update_cell(i, 7, '')
-            # # Update the mobile device type column
-            # if device_type == 'Mobile':
-            #     sheet.update_cell(i, 8, 'True')
-            # else:
-            #     sheet.update_cell(i, 8, '')
-            return
+#     data = sheet.get_all_values()
+#     for i, row in enumerate(data[1:], start=2): # Start from the second row (index 1)
+#         if not row[0]: # If the email column is empty
+#             # Update the email column
+#             sheet.update_cell(i, 1, email)
+#             # Update the next column with the number
+#             sheet.update_cell(i, 2, number)
+#             # Update the next column with the current date
+#             sheet.update_cell(i, 3, current_date)
+#             return
+#     # If no empty row is found, add a new row at the end
+#     # Include the current date in the new row
+#     sheet.append_row([email, number, current_date])
+def add_user(email, number): #supabase
+    # Get the current date in the format you specified
+    current_date = datetime.now().strftime('%Y-%m-%d')  # Supabase expects date in 'YYYY-MM-DD' format
+    
+    try:
+        # Insert the new user into the specified table
+        response = supabase.table("free_trial").insert({
+            "email": email,
+            "attempts": number,
+            "date_of_registration": current_date,
+            # "last_used_date": current_date,  # Assuming you want to set the last used date to the current date as well
+            # "country": None,  # Assuming these fields are optional and can be updated later
+            # "city": None
+        }).execute()
+        
+        print(f"User {email} added successfully. \n {response}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+# def add_location_and_device(sheet, email, country, city):
+#     data = sheet.get_all_values()
+#     for i, row in enumerate(data[1:], start=2): # Start from the second row (index 1)
+#         if row[0] == email: # Find the row with the matching email
+#             # Update the country column
+#             sheet.update_cell(i, 5, country)
+#             # Update the city column
+#             sheet.update_cell(i, 6, city)
+#             # Update the desktop device type column
+#             # if device_type == 'Desktop':
+#             #     sheet.update_cell(i, 7, 'True')
+#             # else:
+#             #     sheet.update_cell(i, 7, '')
+#             # # Update the mobile device type column
+#             # if device_type == 'Mobile':
+#             #     sheet.update_cell(i, 8, 'True')
+#             # else:
+#             #     sheet.update_cell(i, 8, '')
+#             return
+
 # Function to validate Gmail email
+def add_location_and_device(email, country, city): #supabase
+    try:
+        # Update the user's country and city in the free_trial table
+        supabase.table('free_trial').update({
+            "country": country,
+            "city": city
+        }).eq('email', email).execute()
+    except Exception as e:
+        print(f"An error occurred: {e}")
 def is_valid_gmail(email):
     # first it should validate the email there are many websites can do that
     # also detecting ip adress
@@ -342,83 +373,108 @@ def essay_user_sheet(essay_file, email):
         # st.error(f"Error creating sheet: {e}")
         return None
 # user_exist = False
-def registration_process(email):
-    # subscription_sheet = client.open_by_key(subscription_id).sheet1
-    # progression_file = client.open_by_key(progression_file_id)
-    # essay_file = client.open_by_key(essay_file_id)
+# def registration_process(email):
+#     # subscription_sheet = client.open_by_key(subscription_id).sheet1
+#     # progression_file = client.open_by_key(progression_file_id)
+#     # essay_file = client.open_by_key(essay_file_id)
     
+#     try:
+#         city, country = get_location()
+#         # device_type = get_device_type()
+#         progression_file = client.open_by_key(progression_file_id)
+#         essay_file = client.open_by_key(essay_file_id)
+#         subscription_sheet = client.open_by_key(subscription_id).sheet1
+#         if email_exists(subscription_sheet, email):
+#             print('You are subscribed')
+#             # user_exist =  True
+#             try:
+#                 user_sheet = progression_file.worksheet(email)
+#             except Exception as e:
+#                 user_sheet = False
+#             # user_sheet = progression_file.worksheet(email)
+#             if not user_sheet:
+#                 # progression_file = client.open_by_key(progression_file_id)
+#                 user_sheet = create_user_sheet(progression_file, email)
+#                 print(f"Created new sheet '{email}' for the user.")
+#             try:
+#                 essay_sheet = essay_file.worksheet(email)
+#             except Exception as e:
+#                 essay_sheet = False
+#             if not essay_sheet:
+#                 essay_sheet = essay_user_sheet(essay_file, email)
+#                 print(f"Created new sheet '{email}' for the user.")
+#         else:
+#             free_trial_sheet = client.open_by_key(free_trial_id).sheet1
+#             if email_exists(free_trial_sheet, email):
+#                 print(f'{email} is already exists in the Free Trial.')
+#                 add_location_and_device(free_trial_sheet, email, country, city)
+#                 user_exist = True
+#                 try:
+#                     user_sheet = progression_file.worksheet(email)
+#                 except Exception as e:
+#                     user_sheet = False
+#                 if not user_sheet:
+#                     user_sheet = create_user_sheet(progression_file, email)
+#                     print(f"Created new sheet '{email}' for the user.")
+#                 try:
+#                     essay_sheet = essay_file.worksheet(email)
+#                 except Exception as e:
+#                     essay_sheet = False
+#                 if not essay_sheet:
+#                     essay_sheet = essay_user_sheet(essay_file, email)
+#                     print(f"Created new sheet '{email}' for the user.")
+#             else:
+#                 if is_real_gmail(email):
+#                     print("email is real")
+#                     # progression_file = client.open_by_key(progression_file_id)
+#                     # essay_file = client.open_by_key(essay_file_id)
+#                     add_user(free_trial_sheet, email, 5)
+#                     add_location_and_device(free_trial_sheet, email, country, city)
+#                     st.success('Registered successfully!')
+#                     print(f"{email} Registered successfully")
+#                     # user_exist =True
+#                     user_sheet = create_user_sheet(progression_file, email)
+#                     print(f"Created new sheet '{email}' for the user.")
+#                     essay_sheet = essay_user_sheet(essay_file, email)
+#                     print(f"Created new sheet '{email}' for the user.")
+#                 else:
+#                     # st.empty()
+#                     print("email is not real")
+#                     st.error('Invalid Gmail address. please use a real Gmail account')
+#                     st.stop()
+#         if remove_duplicate_emails(free_trial_sheet, email):
+#             print('Duplicate entries found and removed.')
+#     except Exception as e:
+#         print(f"erorr while checking the registration email: {email}")
+#         print(e)
+#         st.error("Registration faild, try again")
+#         st.stop()
+def registration_process(email): #supabase
     try:
         city, country = get_location()
-        # device_type = get_device_type()
-        progression_file = client.open_by_key(progression_file_id)
-        essay_file = client.open_by_key(essay_file_id)
-        subscription_sheet = client.open_by_key(subscription_id).sheet1
-        if email_exists(subscription_sheet, email):
+        
+        # Check if the email exists in the subscription table
+        if email_exists('subscriptions', email):
             print('You are subscribed')
-            # user_exist =  True
-            try:
-                user_sheet = progression_file.worksheet(email)
-            except Exception as e:
-                user_sheet = False
-            # user_sheet = progression_file.worksheet(email)
-            if not user_sheet:
-                # progression_file = client.open_by_key(progression_file_id)
-                user_sheet = create_user_sheet(progression_file, email)
-                print(f"Created new sheet '{email}' for the user.")
-            try:
-                essay_sheet = essay_file.worksheet(email)
-            except Exception as e:
-                essay_sheet = False
-            if not essay_sheet:
-                essay_sheet = essay_user_sheet(essay_file, email)
-                print(f"Created new sheet '{email}' for the user.")
         else:
-            free_trial_sheet = client.open_by_key(free_trial_id).sheet1
-            if email_exists(free_trial_sheet, email):
+            # Check if the email exists in the free_trial table
+            if email_exists('free_trial', email):
                 print(f'{email} is already exists in the Free Trial.')
-                add_location_and_device(free_trial_sheet, email, country, city)
-                user_exist = True
-                try:
-                    user_sheet = progression_file.worksheet(email)
-                except Exception as e:
-                    user_sheet = False
-                if not user_sheet:
-                    user_sheet = create_user_sheet(progression_file, email)
-                    print(f"Created new sheet '{email}' for the user.")
-                try:
-                    essay_sheet = essay_file.worksheet(email)
-                except Exception as e:
-                    essay_sheet = False
-                if not essay_sheet:
-                    essay_sheet = essay_user_sheet(essay_file, email)
-                    print(f"Created new sheet '{email}' for the user.")
+                add_location_and_device(email, country, city)
             else:
                 if is_real_gmail(email):
                     print("email is real")
-                    # progression_file = client.open_by_key(progression_file_id)
-                    # essay_file = client.open_by_key(essay_file_id)
-                    add_user(free_trial_sheet, email, 5)
-                    add_location_and_device(free_trial_sheet, email, country, city)
+                    add_user(email, 5)
+                    add_location_and_device(email, country, city)
                     st.success('Registered successfully!')
                     print(f"{email} Registered successfully")
-                    # user_exist =True
-                    user_sheet = create_user_sheet(progression_file, email)
-                    print(f"Created new sheet '{email}' for the user.")
-                    essay_sheet = essay_user_sheet(essay_file, email)
-                    print(f"Created new sheet '{email}' for the user.")
                 else:
-                    # st.empty()
                     print("email is not real")
                     st.error('Invalid Gmail address. please use a real Gmail account')
                     st.stop()
-        if remove_duplicate_emails(free_trial_sheet, email):
+        
+        if remove_duplicate_emails(email):
             print('Duplicate entries found and removed.')
-    except Exception as e:
-        print(f"erorr while checking the registration email: {email}")
-        print(e)
-        st.error("Registration faild, try again")
-        st.stop()
-
 def find_user_sheet(progression_file, email):
     # Get a list of all sheets in the progression file
     sheets = progression_file.worksheets()
@@ -533,19 +589,35 @@ def append_evaluation_result_to_all_essays(all_essays_file, email, date, task_ty
     # Append the evaluation results and other details to the sheet
     all_essays_sheet.append_row([email, date, task_type, question, essay, task_response, coherence_cohesion, lexical_resources, grammar_accuracy, grammar_spelling2, synonyms, rewritten_essay, score])
     return True
-def remove_duplicate_emails(sheet, email):
-    # Get all rows from the sheet
-    rows = sheet.get_all_values()
-    # Find rows where the email matches the given email (assuming email is in the first column)
-    matching_rows = [index for index, row in enumerate(rows) if row[0].strip().lower() == email.strip().lower()]
+# def remove_duplicate_emails(sheet, email):
+#     # Get all rows from the sheet
+#     rows = sheet.get_all_values()
+#     # Find rows where the email matches the given email (assuming email is in the first column)
+#     matching_rows = [index for index, row in enumerate(rows) if row[0].strip().lower() == email.strip().lower()]
     
-    # If more than one matching row is found, remove duplicates
-    if len(matching_rows) > 1:
-        # Remove all but the first occurrence
-        for row_index in sorted(matching_rows[1:], reverse=True):  # Reverse to avoid shifting indices
-            sheet.delete_rows(row_index + 1)  # +1 because sheet rows are 1-indexed
-        return True
-    return False
+#     # If more than one matching row is found, remove duplicates
+#     if len(matching_rows) > 1:
+#         # Remove all but the first occurrence
+#         for row_index in sorted(matching_rows[1:], reverse=True):  # Reverse to avoid shifting indices
+#             sheet.delete_rows(row_index + 1)  # +1 because sheet rows are 1-indexed
+#         return True
+#     return False
+def remove_duplicate_emails(email): #supabase
+    try:
+        # Query the free_trial table to find all rows with the given email
+        response = supabase.table('free_trial').select('*').eq('email', email).execute()
+        rows = response.data
+        
+        # If more than one matching row is found, remove duplicates
+        if len(rows) > 1:
+            # Keep the first occurrence and delete the rest
+            for row in rows[1:]:
+                supabase.table('free_trial').delete().eq('email', row['email']).eq('date_of_registration', row['date_of_registration']).execute()
+            return True
+        return False
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False
 def update_evaluation_date(free_trial_sheet, email):
     current_date = datetime.now().strftime('%d/%m/%Y %H:%M')
 
