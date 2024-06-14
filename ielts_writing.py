@@ -475,6 +475,11 @@ def registration_process(email): #supabase
         
         if remove_duplicate_emails(email):
             print('Duplicate entries found and removed.')
+    except Exception as e:
+        print(f"Error while checking the registration email: {email}")
+        print(e)
+        st.error("Registration failed, try again")
+        st.stop()
 def find_user_sheet(progression_file, email):
     # Get a list of all sheets in the progression file
     sheets = progression_file.worksheets()
