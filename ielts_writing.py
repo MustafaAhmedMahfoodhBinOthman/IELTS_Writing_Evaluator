@@ -165,94 +165,28 @@ def get_location():
             return "Unknown", "Unknown"
     except Exception as e:
         print(e)
-def get_location2():
-    import requests
-    # Geoapify endpoint for IP Geolocation
-    api_key2 = 'f26824af9014439a984af8b3a32538d2'
-    url = f"https://api.geoapify.com/v1/ipinfo?apiKey={api_key2}"
-    
-    # Make the request
-    response = requests.get(url)
-    if response.status_code == 200:
-        data = response.json()
-        # Extract IP address, city, and country from the response
-        ip_address = data.get('ip', 'Unknown')
-        city = data['city']['name'] if 'city' in data and 'name' in data['city'] else "Unknown"
-        country = data['country']['name'] if 'country' in data and 'name' in data['country'] else "Unknown"
-        return ip_address, city, country
-    else:
-        return "Unknown", "Unknown", "Unknown"
-def get_device_type():
-    try:
-        browser_stats = browser_detection_engine()
-        if 'isDesktop' in browser_stats and browser_stats['isDesktop']:
-            return 'Desktop'
-        elif 'isMobile' in browser_stats and browser_stats['isMobile']:
-            return 'Mobile'
-        else:
-            return 'Unknown'
-    except Exception as e: 
-        print(e)
-        return 'Unknown'
-device_type = get_device_type()
-# device_type = 'Unknown'
-def store_page_view(device_type):
-    try:
-        ip_address, city, country = get_location2()
-        
-        # Get the current timestamp
-        current_timestamp = datetime.now()
-        
-        # Format the timestamp to include only date, hours, and minutes
-        formatted_timestamp = current_timestamp.strftime("%Y-%m-%d %H:%M")
-        
-        # Calculate the timestamp for the last 30 minutes
-        last_30_minutes = current_timestamp - timedelta(minutes=30)
-        
-        # Check if a view from the same IP address exists within the last 30 minutes
-        query = supabase.table("page_views").select("*").filter("ip_address", "eq", ip_address).filter("timestamp", "gt", last_30_minutes).limit(1)
-        result = query.execute()
-        
-        if len(result.data) == 0:
-            data = {
-                "ip_address": ip_address,
-                "city": city,
-                "country": country,
-                "device_type": device_type,
-                "timestamp": formatted_timestamp
-            }
-            supabase.table("page_views").insert(data).execute()
-            print(data)
-    except Exception as e:
-        print(f"Error storing page view data: {str(e)}")
-store_page_view(device_type)
+# from browser_detection import browser_detection_engine
+
+# def get_device_type():
+#     try:
+#         browser_stats = browser_detection_engine()
+#         print(browser_stats)
+#         if 'isDesktop' in browser_stats and browser_stats['isDesktop']:
+#             return 'Desktop'
+#         elif 'isMobile' in browser_stats and browser_stats['isMobile']:
+#             return 'Mobile'
+#         else:
+#             return 'Unknown'
+#     except Exception as e: 
+#         print(e)
+#         return 'Unknown'
+
 # Function to check if an email exists in a given sheet
-# def email_exists(sheet, email):
-#     data = sheet.get_all_values()
-#     emails = [row[0] for row in data[1:]] # Skip the header row
-#     return email in emails
 def email_exists(table_name, email): #supabase   
     response = supabase.table(table_name).select('email').eq('email', email).execute()
     data = response.data
     return len(data) > 0
 # Function to find the next empty row and add data
-# def add_user(sheet, email, number):
-#     # Get the current date in the format you specified
-#     current_date = datetime.now().strftime('%d/%m/%Y')
-    
-#     data = sheet.get_all_values()
-#     for i, row in enumerate(data[1:], start=2): # Start from the second row (index 1)
-#         if not row[0]: # If the email column is empty
-#             # Update the email column
-#             sheet.update_cell(i, 1, email)
-#             # Update the next column with the number
-#             sheet.update_cell(i, 2, number)
-#             # Update the next column with the current date
-#             sheet.update_cell(i, 3, current_date)
-#             return
-#     # If no empty row is found, add a new row at the end
-#     # Include the current date in the new row
-#     sheet.append_row([email, number, current_date])
 def add_user(email, number): #supabase
     # Get the current date in the format you specified
     current_date = datetime.now().strftime('%Y-%m-%d')  # Supabase expects date in 'YYYY-MM-DD' format
@@ -271,27 +205,23 @@ def add_user(email, number): #supabase
         print(f"User {email} added successfully. \n {response}")
     except Exception as e:
         print(f"An error occurred: {e}")
-# def add_location_and_device(sheet, email, country, city):
-#     data = sheet.get_all_values()
-#     for i, row in enumerate(data[1:], start=2): # Start from the second row (index 1)
-#         if row[0] == email: # Find the row with the matching email
-#             # Update the country column
-#             sheet.update_cell(i, 5, country)
-#             # Update the city column
-#             sheet.update_cell(i, 6, city)
-#             # Update the desktop device type column
-#             # if device_type == 'Desktop':
-#             #     sheet.update_cell(i, 7, 'True')
-#             # else:
-#             #     sheet.update_cell(i, 7, '')
-#             # # Update the mobile device type column
-#             # if device_type == 'Mobile':
-#             #     sheet.update_cell(i, 8, 'True')
-#             # else:
-#             #     sheet.update_cell(i, 8, '')
-#             return
+def check_language_exists(email):
+    result = supabase.table('free_trial').select('language').eq('email', email).execute()
+    if result.data and result.data[0]['language']:
+        return True
+    return False
 
-# Function to validate Gmail email
+def add_language_to_database(email, language):
+    print("add_language_to_database")
+    try:
+        result = supabase.table('free_trial').update({'language': language}).eq('email', email).execute()
+        if result.data:
+            print("language added")
+            return True
+        return False
+    except Exception as e:
+        st.error(f"Error adding language to database: {str(e)}")
+        return False
 def add_location_and_device(email, country, city): #supabase
     try:
         # Update the user's country and city in the free_trial table
@@ -301,6 +231,7 @@ def add_location_and_device(email, country, city): #supabase
         }).eq('email', email).execute()
     except Exception as e:
         print(f"An error occurred: {e}")
+# Function to validate Gmail email
 def is_valid_gmail(email):
     # first it should validate the email there are many websites can do that
     # also detecting ip adress
@@ -318,11 +249,11 @@ def is_real_gmail(email):
 
     # Verify if the email address is real and can receive emails
     api_keys = [
-        "8d5ed32003ea4796a89b2c17cb9dd787",
+        "9eeb2de334c441fbbd14272c1299190a",
         "0dced7e2a5704d629c0662d175ff442d",
         "ecdc73a6d6fe4924bf391cc7346f34df"
     ]
-    retries = 3
+    retries = 5
     while retries > 0:
         api_key = random.choice(api_keys)
         try:
@@ -343,192 +274,93 @@ def is_real_gmail(email):
             retries -= 1
     
     return True
-# Function to create a new sheet for a user within the Progression file
-def create_user_sheet(progression_file, email):
-    # Create a new sheet within the Progression file
-    try:
-        progression_file.add_worksheet(title=email, rows="1000", cols="20")
-        # Open the newly created sheet
-        user_sheet = progression_file.worksheet(email)
-        # Add column headers
-        headers = ['task_1_score', 'task_1_date', 'task_2_score', 'task_2_date', 'overall_score', 'overall_date']
-        user_sheet.append_row(headers)
-        return user_sheet
-    except Exception as e:
-        # st.error(f"Error creating sheet: {e}")
-        return None
+# def select_language(email):
+#     if 'language_selected' not in st.session_state:
+#         st.session_state.language_selected = False
 
-def essay_user_sheet(essay_file, email):
-    # Create a new sheet within the essay file
-    try:
-            essay_file.add_worksheet(title=email, rows="1000", cols="20")
-            # Open the newly created sheet
-            essay_sheet = essay_file.worksheet(email)
-            # Add column headers
-            # headers = ['Date', 'task_type', 'question', 'essay', 'evalaution']
-            headers = ['Date', 'Task_type', 'Question', 'Essay', 'Task_response', 'Coherence_cohesion', 'Lexical_resource','Grammar_accuracy', 'Grammar_spelling', 'Synonyms', 'Rewritten_essay', 'Overall_score']
-            essay_sheet.append_row(headers)
-            return essay_sheet
-    except Exception as e:
-        # st.error(f"Error creating sheet: {e}")
-        return None
-# user_exist = False
-# def registration_process(email):
-#     # subscription_sheet = client.open_by_key(subscription_id).sheet1
-#     # progression_file = client.open_by_key(progression_file_id)
-#     # essay_file = client.open_by_key(essay_file_id)
-    
-#     try:
-#         city, country = get_location()
-#         # device_type = get_device_type()
-#         progression_file = client.open_by_key(progression_file_id)
-#         essay_file = client.open_by_key(essay_file_id)
-#         subscription_sheet = client.open_by_key(subscription_id).sheet1
-#         if email_exists(subscription_sheet, email):
-#             print('You are subscribed')
-#             # user_exist =  True
-#             try:
-#                 user_sheet = progression_file.worksheet(email)
-#             except Exception as e:
-#                 user_sheet = False
-#             # user_sheet = progression_file.worksheet(email)
-#             if not user_sheet:
-#                 # progression_file = client.open_by_key(progression_file_id)
-#                 user_sheet = create_user_sheet(progression_file, email)
-#                 print(f"Created new sheet '{email}' for the user.")
-#             try:
-#                 essay_sheet = essay_file.worksheet(email)
-#             except Exception as e:
-#                 essay_sheet = False
-#             if not essay_sheet:
-#                 essay_sheet = essay_user_sheet(essay_file, email)
-#                 print(f"Created new sheet '{email}' for the user.")
-#         else:
-#             free_trial_sheet = client.open_by_key(free_trial_id).sheet1
-#             if email_exists(free_trial_sheet, email):
-#                 print(f'{email} is already exists in the Free Trial.')
-#                 add_location_and_device(free_trial_sheet, email, country, city)
-#                 user_exist = True
-#                 try:
-#                     user_sheet = progression_file.worksheet(email)
-#                 except Exception as e:
-#                     user_sheet = False
-#                 if not user_sheet:
-#                     user_sheet = create_user_sheet(progression_file, email)
-#                     print(f"Created new sheet '{email}' for the user.")
-#                 try:
-#                     essay_sheet = essay_file.worksheet(email)
-#                 except Exception as e:
-#                     essay_sheet = False
-#                 if not essay_sheet:
-#                     essay_sheet = essay_user_sheet(essay_file, email)
-#                     print(f"Created new sheet '{email}' for the user.")
+#     if not st.session_state.language_selected:
+#         st.write("Please select your native language:")
+#         selected_language = st.selectbox("Native Language", common_languages, key="language_selectbox")
+#         if st.button("Confirm Language"):
+#             if add_language_to_database(email, selected_language):
+#                 st.session_state.language_selected = True
+#                 st.success(f"Your native language ({selected_language}) has been added to your profile.")
 #             else:
-#                 if is_real_gmail(email):
-#                     print("email is real")
-#                     # progression_file = client.open_by_key(progression_file_id)
-#                     # essay_file = client.open_by_key(essay_file_id)
-#                     add_user(free_trial_sheet, email, 5)
-#                     add_location_and_device(free_trial_sheet, email, country, city)
-#                     st.success('Registered successfully!')
-#                     print(f"{email} Registered successfully")
-#                     # user_exist =True
-#                     user_sheet = create_user_sheet(progression_file, email)
-#                     print(f"Created new sheet '{email}' for the user.")
-#                     essay_sheet = essay_user_sheet(essay_file, email)
-#                     print(f"Created new sheet '{email}' for the user.")
-#                 else:
-#                     # st.empty()
-#                     print("email is not real")
-#                     st.error('Invalid Gmail address. please use a real Gmail account')
-#                     st.stop()
-#         if remove_duplicate_emails(free_trial_sheet, email):
-#             print('Duplicate entries found and removed.')
-#     except Exception as e:
-#         print(f"erorr while checking the registration email: {email}")
-#         print(e)
-#         st.error("Registration faild, try again")
-#         st.stop()
-def registration_process(email): #supabase
+#                 st.error("Failed to add language to the database. Please try again.")
+#     else:
+#         st.success("Your native language has been recorded.")
+
+registred = False
+def registration_process(email):
+    global registred
     try:
         city, country = get_location()
         
         # Check if the email exists in the subscription table
         if email_exists('subscriptions', email):
-            print('You are subscribed')
+            st.write('You are subscribed')
+            registred = True
         else:
             # Check if the email exists in the free_trial table
             if email_exists('free_trial', email):
-                print(f'{email} is already exists in the Free Trial.')
+                # st.write(f'{email} already exists in the Free Trial.')
                 add_location_and_device(email, country, city)
+                registred = True
             else:
                 if is_real_gmail(email):
-                    print("email is real")
+                    st.write("Email is real")
                     add_user(email, 5)
                     add_location_and_device(email, country, city)
                     st.success('Registered successfully!')
-                    print(f"{email} Registered successfully")
+                    # st.write(f"{email} Registered successfully")
+                    registred = True
                 else:
-                    print("email is not real")
-                    st.error('Invalid Gmail address. please use a real Gmail account')
+                    st.error('Invalid Gmail address. Please use a real Gmail account')
                     st.stop()
         
         if remove_duplicate_emails(email):
-            print('Duplicate entries found and removed.')
+            st.write('Duplicate entries found and removed.')
+        
+       
+        
     except Exception as e:
-        print(f"Error while checking the registration email: {email}")
-        print(e)
-        st.error("Registration failed, try again")
+        st.error(f"Error during registration process: {str(e)}")
         st.stop()
-def find_user_sheet(progression_file, email):
-    # Get a list of all sheets in the progression file
-    sheets = progression_file.worksheets()
-    
-    # Iterate through the sheets to find the one with the matching title
-    for sheet in sheets:
-        if sheet.title == email:
-            return sheet
-    
-    # If no matching sheet is found, return None
-    return None
-def append_score_and_date(progression_file, email, task_type, score, date):
-    # Find the user's sheet
-    user_sheet = find_user_sheet(progression_file, email)
-    if user_sheet is None:
-        return False # Failed to find the sheet
 
-    # Determine the column index based on the task type
-    if task_type == 'Task 1':
-        score_col_index = 1
-        date_col_index = 2
-    elif task_type == 'Task 2':
-        score_col_index = 3
-        date_col_index = 4
-    else:
-        return False # Invalid task type
+def append_score_and_date(email, task_type, score, date):
+    try:
+        # Convert the date to the correct format for timestamptz
+        date = datetime.strptime(date, '%d/%m/%Y %H:%M').strftime('%Y-%m-%d %H:%M:%S')
+        
+        # Determine the column names based on the task type
+        if task_type == 'Task 1':
+            score_col = 'task_1_score'
+            date_col = 'task_1_date'
+        elif task_type == 'Task 2':
+            score_col = 'task_2_score'
+            date_col = 'task_2_date'
+        else:
+            return False  # Invalid task type
 
-    # Get all values from the sheet
-    all_values = user_sheet.get_all_values()
-    last_row_with_data = len(all_values) - 1 # Subtract 1 to exclude the header row
+        # Insert a new record with the provided score and date
+        supabase.table('progression').insert({
+            "email": email,
+            score_col: score,
+            date_col: date,
+            "overall_score": None,  # Set to None to avoid violating NOT NULL constraint
+            "overall_date": None    # Set to None to avoid violating NOT NULL constraint
+        }).execute()
 
-    # Check if the columns for the current task type are already filled
-    if all_values[last_row_with_data][score_col_index - 1] and all_values[last_row_with_data][date_col_index - 1]:
-        # If both columns are filled, append to the next row
-        row_to_append = last_row_with_data + 2
-    else:
-        # If either column is empty, append to the current row
-        row_to_append = last_row_with_data + 1
-
-    # Append the score and date to the appropriate columns
-    user_sheet.update_cell(row_to_append, score_col_index, score)
-    user_sheet.update_cell(row_to_append, date_col_index, date)
-
-    return True
+        return True
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False
 if 'task1_band_score' not in st.session_state:
     st.session_state['task1_band_score'] = []
 if 'task2_band_score' not in st.session_state:
     st.session_state['task2_band_score'] = []
-def add_overall_score_to_progression_sheet(progression_file, email, date):
+
+def add_overall_score_to_progression_sheet(email, date):
     if 'task1_band_score' in st.session_state and 'task2_band_score' in st.session_state:
         task1_scores = st.session_state['task1_band_score']
         task2_scores = st.session_state['task2_band_score']
@@ -541,7 +373,7 @@ def add_overall_score_to_progression_sheet(progression_file, email, date):
             average_score = sum(task1_scores) / len(task2_scores)
             # Append the overall score and date to the user's sheet
             overall_score = round(average_score * 2) / 2
-            append_overall_score_and_date(progression_file, email, float(overall_score), date)
+            append_overall_score_and_date(email, float(overall_score), date)
             st.markdown(f'\n\n#### After evaluating Task 1 and Task2 essays \n')
             st.markdown(f"#### your overall band score is {(overall_score)}")
             return True
@@ -551,42 +383,61 @@ def add_overall_score_to_progression_sheet(progression_file, email, date):
     else:
         print("Task scores are not available.")
         return False
-def append_overall_score_and_date(progression_file, email, overall_score, date):
-    # Find the user's sheet
-    user_sheet = find_user_sheet(progression_file, email)
-    if user_sheet is None:
-        return False # Failed to find the sheet
 
-    # The overall score and date will be appended to the 5th and 6th columns
-    score_col_index = 5
-    date_col_index = 6
+def append_overall_score_and_date(email, overall_score, date): #supabae
+    try:
+        # Check if the user already has an entry in the progression table
+        response = supabase.table('progression').select('*').eq('email', email).execute()
+        data = response.data
 
-    # Get all values from the sheet
-    all_values = user_sheet.get_all_values()
-    last_row_with_data = len(all_values) - 1 # Subtract 1 to exclude the header row
+        if data:
+            # If the user already has an entry, update the existing record
+            supabase.table('progression').update({
+                "overall_score": overall_score,
+                "overall_date": date
+            }).eq('email', email).execute()
+        else:
+            # If the user does not have an entry, insert a new record
+            supabase.table('progression').insert({
+                "email": email,
+                "overall_score": overall_score,
+                "overall_date": date
+            }).execute()
 
-    # Check if the columns for the overall score and date are already filled
-    if all_values[last_row_with_data][score_col_index - 1] and all_values[last_row_with_data][date_col_index - 1]:
-        # If both columns are filled, append to the next row
-        row_to_append = last_row_with_data + 2
-    else:
-        # If either column is empty, append to the current row
-        row_to_append = last_row_with_data + 1
+        return True
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False
 
-    # Append the overall score and date to the appropriate columns
-    user_sheet.update_cell(row_to_append, score_col_index, overall_score)
-    user_sheet.update_cell(row_to_append, date_col_index, date)
-
-    return True
-def append_evaluation_result(essay_file, email, date, task_type, question, essay, task_response, coherence_cohesion, lexical_resources, grammar_accuracy, grammar_spelling2, synonyms, rewritten_essay, score):
-    # Find the user's essay sheet
-    essay_sheet = find_user_sheet(essay_file, email)
-    if essay_sheet is None:
-        return False # Failed to find the sheet
-
-    # Append the evaluation results and other details to the sheet
-    essay_sheet.append_row([date, task_type, question, essay, task_response, coherence_cohesion, lexical_resources, grammar_accuracy, grammar_spelling2, synonyms, rewritten_essay, score])
-    return True
+#supabae
+def append_evaluation_result(email, date, task_type, question, essay, task_response, coherence_cohesion, lexical_resources, grammar_accuracy, grammar_spelling, synonyms, rewritten_essay, score):
+    try:
+        # Convert the date to the correct format for timestamptz
+        date = datetime.strptime(date, '%d/%m/%Y %H:%M').strftime('%Y-%m-%d %H:%M:%S')
+        
+        # Insert the evaluation results into the all_essays table
+        supabase.table('all_essays').insert({
+            "email": email,
+            "date": date,
+            "task_type": task_type,
+            "question": question,
+            "essay": essay,
+            "task_response": task_response,
+            "coherence_cohesion": coherence_cohesion,
+            "lexical_resource": lexical_resources,
+            "grammar_accuracy": grammar_accuracy,
+            "grammar_spelling": grammar_spelling,
+            "synonyms": synonyms,
+            "rewritten_essay": rewritten_essay,
+            "overall_score": score
+        }).execute()
+        
+        return True
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False
+        
+#supabae
 def append_evaluation_result_to_all_essays(all_essays_file, email, date, task_type, question, essay, task_response, coherence_cohesion, lexical_resources, grammar_accuracy, grammar_spelling2, synonyms, rewritten_essay, score):
     # Assuming the first sheet in the all_essays file is the one where you want to append the results
     all_essays_sheet = all_essays_file.get_worksheet(0) # Adjust the index if the target sheet is not the first one
@@ -594,19 +445,7 @@ def append_evaluation_result_to_all_essays(all_essays_file, email, date, task_ty
     # Append the evaluation results and other details to the sheet
     all_essays_sheet.append_row([email, date, task_type, question, essay, task_response, coherence_cohesion, lexical_resources, grammar_accuracy, grammar_spelling2, synonyms, rewritten_essay, score])
     return True
-# def remove_duplicate_emails(sheet, email):
-#     # Get all rows from the sheet
-#     rows = sheet.get_all_values()
-#     # Find rows where the email matches the given email (assuming email is in the first column)
-#     matching_rows = [index for index, row in enumerate(rows) if row[0].strip().lower() == email.strip().lower()]
-    
-#     # If more than one matching row is found, remove duplicates
-#     if len(matching_rows) > 1:
-#         # Remove all but the first occurrence
-#         for row_index in sorted(matching_rows[1:], reverse=True):  # Reverse to avoid shifting indices
-#             sheet.delete_rows(row_index + 1)  # +1 because sheet rows are 1-indexed
-#         return True
-#     return False
+
 def remove_duplicate_emails(email): #supabase
     try:
         # Query the free_trial table to find all rows with the given email
@@ -623,62 +462,26 @@ def remove_duplicate_emails(email): #supabase
     except Exception as e:
         print(f"An error occurred: {e}")
         return False
-def update_evaluation_date(free_trial_sheet, email):
-    current_date = datetime.now().strftime('%d/%m/%Y %H:%M')
 
-    all_values = free_trial_sheet.get_all_values()
-    for i, row in enumerate(all_values[1:], start=2):  # Start from the second row (index 1)
-        if row[0] == email:  # Check if the email matches
-            free_trial_sheet.update_cell(i, 4, current_date)  # Update the date in the fourth column
-            print("user last used date updated", current_date)
+def update_evaluation_date(email): #supabase
+    current_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Supabase expects datetime in 'YYYY-MM-DD HH:MM:SS' format
+    
+    try:
+        # Update the last_used_date for the specified email in the free_trial table
+        response = supabase.table('free_trial').update({
+            "last_used_date": current_date
+        }).eq('email', email).execute()
+        
+        if response.data:
+            print("User last used date updated", current_date)
             return True
-    
-    return False  # Return False if the email is not found
-# def check_evaluation_attempts(email):
-#     # Check if the user is in the subscription sheet
-#     subscription_sheet = client.open_by_key(subscription_id).sheet1
-#     if email_exists(subscription_sheet, email):
-#         # User is subscribed, check the "number_evaluation" column
-#         user_row = subscription_sheet.row_values(subscription_sheet.find(email).row)
-#         attempts = int(user_row[subscription_sheet.find("number_evaluation").col - 1])
-#         return attempts
-#     else:
-#         # Check if the user is in the free trial sheet
-#         free_trial_sheet = client.open_by_key(free_trial_id).sheet1
-#         if email_exists(free_trial_sheet, email):
-#             # User is in free trial, check the "attempts" column
-#             user_row = free_trial_sheet.row_values(free_trial_sheet.find(email).row)
-#             attempts = int(user_row[free_trial_sheet.find("attempts").col - 1])
-#             return attempts
-#     return 0 # Default to 0 if user not fo
+        else:
+            print("Email not found")
+            return False
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return False
 
-# def subtract_num_attempts(email):
-
-#     """
-#     Subtracts one from the number of attempts for a given email in either the subscription sheet or the free trial sheet.
-    
-#     Args:
-#     - email (str): The email address to subtract attempts from.
-    
-#     Returns:
-#     - None
-#     """
-
-#     subscription_sheet = client.open_by_key(subscription_id).sheet1
-#     if email_exists(subscription_sheet, email):
-#         user_row = subscription_sheet.row_values(subscription_sheet.find(email).row)
-#         attempts = int(user_row[subscription_sheet.find("number_evaluation").col - 1])
-#         if attempts > 0:
-#             attempts -= 1
-#             subscription_sheet.update_cell(subscription_sheet.find(email).row, subscription_sheet.find("number_evaluation").col, attempts)
-#         else:
-#             print("deleting the row")
-#             # Delete the row if attempts are 0 or less
-#             row = subscription_sheet.find(email).row
-#             subscription_sheet.delete_rows(row)
-            
-#     else:
-#         free_trial_sheet = client.open_by_key(free_trial_id).sheet1
 #         if email_exists(free_trial_sheet, email):
 #             # User is in free trial, subtract from the "attempts" column
 #             user_row = free_trial_sheet.row_values(free_trial_sheet.find(email).row)
@@ -802,6 +605,13 @@ if st.button('Register'):
 
 task = ''
 gen_acad = ''
+ # Check if user's language is already in the database
+# if registred == True:
+#     if not check_language_exists(email):
+#         print("not check_language_exists")
+#         # select_language(email)
+#     else:
+#         st.success("Your native language is already recorded.")
 select_task = st.selectbox('**Select the task**', ['Task 1', 'Task 2'])
 
 if select_task == 'Task 1':
@@ -855,6 +665,7 @@ def decripe_image(api, image):
     while retries < max_retries:
         try:
             used_key = random.choice(keys)
+            print(used_key)
             genai.configure(api_key=used_key)
             model_vision = genai.GenerativeModel('gemini-pro-vision')
             response2 = model_vision.generate_content([image_prompt, image])
@@ -896,12 +707,14 @@ def essay_image(api_key, image_pil):
     while retries < max_retries:
         try:
             used_key = random.choice(keys)
+            print(used_key)
             image_prompt = 'Please transcribe the text from the provided image without adding any additional information or making changes to the words. Ensure accuracy in detecting and reproducing the text exactly as it appears in the image, including any spelling mistakes. Your task is to strictly adhere to the content visible in the image and refrain from introducing any extraneous details or alterations to the text. if the text was not in english only write that the text is not in English language '
             genai.configure(api_key=used_key)
             model_vision = genai.GenerativeModel('gemini-pro-vision')
             response2 = model_vision.generate_content([image_prompt, image_pil])
             response2.resolve()
             describe = response2.text
+            
             prompt_image = f"""
             You will be given text extracted from one or more images, which together should form an IELTS essay. 
             Your task is to carefully analyze the extracted text from each image, 
@@ -959,8 +772,11 @@ if task_image is not None:
 
 
 essay = st.text_area(label='**Write or paste the essay**', height=600, value=st.session_state.essay)
-num_words = len(essay.split())
-q_words = len(question.split())
+try:
+    num_words = len(essay.split())
+    q_words = len(question.split())
+except Exception as e :
+    num_words = 0
 st.write('Number of Words:    ',num_words)
 button = st.button('Evaluate')
 
@@ -1039,6 +855,7 @@ def words_charts():
     plt.ylabel('Counts')
     plt.title('Top 5 Most Repeated Words')
     st.pyplot(plt)
+
 def organaize_synonyms(API, synonyms):
     sy_prompt = f"""
     
@@ -1196,6 +1013,7 @@ def synonym(API= groq_API1, model2=llama):
                 print("Sorry, there is an unexpected problem happened Please try again later, if the problem persists please contact me")
                 print("stop running replicate (synonyms)")
                 st.stop()
+
 def translate_results(results, target_language):
     # Construct the prompt for translation
     prompt = f"""
@@ -1221,6 +1039,7 @@ def translate_results(results, target_language):
     while retries < max_retries:
         try:
             used_key = random.choice(keys)
+            print(used_key)
             genai.configure(api_key=used_key)
             model = genai.GenerativeModel('gemini-1.5-flash')
             response2 = model.generate_content(prompt)
@@ -1374,75 +1193,7 @@ def count_words():
         word_cloud = WordCloud(stopwords=stop_w).generate(essay)
         img = word_cloud.to_image()
         st.image(img)    
-# def translate_results(results, target_language):
-#     # Construct the prompt for translation
-#     prompt = f"""
-#     You are a professional translator specializing in translating IELTS evaluation results. 
-#     Please translate the following evaluation text into {target_language}:
 
-#     ```
-#     {results}
-#     ```
-#     """
-
-#     # Use Groq API for translation
-#     max_retries = number_of_tries
-#     retries = 0
-#     while retries < max_retries:
-#         try:
-#             # gra_spelling = claude_model2(haiku, prompt)
-#             client = Groq(
-#                         api_key=groq_API1
-#                     )
-
-#             chat_completion = client.chat.completions.create(
-#                             messages=[
-#                                 # Set an optional system message. This sets the behavior of the
-#                                 # assistant and can be used to provide specific instructions for
-#                                 # how it should behave throughout the conversation.
-#                                 {
-#                                     "role": "system",
-#                                     "content": "you are English grammar Expert  in  writing ",
-#                                     # "content": prompt
-#                                 },
-#                                 # Set a user message for the assistant to respond to.
-#                                 {
-#                                     "role": "user",
-#                                     "content": prompt,
-#                                     # "content": task_analysis,
-#                                 }
-#                             ],
-#                             model="llama3-8b-8192",
-#                         )
-
-#             translated_text = chat_completion.choices[0].message.content
-#             st.markdown(translated_text)
-#             return translated_text
-#             # function_reviwer(task_ch)
-            
-#             break  # Break out of the while loop if the generation is successful
-#         except Exception  as e:
-#             retries+=1
-#             print("An internal error has occurred:", e)
-#             print("Retrying...")
-#             continue
-#     else:
-#         print("start the second model grammar2")
-        
-#         try:
-#                 output = replicate.run(
-#             "meta/meta-llama-3-70b-instruct",
-#                 input={'prompt':prompt},
-#                 )
-#                 translated_text = ("".join(output))
-#                 print("replicate grammar2")
-#                 st.markdown(translated_text)
-#                 return translated_text
-#         except Exception as e:
-#                 print("An internal error has occurred:", e)
-#                 print("Retrying...")
-                
-#     # return translated_text
 
 def grammar_spelling(API= groq_API1, model=llama):
     
@@ -1699,7 +1450,7 @@ def essay_analysis(prompt, API= groq_API1, model= llama):
             break  # Break out of the while loop if the generation is successful
         except Exception  as e:
             retries += 1
-            st.error('OPPS, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
+            st.error('Sorry, there is an unexpected problem happened Please try again later, if the problem persists please contact me')
             print("An internal error has occurred: now will use ", e)
             print("Retrying...")
             continue
@@ -2186,70 +1937,7 @@ Please note that your evaluation should be unbiased and based solely on the IELT
 Remember to maintain a supportive and constructive tone throughout your evaluation. Your goal is to provide valuable insights and practical suggestions that can help the candidate refine their IELTS  Writing {task} skills and achieve their desired band score.
     """
 
-# co_prompt= f"""
-# Evaluate the given IELTS Writing essay {essay} based on the Coherence and Cohesion criteria. Your evaluation should be detailed, structured, and aligned with the IELTS band descriptors. Provide an accurate and reliable band score similar to an actual IELTS examiner. Follow the guidelines below to ensure a thorough assessment:
 
-# Coherence and Cohesion Evaluation Criteria
-# Logical Sequencing and Paragraphing
-
-# Assess if the information and ideas are logically sequenced.
-# Check for clear and appropriate paragraphing.
-# Use of Cohesive Devices
-
-# Evaluate the use of linking words and phrases (cohesive devices) to connect ideas within and between paragraphs.
-# Ensure that cohesive devices are used appropriately and effectively.
-# Reference and Substitution
-
-# Analyze the use of reference words (e.g., pronouns) and substitution to avoid repetition and enhance readability.
-# Overall Flow and Clarity
-
-# Determine if the essay flows smoothly and is easy to follow.
-# Check for any instances of unclear or confusing text.
-# Band Descriptors
-# Use the following band descriptors to provide an accurate band score (0-9):
-
-# Band 9
-
-# Uses cohesion in such a way that it attracts no attention.
-# Skillfully manages paragraphing.
-# Band 8
-
-# Sequences information and ideas logically.
-# Manages all aspects of cohesion well.
-# Uses paragraphing sufficiently and appropriately.
-# Band 7
-
-# Logically organizes information and ideas; there is clear progression throughout.
-# Uses a range of cohesive devices appropriately, although there may be some over/under-use.
-# Presents a clear central topic within each paragraph.
-# Band 6
-
-# Arranges information and ideas coherently; there is a clear overall progression.
-# Uses cohesive devices effectively, but cohesion within and/or between sentences may be faulty or mechanical.
-# May not always use referencing clearly or appropriately.
-# Band 5
-
-# Presents information with some organization but there may be a lack of overall progression.
-# Makes inadequate, inaccurate, or overuse of cohesive devices.
-# May be repetitive due to lack of referencing and substitution.
-# Band 4
-
-# Presents information and ideas but these are not arranged coherently and there is no clear progression in the response.
-# Uses some basic cohesive devices but these may be inaccurate or repetitive.
-# May not write in paragraphs or their use may be confusing.
-# Band 3 and Below
-
-# Fails to organize information and ideas logically.
-# Lacks coherence and cohesion.
-# Writing is difficult to follow.
-# Evaluation Example
-# Introduction and Thesis Statement: Assess if the introduction sets up the essay logically and provides a clear thesis statement.
-# Body Paragraphs: Evaluate each paragraph for logical sequencing of ideas and effective use of cohesive devices.
-# Conclusion: Check if the conclusion logically follows from the body paragraphs and effectively summarizes the main points.
-
-
-
-# """
 # # lexical resources citeria prompt
 lex_task2_analysis = f"""
 
@@ -2924,6 +2612,7 @@ you should be fair when you assess this criteria and give a precise band score a
 
     Remember to maintain a supportive and constructive tone throughout your evaluation. Your goal is to provide valuable insights and practical suggestions that can help the candidate refine their IELTS General Training Writing Task 1 skills and achieve their desired band score.
 """
+
 task1_band_score = []
 task2_band_score = []
 
@@ -2976,6 +2665,7 @@ def remove_band_score(result):
 
 
 
+
 task_response = f""""""
 if task == 'Task 1' and gen_acad == 'Academic':
     task_response = tas_academic_task1
@@ -2999,7 +2689,7 @@ def delay(num_sec=5):
 
 
 def evaluate2(prompt, API= groq_API1, model= llama):
-    genai.configure(api_key = used_key)
+    # genai.configure(api_key = used_key)
     max_retries = number_of_tries
     retries = 0
     while retries < max_retries:
@@ -3029,6 +2719,7 @@ def evaluate2(prompt, API= groq_API1, model= llama):
             #         )
             
             # result = chat_completion.choices[0].message.content
+            
             messages = [
                 {
                     "role": "system",
@@ -3052,7 +2743,12 @@ def evaluate2(prompt, API= groq_API1, model= llama):
             
             # print(response.choices[0].message.content)
             result = (response.choices[0].message.content)
-    
+            # used_key = random.choice(keys)
+            # genai.configure(api_key=used_key)
+            # model = genai.GenerativeModel('gemini-1.5-pro-latest')
+            # response2 = model.generate_content(prompt)
+            # response2.resolve()
+            # result = response2.text
             return remove_band_score(result)
             
             break  # Break out of the while loop if the generation is successful
@@ -3179,6 +2875,7 @@ if button:
                                 if gen_acad == 'Academic':
                                     
                                     if chart_image is not None:
+                                        print(used_key)
                                         described_image = decripe_image(used_key, image_pil)
                                         describe_image += described_image
                                         # print(describe_image)
@@ -3268,8 +2965,8 @@ if button:
                                 task_type = 'Task 2'
                             current_date = datetime.now().strftime('%d/%m/%Y %H:%M')
                             try:
-                                progression_file = client.open_by_key(progression_file_id)
-                                append_score_and_date(progression_file, email, task_type, overall_score, current_date)
+                                # progression_file = client.open_by_key(progression_file_id)
+                                append_score_and_date(email, task_type, overall_score, current_date)
                             except Exception as e:
                                 print("an error happened when appending scores", e)
                             st.markdown(f"## {task} Band Score: {float(overall_score)} / 9")
@@ -3403,19 +3100,19 @@ if button:
                                     
                             try:
                                 essay_file = client.open_by_key(essay_file_id)
-                                all_essays_file = client.open_by_key(all_essays_file_id)
+                                # all_essays_file = client.open_by_key(all_essays_file_id)
                                 print("adding evaluation result to Google Spreadsheet ")
                                 # print(task_response_result)
-                                append_evaluation_result(essay_file, email, current_date, task_type, question, essay, task_response_result, coherence_cohesion_result, lexical_resources_result, grammar_spelling_result, grammar_spelling2_result, synonyms_result, rewritten_essay_result, overall_score_result)
-                                append_evaluation_result_to_all_essays(all_essays_file, email, current_date, task_type, question, essay, task_response_result, coherence_cohesion_result, lexical_resources_result, grammar_spelling_result, grammar_spelling2_result, synonyms_result, rewritten_essay_result, overall_score)
+                                append_evaluation_result(email, current_date, task_type, question, essay, task_response_result, coherence_cohesion_result, lexical_resources_result, grammar_spelling_result, grammar_spelling2_result, synonyms_result, rewritten_essay_result, overall_score_result)
+                                # append_evaluation_result_to_all_essays(all_essays_file, email, current_date, task_type, question, essay, task_response_result, coherence_cohesion_result, lexical_resources_result, grammar_spelling_result, grammar_spelling2_result, synonyms_result, rewritten_essay_result, overall_score)
                             except Exception as e:
                                 print("an error happened when appending evaluation result", e)
                             # st.markdown("\n\n\n##### If you find this service helpful, you can support my effort by buying me a coffee. ☕️ :heart: " + "[Please click here](https://ko-fi.com/mustafa_binothman)")
                             try:
-                                free_trial_sheet = client.open_by_key(free_trial_id).sheet1
-                                progression_file = client.open_by_key(progression_file_id)
-                                add_overall_score_to_progression_sheet(progression_file, email, current_date)
-                                update_evaluation_date(free_trial_sheet, email)
+                                # free_trial_sheet = client.open_by_key(free_trial_id).sheet1
+                                # progression_file = client.open_by_key(progression_file_id)
+                                add_overall_score_to_progression_sheet(email, current_date)
+                                update_evaluation_date(email)
                             except Exception as e:
                                 print("an error happened when adding overall score to the sheet", e)
                             end_time = time.time()
