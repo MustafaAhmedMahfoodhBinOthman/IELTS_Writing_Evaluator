@@ -2735,12 +2735,16 @@ def evaluate2(prompt, API= groq_API1, model= llama):
                     ),
                 },
             ]
-            client = OpenAI(api_key=YOUR_API_KEY, base_url="https://api.perplexity.ai")
+            # client = OpenAI(api_key=YOUR_API_KEY, base_url="https://api.perplexity.ai")
+            # response = client.chat.completions.create(
+            #     model="llama-3-70b-instruct",
+            #     messages=messages
+            # )
+            client = OpenAI(api_key="sk-9d813c3cdc754b2c9d5167aef9d4be09", base_url="https://withmartian.com/api/openai/v1")
             response = client.chat.completions.create(
-                model="llama-3-70b-instruct",
+                model="gpt-4o",
                 messages=messages
             )
-            
             # print(response.choices[0].message.content)
             result = (response.choices[0].message.content)
             # used_key = random.choice(keys)
